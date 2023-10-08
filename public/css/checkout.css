@@ -1,0 +1,123 @@
+
+.container {
+  width: 100%;
+  padding: 20px 0 0 10vw;
+  border-right: 1px solid #666;
+}
+#checkoutForm input {
+  height: 42px;
+  border: 1px solid #dedede;
+  padding-left: 15px;
+  width: 80%;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: auto;
+}
+#checkoutForm button {
+  background-color: #000000;
+  border-radius: 10px;
+  cursor:pointer;
+  color: #FFFFFF;
+  padding: 10px
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+div[id^="sq-card"] {
+  margin-bottom: 10px;
+}
+iframe {
+  height: 500px;
+}
+#card-container {
+  display: grid;
+  grid-template-columns: auto;
+}
+iframe > #card-data-wrapper {
+  display: grid;
+  grid-template-columns: auto;
+}
+.sq-card-wrapper {
+  margin: 0 !important;
+  width: 250px;
+}
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: transparent;
+  border-radius: 50%;
+}
+
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: transparent;
+  width: 36px;
+  height: 36px;
+}
+
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: transparent;
+  width: 36px;
+  height: 36px;
+  animation: spin89345 1s linear infinite;
+}
+
+@keyframes spin89345 {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+main {
+  display: flex;
+  justify-content: space-between;
+}
+.checkout_flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.checkout_product_image {
+  width: min(50px, 100%);
+  margin-right: 20px;
+}
+.first_part_checkout {
+  display: flex;
+  align-items: center;
+}
+.checkout_products div p {
+  font-size: 14px;
+}
+.checkout_products {
+  width: 100%;
+  padding-right: 4%;
+  padding: 20px 10vw 0 20px;
+}
+.checkout_flex:not(:nth-child(1)) {
+  margin-top: 8px;
+}
+.checkout_subtotal {
+  margin-top: 20px !important;
+  border-top: 1px solid #00000081;
+  padding-top: 10px;
+}
+.image_popup {
+  position: absolute;
+  background-color: #0e0e0eae;
+  color: #ffffff;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  border-radius: 20px;
+  margin-bottom: 45px;
+  margin-left: 37px;
+}
+.checkout_product_block:not(:nth-child(1)) {
+  margin-top: 18px;
+}

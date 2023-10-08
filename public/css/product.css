@@ -1,0 +1,129 @@
+main {
+  display: flex;
+  margin: 2% 5%;
+}
+
+/*? Slider */
+
+.slider {
+  position: sticky;
+  width: 100%;
+  margin-right: 40px;
+  top: 20px;
+  overflow: auto;
+  height: 100%;
+}
+
+.main-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
+.thumbnails {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.thumbnail {
+  width: 100px;
+  height: auto;
+  cursor: pointer;
+  margin: 0 5px;
+}
+.zoom_image {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  cursor: zoom-in;
+  box-shadow: 0 0 0 500px #ffffff;
+}
+.close_image {
+  height: 40px;
+  position: absolute;
+  top: 2%;
+  width: 40px;
+  z-index: 10000;
+  right: 5%;
+}
+.product_textBlock {
+  width: 100%;
+}
+
+/*? Text part */
+
+h1 {
+  font-size: 48px;
+  font-weight: 600;
+  color: #040313;
+}
+.product_desc {
+  color: #020020b9;
+  font-size: 18px;
+}
+.product_desc:nth-child(1) {
+  font-size: 20px;
+  margin-top: 20px;
+}
+.product_desc_br::before {
+  content: "\a \2022 \2002";
+  white-space: pre;
+}
+.product_desc_br:nth-child(1)::before {
+  content: "\2022 \2002";
+}
+button {
+  cursor: pointer;
+}
+.product_amount_box {
+  display: flex;
+  justify-content: space-between;
+  width: min(150px, 100%);
+  align-items: center;
+  font-size: 20px;
+  border: 1px solid #00000093;
+  border-radius: 30px;
+  padding: 8px 30px
+}
+.product_number {
+  padding: 0;
+}
+h4 {
+  font-size: 22px
+}
+.product_amount {
+  font-size: 12px;
+  padding: 20px 0 5px 5px;
+}
+.product_priceBox {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+
+}
+.product_price {
+  font-size: 20px;
+  padding: 0;
+}
+.product_oldprice {
+  text-decoration: line-through;
+  font-size: 14px;
+  margin-right: 20px;
+}
+.product_sale {
+  background-color: #000000;
+  padding: 5px 20px;
+  color: #FFFFFF;
+  margin-left: 30px;
+}
+.cart__button {
+  margin: 20px 0 40px 0;
+}
+.clicked_cart {
+  justify-content: center;
+  align-items: center;
+}

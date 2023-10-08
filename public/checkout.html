@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Page</title>
+    <!-- Include the Square.js library -->
+    <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/style.css" />
+
+    <link rel="stylesheet" href="css/checkout.css" />
+  </head>
+  <body class="dark-mode">
+    <header></header>
+    <nav></nav>
+    <main>
+      <div class="container">
+        <h1>Checkout Page</h1>
+        <form id="checkoutForm">
+          <input type="text" id="orderNumber" placeholder="Order Number" />
+          <input type="text" id="shippingZip" placeholder="Shipping Zip" />
+          <!-- Add more fields as necessary -->
+          <button type="submit">Submit</button>
+        </form>
+
+        <form id="payment-form">
+          <div class="loader" id="loader"></div>
+          <div id="card-container"></div>
+          <button id="card-button" type="button">Pay $10.00</button>
+          <div id="payment-status-container"></div>
+        </form>
+      </div>
+      <div class="checkout_products">
+        <div id="products"></div>
+
+        <div class="checkout_subtotal checkout_flex">
+          <p class="checkout_subtotal_title">Subtotal</p>
+          <p class="checkout_subtotal_price"></p>
+        </div>
+        <div class="checkout_shipping checkout_flex">
+          <p class="checkout_shipping_title">Shipping</p>
+          <p class="checkout_shipping_price">Free</p>
+        </div>
+        <div class="checkout_coupons checkout_flex">
+          <p class="checkout_coupons_title">Coupons</p>
+          <p class="checkout_coupons_price"></p>
+        </div>
+        <div class="checkout_total checkout_flex">
+          <h5 class="checkout_total_title">Total</h5>
+          <p class="checkout_total_price"></p>
+        </div>
+      </div>
+    </main>
+
+    <footer></footer>
+    <script src="js/structure.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/payments.js"></script>
+    <script src="js/checkout.js"></script>
+  </body>
+</html>
