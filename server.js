@@ -14,8 +14,7 @@ const nodemailer = require("nodemailer");
 const square = require("square");
 const axios = require("axios");
 
-const accessToken =
-  "EAAAEKAOo2xDqFEVKEFoeAQYqDNQQvlcTrc9KnPcPtKx8pvxdXWtoT4bfBAuCaQr";
+
 const environment = square.Environment.Sandbox; // or square.Environment.Production
 const client = new square.Client({
   accessToken: accessToken,
