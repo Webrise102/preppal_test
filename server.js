@@ -269,7 +269,7 @@ app.post("/check-coupon", (req, res) => {
   }
 });
 const apiUrl = "https://developers.cjdropshipping.com/api2.0/v1/authentication";
-const email = `${process.env.EMAIL_ACCOUNT}`;
+const email = `${process.env.CJ_EMAIL}`;
 const password = `${process.env.CJ_PASSWORD}`;
 
 // Function to get an access token
