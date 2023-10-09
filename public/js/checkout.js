@@ -123,22 +123,26 @@ document
   .addEventListener("submit", function (event) {
     event.preventDefault();
 
-    const orderNumber = document.getElementById("orderNumber").value;
-    const shippingZip = document.getElementById("shippingZip").value;
     // Gather more form data as necessary
 
     var orderData = {
-      orderNumber: orderNumber,
+      orderNumber: "1",
       shippingCountryCode: "US",
       shippingCountry: "United States",
-      shippingProvince: "",
-      shippingCity: "",
-      shippingAddress: "",
+      shippingProvince: "NYC",
+      shippingCity: "NYC",
+      shippingAddress: "55 Cobblestone Street Fairport, NY 14450",
       shippingAddress2: "",
-      shippingCustomerName: "",
-      shippingZip: shippingZip,
-      shippingPhone: "",
-
+      shippingCustomerName: "Illia",
+      shippingZip: "12345",
+      shippingPhone: "+4915157004753",
+      products: [
+        {
+          vid: "9633D08C-B0F9-4824-8A59-546701C389C6",
+          quantity: "1",
+          shippingName: "Illia",
+        },
+      ],
 
       // Include more data as necessary
     };

@@ -14,8 +14,7 @@ const nodemailer = require("nodemailer");
 const square = require("square");
 const axios = require("axios");
 
-const accessToken =
-  `${process.env.ACCESS_TOKEN}`;
+const accessToken = `${process.env.ACCESS_TOKEN}`;
 const environment = square.Environment.Sandbox; // or square.Environment.Production
 const client = new square.Client({
   accessToken: accessToken,
@@ -291,6 +290,32 @@ async function getAccessToken() {
     return null;
   }
 }
+const url = 'https://developers.cjdropshipping.com/api2.0/v1/logistic/freightCalculate';
+
+const headers = {
+  'Content-Type': 'application/json',
+  'CJ-Access-Token': `${process.env.CJ_ACCESS_TOKEN}`, // Replace with your actual access token
+};
+
+const data = {
+  startCountryCode: 'US',
+  endCountryCode: 'US',
+  products: [
+    {
+      quantity: 1,
+      vid: 'F616DF14-C0BF-4BDC-AE52-75664D36218D',
+    },
+  ],
+};
+
+axios.post(url, data, { headers })
+  .then((response) => {
+    console.log(response.data);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+
 app.post("/create-order", async (req, res) => {
   const accessToken = await getAccessToken();
 
@@ -299,24 +324,45 @@ app.post("/create-order", async (req, res) => {
   } else {
     res.status(500).json({ error: "Failed to obtain access token" });
   }
-  const orderData = req.body;
-  const config = {
-    headers: {
-      "CJ-Access-Token":
-        `${process.env.CJ_ACCESS_TOKEN}`,
-      "Content-Type": "application/json",
-    },
+  const headers = {
+    "CJ-Access-Token": `${process.env.CJ_ACCESS_TOKEN}`,
+    "Content-Type": "application/json",
   };
-  createOrder(orderData, config);
 
-  function createOrder(orderData, config) {
-    axios
-      .post(
-        "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrder",
-        orderData,
-        config,
-        {}
-      )
+  const data = {
+    orderNumber: "1234",
+    shippingZip: "12345",
+    shippingCountryCode: "US",
+    shippingCountry: "United States",
+    shippingProvince: "NYC",
+    shippingCity: "NYC",
+    shippingAddress: "",
+    shippingCustomerName: "",
+    shippingPhone: "",
+    remark: "note",
+    fromCountryCode: "US",
+    logisticName: "US (2-5Days)",
+    houseNumber: "123",
+    email: "",
+    products: [
+      {
+        vid: "F616DF14-C0BF-4BDC-AE52-75664D36218D",
+        quantity: 1,
+        shippingName: "",
+      },
+    ],
+  };
+
+  const config = {
+    method: "post",
+    url: "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrder",
+    headers,
+    data,
+  };
+  createOrder(config);
+
+  function createOrder(config) {
+    axios(config)
       .then(function (response) {
         console.log(response.data);
       })
