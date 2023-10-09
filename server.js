@@ -310,7 +310,6 @@ const data = {
 
 axios.post(url, data, { headers })
   .then((response) => {
-    console.log(response.data);
   })
   .catch((error) => {
     console.error(error);

@@ -156,7 +156,13 @@ h2 {
   padding: 0;
 }
 .amountParagr {
-  padding: 0;
+  padding: 0 5px;
+}
+.amountBox button {
+  cursor: pointer
+}
+.product_title_cart {
+  width: 100%
 }
 
 

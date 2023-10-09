@@ -71,20 +71,20 @@ footer.innerHTML = `      <div class="footer_part">
 <div class="line"></div>
 <div class="footer_part">
 <div class="footer_cardsBlock">
-  <img src="images/Visa.svg" alt="Visa Card" class="footer_card" /><img
-    src="images/Mastercard.svg"
+  <img src="images/cards/Visa.svg" alt="Visa Card" class="footer_card" /><img
+    src="images/cards/Mastercard.svg"
     alt="Mastercard Card"
     class="footer_card"
   /><img
-    src="images/Amex.svg"
+    src="images/cards/Amex.svg"
     alt="American Express Card"
     class="footer_card"
   /><img
-    src="images/Discover.svg"
+    src="images/cards/Discover.svg"
     alt="Discover Card"
     class="footer_card"
-  /><img src="images/JCB.svg" alt="JCB Card" class="footer_card" />
-  <img src="images/UnionPay.svg" alt="Union Card" class="footer_card" />
+  /><img src="images/cards/JCB.svg" alt="JCB Card" class="footer_card" />
+  <img src="images/cards/UnionPay.svg" alt="Union Card" class="footer_card" />
 </div>
 <p class="footer_company">©2023, PrepPal™</p>
 </div>`;

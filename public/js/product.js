@@ -2,11 +2,16 @@ const mainImage = document.querySelector(".main-image");
 const thumbnails = document.querySelectorAll(".thumbnail");
 
 let currentImageIndex = 0;
-const images = [
-  "../images/juicer_1st.jpg",
-  "../images/juicer_2nd.jpg",
-  "../images/juicer_3rd.jpg",
-];
+const currentLocation = window.location.pathname
+let images;
+if(currentLocation === "/fast-defrost-tray") {
+  images = [
+    "../images/tray_preview1.webp",
+    "../images/tray_preview2.webp",
+    "../images/tray_preview3.webp",
+  ];
+}
+
 
 function updateMainImage() {
   mainImage.src = images[currentImageIndex];
