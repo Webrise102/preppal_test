@@ -1,48 +1,11 @@
-
+html,
+body {
+  height: 100%;
+}
 .container {
   width: 100%;
   padding: 20px 0 0 10vw;
   border-right: 1px solid #666;
-}
-#checkoutForm input {
-  height: 42px;
-  border: 1px solid #dedede;
-  padding-left: 15px;
-  width: 80%;
-  border-radius: 10px;
-  display: grid;
-  grid-template-columns: auto;
-}
-#checkoutForm button {
-  background-color: #000000;
-  border-radius: 10px;
-  cursor:pointer;
-  color: #FFFFFF;
-  padding: 10px
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-div[id^="sq-card"] {
-  margin-bottom: 10px;
-}
-iframe {
-  height: 500px;
-}
-#card-container {
-  display: grid;
-  grid-template-columns: auto;
-}
-iframe > #card-data-wrapper {
-  display: grid;
-  grid-template-columns: auto;
-}
-.sq-card-wrapper {
-  margin: 0 !important;
-  width: 250px;
 }
 .loader {
   border: 4px solid rgba(0, 0, 0, 0.1);
@@ -63,6 +26,52 @@ iframe > #card-data-wrapper {
   width: 36px;
   height: 36px;
   animation: spin89345 1s linear infinite;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+input {
+  height: 48px !important;
+  min-height: 0 !important;
+}
+form {
+  width: 90% !important;
+}
+.row1 .col {
+  flex-basis: 200px;
+}
+.row2 .col {
+  flex-basis: 150px
+}
+.form-select {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 14px;
+}
+.form-floating>label {
+  padding: 15px 0 0 10px;
+  font-size: 14px
+}
+
+div[id^="sq-card"] {
+  margin-bottom: 10px;
+}
+iframe {
+  height: 500px;
+}
+#card-container {
+  display: grid;
+  grid-template-columns: auto;
+}
+iframe > #card-data-wrapper {
+  display: grid;
+  grid-template-columns: auto;
+}
+.sq-card-wrapper {
+  margin: 0 !important;
+  width: 250px;
 }
 
 @keyframes spin89345 {

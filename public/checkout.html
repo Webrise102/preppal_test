@@ -8,7 +8,10 @@
     <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
     <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/style.css" />
-
+    <link
+      rel="stylesheet"
+      href="css/bootstrap-5.3.1-dist/css/bootstrap.min.css"
+    />
     <link rel="stylesheet" href="css/checkout.css" />
   </head>
   <body class="dark-mode">
@@ -16,10 +19,127 @@
     <nav></nav>
     <main>
       <div class="container">
-        <h1>Checkout Page</h1>
+        <form id="contactForm">
+          <h4>Contact</h4>
+          <div class="form-floating">
+            <input
+              type="email"
+              class="form-control"
+              id="floatingInput"
+              placeholder="name@example.com"
+            />
+            <label for="floatingInput">Email address</label>
+          </div>
+        </form>
         <form id="checkoutForm">
-          <input type="text" id="orderNumber" placeholder="Order Number" />
-          <input type="text" id="shippingZip" placeholder="Shipping Zip" />
+          <h4 class="form_label">Delivery</h4>
+          <div class="input-group mb-3">
+            <select
+              class="form-select"
+              id="inputGroupSelect03"
+              aria-label="Example select with button addon"
+            >
+              <option selected>United States</option>
+            </select>
+          </div>
+          <div class="conteiner">
+            <div class="row row1">
+              <div class="col">
+                <div class="form-floating mb-3">
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="floatingInput"
+                    placeholder="name@example.com"
+                  />
+                  <label for="floatingInput">First Name</label>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-floating">
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="floatingPassword"
+                    placeholder="Password"
+                  />
+                  <label for="floatingPassword">Last Name</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-floating mb-3">
+            <input
+              type="email"
+              class="form-control"
+              id="floatingInput"
+              placeholder="name@example.com"
+            />
+            <label for="floatingInput">Address</label>
+          </div>
+          <button id="expandInfo">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#000000"
+              stroke-width="1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add apartment, suite, etc.
+          </button>
+          <div class="form-floating mb-3" id="secondInfo" style="display: none">
+            <input
+              type="email"
+              class="form-control"
+              id="floatingInput"
+              placeholder="name@example.com"
+            />
+            <label for="floatingInput">Address 2</label>
+          </div>
+          <div class="conteiner">
+            <div class="row row2">
+              <div class="col">
+                <div class="form-floating mb-3">
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="floatingInput"
+                    placeholder="name@example.com"
+                  />
+                  <label for="floatingInput">City</label>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-floating mb-3">
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="floatingInput"
+                    placeholder="name@example.com"
+                  />
+                  <label for="floatingInput">Province</label>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-floating mb-3">
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="floatingInput"
+                    placeholder="name@example.com"
+                  />
+                  <label for="floatingInput">ZIP</label>
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- Add more fields as necessary -->
           <button type="submit">Submit</button>
         </form>
@@ -55,6 +175,7 @@
 
     <footer></footer>
     <script src="js/structure.js"></script>
+    <script src="css/bootstrap-5.3.1-dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
     <script src="js/payments.js"></script>
     <script src="js/checkout.js"></script>

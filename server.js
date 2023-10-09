@@ -15,7 +15,7 @@ const square = require("square");
 const axios = require("axios");
 
 const accessToken =
-  "EAAAEKAOo2xDqFEVKEFoeAQYqDNQQvlcTrc9KnPcPtKx8pvxdXWtoT4bfBAuCaQr";
+  `${process.env.ACCESS_TOKEN}`;
 const environment = square.Environment.Sandbox; // or square.Environment.Production
 const client = new square.Client({
   accessToken: accessToken,
@@ -268,53 +268,42 @@ app.post("/check-coupon", (req, res) => {
     res.json({ error });
   }
 });
-const apiUrl =
-  "https://developers.cjdropshipping.com/api2.0/v1/authentication/refreshAccessToken";
-const refreshToken = "3d3b01404da04be8b6795d7e9823cee5";
+const apiUrl = "https://developers.cjdropshipping.com/api2.0/v1/authentication";
+const email = `${process.env.EMAIL_ACCOUNT}`;
+const password = `${process.env.CJ_PASSWORD}`;
 
-// Define the request body
-const requestBody = {
-  refreshToken,
-};
-
-// Define request headers
-const headers = {
-  "Content-Type": "application/json",
-};
-
-// Function to refresh the access token
-async function refreshAccessToken() {
+// Function to get an access token
+async function getAccessToken() {
   try {
-    const response = await axios.post(apiUrl, requestBody, { headers });
+    const response = await axios.post(`${apiUrl}/getAccessToken`, {
+      email,
+      password,
+    });
 
     if (response.data && response.data.code === 200 && response.data.result) {
       return response.data.data.accessToken;
     } else {
-      console.error("Failed to refresh access token:", response.data.message);
+      console.error("Failed to get access token:", response.data.message);
       return null;
     }
   } catch (error) {
-    console.error("Error while refreshing access token:", error.message);
+    console.error("Error while getting access token:", error.message);
     return null;
   }
 }
 app.post("/create-order", async (req, res) => {
-  // Usage
-  refreshAccessToken()
-    .then((accessToken) => {
-      if (accessToken) {
-        console.log("Refreshed Access Token:", accessToken);
-      } else {
-        console.log("Failed to refresh access token.");
-      }
-    })
-    .catch((err) => {
-      console.error("Error:", err.message);
-    });
+  const accessToken = await getAccessToken();
+
+  if (accessToken) {
+    console.log(accessToken);
+  } else {
+    res.status(500).json({ error: "Failed to obtain access token" });
+  }
   const orderData = req.body;
   const config = {
     headers: {
-      "CJ-Access-Token": "7452651d566d484b897f506b9aeae65a",
+      "CJ-Access-Token":
+        `${process.env.CJ_ACCESS_TOKEN}`,
       "Content-Type": "application/json",
     },
   };

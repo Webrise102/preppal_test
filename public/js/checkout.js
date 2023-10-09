@@ -123,13 +123,23 @@ document
   .addEventListener("submit", function (event) {
     event.preventDefault();
 
-    var orderNumber = document.getElementById("orderNumber").value;
-    var shippingZip = document.getElementById("shippingZip").value;
+    const orderNumber = document.getElementById("orderNumber").value;
+    const shippingZip = document.getElementById("shippingZip").value;
     // Gather more form data as necessary
 
     var orderData = {
       orderNumber: orderNumber,
+      shippingCountryCode: "US",
+      shippingCountry: "United States",
+      shippingProvince: "",
+      shippingCity: "",
+      shippingAddress: "",
+      shippingAddress2: "",
+      shippingCustomerName: "",
       shippingZip: shippingZip,
+      shippingPhone: "",
+
+
       // Include more data as necessary
     };
     fetch("/create-order", {
@@ -138,3 +148,9 @@ document
       body: JSON.stringify({ orderInfo: orderData }),
     });
   });
+const expand = document.getElementById("expandInfo");
+const secondInfo = document.getElementById("secondInfo");
+expand.addEventListener("click", function () {
+  secondInfo.style.display = "block";
+  expand.style.display = "none";
+});
