@@ -290,27 +290,28 @@ async function getAccessToken() {
     return null;
   }
 }
-const url = 'https://developers.cjdropshipping.com/api2.0/v1/logistic/freightCalculate';
+const url =
+  "https://developers.cjdropshipping.com/api2.0/v1/logistic/freightCalculate";
 
 const headers = {
-  'Content-Type': 'application/json',
-  'CJ-Access-Token': `${process.env.CJ_ACCESS_TOKEN}`, // Replace with your actual access token
+  "Content-Type": "application/json",
+  "CJ-Access-Token": `${process.env.CJ_ACCESS_TOKEN}`, // Replace with your actual access token
 };
 
 const data = {
-  startCountryCode: 'US',
-  endCountryCode: 'US',
+  startCountryCode: "US",
+  endCountryCode: "US",
   products: [
     {
       quantity: 1,
-      vid: 'F616DF14-C0BF-4BDC-AE52-75664D36218D',
+      vid: "F616DF14-C0BF-4BDC-AE52-75664D36218D",
     },
   ],
 };
 
-axios.post(url, data, { headers })
-  .then((response) => {
-  })
+axios
+  .post(url, data, { headers })
+  .then((response) => {})
   .catch((error) => {
     console.error(error);
   });
@@ -328,29 +329,8 @@ app.post("/create-order", async (req, res) => {
     "Content-Type": "application/json",
   };
 
-  const data = {
-    orderNumber: "1234",
-    shippingZip: "12345",
-    shippingCountryCode: "US",
-    shippingCountry: "United States",
-    shippingProvince: "NYC",
-    shippingCity: "NYC",
-    shippingAddress: "",
-    shippingCustomerName: "",
-    shippingPhone: "",
-    remark: "note",
-    fromCountryCode: "US",
-    logisticName: "US (2-5Days)",
-    houseNumber: "123",
-    email: "",
-    products: [
-      {
-        vid: "F616DF14-C0BF-4BDC-AE52-75664D36218D",
-        quantity: 1,
-        shippingName: "",
-      },
-    ],
-  };
+  const data = req.body.orderData;
+  console.log(data);
 
   const config = {
     method: "post",
@@ -388,6 +368,37 @@ app.post("/payment", async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+});
+
+app.post("/check-address", async (req, res) => {
+  const city = req.body.city;
+  const address = req.body.address;
+
+  const zip = req.body.zip;
+  const code = req.body.state
+
+  console.log(address)
+  let addressXML =
+    '<AddressValidateRequest USERID="1PREPP5N11673"><Revision>1</Revision><Address><Address1></Address1><Address2>'+ address  +'</Address2><City>'+ city +'</City><State>'+ code +'</State><Zip5>'+ zip +'</Zip5><Zip4></Zip4></Address></AddressValidateRequest>';
+
+  let addressUrl =
+    "https://secure.shippingapis.com/ShippingAPI.dll?API=Verify&xml=" +
+    encodeURIComponent(addressXML);
+  console.log("Request");
+  axios
+    .get(addressUrl)
+    .then(function (response) {
+      console.log(response.data);
+      if (response.data.includes("<Error>")) {
+        res.status(400).send();
+      } else {
+        console.log("Error Not Found");
+        res.status(200).send();
+      }
+    })
+    .catch(function (error) {
+      res.status(500).send();
+    });
 });
 
 //? Start Server

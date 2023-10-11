@@ -18,20 +18,35 @@
     <header></header>
     <nav></nav>
     <main>
+      <div class="error-message" id="error-message"></div>
+
       <div class="container">
-        <form id="contactForm">
+        <div class="loader" id="loader"></div>
+
+        <form id="checkoutForm">
+
+        <div id="contactForm">
           <h4>Contact</h4>
-          <div class="form-floating">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="phone"
+              placeholder="+1295857675994857"
+            />
+            <label for="phone">Phone Number</label>
+          </div>
+          <div class="form-floating mb-3">
             <input
               type="email"
               class="form-control"
-              id="floatingInput"
-              placeholder="name@example.com"
+              id="email"
+              placeholder="example@example.com"
             />
-            <label for="floatingInput">Email address</label>
+            <label for="email">Email </label>
           </div>
-        </form>
-        <form id="checkoutForm">
+        </div>
+        <div id="deliveryForm">
           <h4 class="form_label">Delivery</h4>
           <div class="input-group mb-3">
             <select
@@ -47,35 +62,36 @@
               <div class="col">
                 <div class="form-floating mb-3">
                   <input
-                    type="email"
+                    type="text"
                     class="form-control"
-                    id="floatingInput"
-                    placeholder="name@example.com"
+                    id="firstName"
+                    placeholder="John"
                   />
-                  <label for="floatingInput">First Name</label>
+                  <label for="firstName">First Name</label>
                 </div>
               </div>
               <div class="col">
                 <div class="form-floating">
                   <input
-                    type="password"
+                    type="text"
                     class="form-control"
-                    id="floatingPassword"
-                    placeholder="Password"
+                    id="lastName"
+                    placeholder="Doe"
                   />
-                  <label for="floatingPassword">Last Name</label>
+                  <label for="lastName">Last Name</label>
                 </div>
               </div>
             </div>
           </div>
-          <div class="form-floating mb-3">
+          <label for="addressBlock" class="errorAddress error"></label>
+          <div class="form-floating mb-3" id="addressBlock">
             <input
-              type="email"
+              type="text"
               class="form-control"
-              id="floatingInput"
-              placeholder="name@example.com"
+              id="address"
+              placeholder="3101 Wisconsin Ave NW"
             />
-            <label for="floatingInput">Address</label>
+            <label for="address">Address</label>
           </div>
           <button id="expandInfo">
             <svg
@@ -96,60 +112,74 @@
           </button>
           <div class="form-floating mb-3" id="secondInfo" style="display: none">
             <input
-              type="email"
+              type="text"
               class="form-control"
-              id="floatingInput"
-              placeholder="name@example.com"
+              id="address2"
+              placeholder="Apartment, Suite etc."
             />
-            <label for="floatingInput">Address 2</label>
+            <label for="address2">Address 2</label>
           </div>
           <div class="conteiner">
             <div class="row row2">
               <div class="col">
                 <div class="form-floating mb-3">
                   <input
-                    type="email"
+                    type="text"
                     class="form-control"
-                    id="floatingInput"
-                    placeholder="name@example.com"
+                    id="city"
+                    placeholder="Washington"
                   />
-                  <label for="floatingInput">City</label>
+                  <label for="city">City</label>
+                </div>
+              </div>
+              <label for="stateBlock" class="error errorState"></label>
+              <div class="col" id="stateBlock">
+                <div class="form-floating mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="province"
+                    placeholder="Washington"
+                  />
+                  <label for="province">Province/State</label>
                 </div>
               </div>
               <div class="col">
                 <div class="form-floating mb-3">
                   <input
-                    type="email"
+                    type="text"
                     class="form-control"
-                    id="floatingInput"
-                    placeholder="name@example.com"
+                    id="zip"
+                    placeholder="12345"
                   />
-                  <label for="floatingInput">Province</label>
+                  <label for="zip">ZIP</label>
                 </div>
               </div>
+            </div>
+            <div class="row">
               <div class="col">
                 <div class="form-floating mb-3">
                   <input
-                    type="email"
+                    type="text"
                     class="form-control"
-                    id="floatingInput"
-                    placeholder="name@example.com"
+                    id="house"
+                    placeholder="1"
                   />
-                  <label for="floatingInput">ZIP</label>
+                  <label for="house">House Number</label>
                 </div>
               </div>
             </div>
           </div>
           <!-- Add more fields as necessary -->
-          <button type="submit">Submit</button>
-        </form>
+        </div>
 
-        <form id="payment-form">
-          <div class="loader" id="loader"></div>
+        <div id="payment-form">
           <div id="card-container"></div>
-          <button id="card-button" type="button">Pay $10.00</button>
           <div id="payment-status-container"></div>
-        </form>
+        </div>
+        <button  id="card-button" type="submit" >Submit</button>
+
+      </form>
       </div>
       <div class="checkout_products">
         <div id="products"></div>
@@ -177,7 +207,8 @@
     <script src="js/structure.js"></script>
     <script src="css/bootstrap-5.3.1-dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
-    <script src="js/payments.js"></script>
     <script src="js/checkout.js"></script>
+
+    <script src="js/payments.js"></script>
   </body>
 </html>

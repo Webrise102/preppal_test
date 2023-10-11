@@ -158,10 +158,13 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 });
 function showLoader() {
+  document.querySelector("form").style.display = "none"
   const loader = document.getElementById("loader");
   loader.style.display = "block";
 }
 function hideLoader() {
+  document.querySelector("form").style.display = "block"
+
   const loader = document.getElementById("loader");
   loader.style.display = "none";
 }

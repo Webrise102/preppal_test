@@ -130,3 +130,13 @@ main {
 .checkout_product_block:not(:nth-child(1)) {
   margin-top: 18px;
 }
+.error {
+  color: #d44040;
+  font-size: 12px;
+  margin: 0;
+}
+#card-button {
+  cursor: pointer;
+  position: relative;
+  z-index: 100000000000000000000000000000;
+}

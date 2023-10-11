@@ -118,40 +118,197 @@ elementsToTruncate.forEach(function (element) {
     element.textContent = truncatedText;
   }
 });
-document
-  .getElementById("checkoutForm")
-  .addEventListener("submit", function (event) {
-    event.preventDefault();
 
-    // Gather more form data as necessary
+document.addEventListener("DOMContentLoaded", function () {
+  const currentForm = document.getElementById("card-button");
+  currentForm.addEventListener("click", function (event) {
+    let status = true;
 
-    var orderData = {
-      orderNumber: "1",
-      shippingCountryCode: "US",
-      shippingCountry: "United States",
-      shippingProvince: "NYC",
-      shippingCity: "NYC",
-      shippingAddress: "55 Cobblestone Street Fairport, NY 14450",
-      shippingAddress2: "",
-      shippingCustomerName: "Illia",
-      shippingZip: "12345",
-      shippingPhone: "+4915157004753",
-      products: [
-        {
-          vid: "9633D08C-B0F9-4824-8A59-546701C389C6",
-          quantity: "1",
-          shippingName: "Illia",
-        },
-      ],
+    const orderNumber = Array.from({ length: 10 }, () =>
+      Math.floor(Math.random() * 10)
+    ).join("");
 
-      // Include more data as necessary
+    const shippingZip = document.getElementById("zip").value;
+    const shippingProvince = document.getElementById("province").value;
+    const shippingCity = document.getElementById("city").value;
+    const shippingAddress = document.getElementById("address").value;
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
+    const shippingPhone = document.getElementById("phone").value;
+    const houseNumber = document.getElementById("house").value;
+
+    let inputsStatus = false;
+    if (firstName !== "" && lastName !== "" && houseNumber !== "") {
+      inputsStatus = true;
+    } else {
+      inputsStatus = false;
+    }
+
+    const stateCodes = {
+      alabama: "AL",
+      alaska: "AK",
+      arizona: "AZ",
+      arkansas: "AR",
+      california: "CA",
+      colorado: "CO",
+      connecticut: "CT",
+      delaware: "DE",
+      florida: "FL",
+      georgia: "GA",
+      hawaii: "HI",
+      idaho: "ID",
+      illinois: "IL",
+      indiana: "IN",
+      iowa: "IA",
+      kansas: "KS",
+      kentucky: "KY",
+      louisiana: "LA",
+      maine: "ME",
+      maryland: "MD",
+      massachusetts: "MA",
+      michigan: "MI",
+      minnesota: "MN",
+      mississippi: "MS",
+      missouri: "MO",
+      montana: "MT",
+      nebraska: "NE",
+      nevada: "NV",
+      "new hampshire": "NH",
+      "new jersey": "NJ",
+      "new mexico": "NM",
+      "new york": "NY",
+      "north carolina": "NC",
+      "north dakota": "ND",
+      ohio: "OH",
+      oklahoma: "OK",
+      oregon: "OR",
+      pennsylvania: "PA",
+      "rhode island": "RI",
+      "south carolina": "SC",
+      "south dakota": "SD",
+      tennessee: "TN",
+      texas: "TX",
+      utah: "UT",
+      vermont: "VT",
+      virginia: "VA",
+      washington: "WA",
+      "west virginia": "WV",
+      wisconsin: "WI",
+      wyoming: "WY",
     };
-    fetch("/create-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderInfo: orderData }),
-    });
+
+    function getStateCode(stateName) {
+      const normalizedStateName = stateName.trim();
+      return stateCodes[normalizedStateName] || false;
+    }
+
+    const stateName = `${shippingProvince.toLowerCase()}`;
+    const stateCode = getStateCode(stateName);
+
+    if (stateCode === false) {
+      document.querySelector(".errorState").innerHTML = "State Not Found";
+    } else {
+      document.querySelector(".errorState").innerHTML = "";
+    }
+
+    let addressStatus = false;
+    let phoneStatus = false;
+
+    function isValidPhoneNumber(phoneNumber) {
+      const phonePattern =
+        /^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9][0-9]{2})\s*\)|([2-9][0-9]{2}))(?:[.-]\s*)?([2-9][0-9]{2})(?:[.-]\s*)?([0-9]{4}))(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/;
+      return phonePattern.test(phoneNumber);
+    }
+
+    const phoneNumber = `${shippingPhone}`;
+    if (isValidPhoneNumber(phoneNumber)) {
+      console.log("Phone Valid");
+      phoneStatus = true;
+    } else {
+      phoneStatus = false;
+    }
+
+    if (firstName !== "" && lastName !== "" && houseNumber !== "") {
+      inputsStatus = true;
+    } else {
+      inputsStatus = false;
+    }
+
+    if (
+      document.querySelector(".errorAddress").innerHTML === "" &&
+      document.querySelector(".errorState").innerHTML === ""
+    ) {
+      addressStatus = true;
+    } else {
+      addressStatus = false;
+    }
+
+    if (phoneStatus && inputsStatus) {
+      console.log("Success");
+
+      const orderData = {
+        orderNumber: `${orderNumber}`,
+        shippingZip: `${shippingZip}`,
+        shippingCountryCode: "US",
+        shippingCountry: "United States",
+        shippingProvince: `${shippingProvince}`,
+        shippingCity: `${shippingCity}`,
+        shippingAddress: `${shippingAddress}`,
+        shippingCustomerName: `${firstName} ${lastName}`,
+        shippingPhone: `${shippingPhone}`,
+        remark: "note",
+        fromCountryCode: "US",
+        logisticName: "US (2-5Days)",
+        houseNumber: `${houseNumber}`,
+        email: "",
+        products: [
+          {
+            vid: "F616DF14-C0BF-4BDC-AE52-75664D36218D",
+            quantity: 1,
+            shippingName: "",
+          },
+        ],
+      };
+      const serverData = {
+        address: shippingAddress,
+        city: shippingCity,
+        zip: shippingZip,
+        state: stateCode,
+      };
+      fetch("/check-address", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(serverData),
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.status === 400) {
+            document.querySelector(".errorAddress").innerHTML =
+              "Address Incorrect";
+            addressStatus = false;
+          }
+          if (response.status === 200) {
+            document.querySelector(".errorAddress").innerHTML = "";
+            fetch("/create-order", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ orderData }),
+            });
+          }
+        })
+        .catch((error) => {
+          document.querySelector(".errorAddress").innerHTML =
+            "Address Incorrect";
+          addressStatus = false;
+        });
+    }
   });
+});
+
 const expand = document.getElementById("expandInfo");
 const secondInfo = document.getElementById("secondInfo");
 expand.addEventListener("click", function () {
