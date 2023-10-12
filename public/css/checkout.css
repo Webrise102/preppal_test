@@ -140,3 +140,8 @@ main {
   position: relative;
   z-index: 100000000000000000000000000000;
 }
+.form-control:focus::placeholder {
+  transition: 0.4s;
+  color: rgba(0, 0, 0, 0.819);
+}
+

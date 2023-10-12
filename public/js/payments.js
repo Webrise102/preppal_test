@@ -143,27 +143,197 @@ document.addEventListener("DOMContentLoaded", async function () {
       cardButton.disabled = true;
       const token = await tokenize(paymentMethod);
       const paymentResults = await createPayment(token);
-      displayPaymentResults("SUCCESS");
-      console.debug("Payment Success", paymentResults);
+      if (paymentResults) {
+        displayPaymentResults("SUCCESS");
+        console.debug("Payment Success", paymentResults);
+        storeOrder(); // Call the storeOrder function after successful payment
+      }
     } catch (e) {
       cardButton.disabled = false;
       displayPaymentResults("FAILURE");
       console.error(e.message);
+      return false;
     }
   }
 
   const cardButton = document.getElementById("card-button");
   cardButton.addEventListener("click", async function (event) {
-    await handlePaymentMethodSubmission(event, card);
-  });
+    console.log("Called Function");
+    event.preventDefault();
+    const orderNumber = Array.from({ length: 10 }, () =>
+      Math.floor(Math.random() * 10)
+    ).join("");
+  
+    const shippingZip = document.getElementById("zip").value;
+    const shippingProvince = document.getElementById("province").value;
+    const shippingCity = document.getElementById("city").value;
+    const shippingAddress = document.getElementById("address").value;
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
+    const shippingPhone = document.getElementById("phone").value;
+    const houseNumber = document.getElementById("house").value;
+  
+    let addressError = "";
+    let stateError = "";
+    let phoneError = "";
+    let nameError = ""
+  
+    if (firstName === "" || lastName === "" || houseNumber === "") {
+      nameError = "Please fill in all name and house number fields.";
+    }
+    document.querySelector(".nameError").innerHTML = nameError
+
+    const stateCodes = {
+      alabama: "AL",
+      alaska: "AK",
+      arizona: "AZ",
+      arkansas: "AR",
+      california: "CA",
+      colorado: "CO",
+      connecticut: "CT",
+      delaware: "DE",
+      florida: "FL",
+      georgia: "GA",
+      hawaii: "HI",
+      idaho: "ID",
+      illinois: "IL",
+      indiana: "IN",
+      iowa: "IA",
+      kansas: "KS",
+      kentucky: "KY",
+      louisiana: "LA",
+      maine: "ME",
+      maryland: "MD",
+      massachusetts: "MA",
+      michigan: "MI",
+      minnesota: "MN",
+      mississippi: "MS",
+      missouri: "MO",
+      montana: "MT",
+      nebraska: "NE",
+      nevada: "NV",
+      "new hampshire": "NH",
+      "new jersey": "NJ",
+      "new mexico": "NM",
+      "new york": "NY",
+      "north carolina": "NC",
+      "north dakota": "ND",
+      ohio: "OH",
+      oklahoma: "OK",
+      oregon: "OR",
+      pennsylvania: "PA",
+      "rhode island": "RI",
+      "south carolina": "SC",
+      "south dakota": "SD",
+      tennessee: "TN",
+      texas: "TX",
+      utah: "UT",
+      vermont: "VT",
+      virginia: "VA",
+      washington: "WA",
+      "west virginia": "WV",
+      wisconsin: "WI",
+      wyoming: "WY",
+    };
+
+
+    function getStateCode(stateName) {
+      const normalizedStateName = stateName.trim();
+      return stateCodes[normalizedStateName] || false;
+    }
+  
+    const stateName = `${shippingProvince.toLowerCase()}`;
+    const stateCode = getStateCode(stateName);
+  
+    if (stateCode === false) {
+      stateError = "State Not Found";
+    }
+  
+    function isValidPhoneNumber(phoneNumber) {
+      const phonePattern =
+        /^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9][0-9]{2})\s*\)|([2-9][0-9]{2}))(?:[.-]\s*)?([2-9][0-9]{2})(?:[.-]\s*)?([0-9]{4}))(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/;
+      return phonePattern.test(phoneNumber);
+    }
+  
+    const phoneNumber = `${shippingPhone}`;
+    if (!isValidPhoneNumber(phoneNumber)) {
+      phoneError = "Phone Is Incorrect";
+    }
+  
+    // Display errors for each field
+    document.querySelector(".errorAddress").innerHTML = addressError;
+    document.querySelector(".errorState").innerHTML = stateError;
+    document.querySelector(".errorPhone").innerHTML = phoneError;
+  
+      console.log("Success");
+  
+      const serverData = {
+        address: shippingAddress,
+        city: shippingCity,
+        zip: shippingZip,
+        state: stateCode,
+      };
+      fetch("/check-address", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(serverData),
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.status === 400) {
+            document.querySelector(".errorAddress").innerHTML = "Address Incorrect";
+          }
+          if (response.status === 200) {
+            document.querySelector(".errorAddress").innerHTML = "";
+            handlePaymentMethodSubmission(event, card);
+          }
+        })
+        .catch((error) => {
+          document.querySelector(".errorAddress").innerHTML = "Address Incorrect";
+        });
+  }); 
+  function storeOrder() {
+    const orderData = {
+      orderNumber: `${orderNumber}`,
+      shippingZip: `${shippingZip}`,
+      shippingCountryCode: "US",
+      shippingCountry: "United States",
+      shippingProvince: `${shippingProvince}`,
+      shippingCity: `${shippingCity}`,
+      shippingAddress: `${shippingAddress}`,
+      shippingCustomerName: `${firstName} ${lastName}`,
+      shippingPhone: `${shippingPhone}`,
+      remark: "note",
+      fromCountryCode: "US",
+      logisticName: "US (2-5Days)",
+      houseNumber: `${houseNumber}`,
+      email: "",
+      products: [
+        {
+          vid: "F616DF14-C0BF-4BDC-AE52-75664D36218D",
+          quantity: 1,
+          shippingName: "",
+        },
+      ],
+    };
+    fetch("/create-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ orderData }),
+    });
+  }
 });
 function showLoader() {
-  document.querySelector("form").style.display = "none"
+  document.querySelector("form").style.display = "none";
   const loader = document.getElementById("loader");
   loader.style.display = "block";
 }
 function hideLoader() {
-  document.querySelector("form").style.display = "block"
+  document.querySelector("form").style.display = "block";
 
   const loader = document.getElementById("loader");
   loader.style.display = "none";

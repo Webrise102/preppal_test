@@ -365,8 +365,10 @@ app.post("/payment", async (req, res) => {
     });
 
     console.log(response.result);
+    res.json("Response"); // Return the response as JSON
   } catch (error) {
     console.log(error);
+    res.status(500).json({ error: error.message }); // Return the error as JSON
   }
 });
 
