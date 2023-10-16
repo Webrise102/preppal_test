@@ -297,28 +297,6 @@ app.post("/check-coupon", (req, res) => {
     res.status(400).send();
   }
 });
-const apiUrl = "https://developers.cjdropshipping.com/api2.0/v1/authentication";
-const email = `${process.env.CJ_EMAIL}`;
-const password = `${process.env.CJ_PASSWORD}`;
-
-async function getAccessToken() {
-  axios
-    .post(
-      "https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken",
-      {
-        email: process.env.CJ_EMAIL,
-        password: process.env.CJ_PASSWORD,
-      }
-    )
-    .then(function (response) {
-      console.log(response.data);
-      return response.data.accessToken;
-    })
-    .catch(function (error) {
-      console.log(error);
-      return false;
-    });
-}
 const url =
   "https://developers.cjdropshipping.com/api2.0/v1/logistic/freightCalculate";
 
