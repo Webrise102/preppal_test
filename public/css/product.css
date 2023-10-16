@@ -127,3 +127,48 @@ h4 {
   justify-content: center;
   align-items: center;
 }
+
+@media screen and (max-width: 820px) {
+  .slider {
+    position: relative;
+  }
+  main {
+    flex-direction: column;
+  }
+  .product_priceBox {
+    justify-content: center;
+  }
+  .product_main {
+    text-align: center;
+  }
+  .product_title {
+    text-align: center;
+    margin-top: 50px;
+  }
+  .product_amountBox {
+    text-align: center;
+  }
+  .product_amount_box {
+    margin: auto;
+  }
+  .cart__button  {
+    margin: 20px auto 0 auto;
+  }
+  .product_footer {
+    margin-bottom: 50px;
+  }
+  .slider {
+    width: 80%;
+    margin: auto;
+  }
+}
+@media screen and (max-width: 500px) {
+  .thumbnail {
+    width: 70px
+  }
+}
+@media screen and (max-width: 400px) {
+  .slider {
+    width: 100%;
+  }
+}

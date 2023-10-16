@@ -15,7 +15,7 @@ const square = require("square");
 const axios = require("axios");
 
 const accessToken = `${process.env.ACCESS_TOKEN}`;
-const environment = square.Environment.Sandbox; // or square.Environment.Production
+const environment = square.Environment.Production; // or square.Environment.Production
 const client = new square.Client({
   accessToken: accessToken,
   environment: environment,
@@ -68,6 +68,12 @@ app.get("/unsubscribe", (req, res) => {
 app.get("/checkout", (req, res) => {
   res.sendFile(path.join(staticPath, "checkout.html"));
 });
+app.get("/contact", (req, res) => {
+  res.sendFile(path.join(staticPath, "contact.html"));
+});
+app.get("/track", (req, res) => {
+  res.sendFile(path.join(staticPath, "track.html"));
+});
 
 //? Subscription Service
 
@@ -87,10 +93,10 @@ const mailer = async function (title, obj) {
 
           transporter.sendMail(
             {
-              from: `${process.env.contactEmail} <${process.env.contactEmail}>`,
+              from: `${process.env.EMAIL_ACCOUNT} <${process.env.EMAIL_ACCOUNT}>`,
               to: recipientEmail,
               subject: title,
-              replyTo: process.env.contactEmail,
+              replyTo: `${process.env.EMAIL_ACCOUNT}`,
               headers: {
                 "Mime-Version": "1.0",
                 "X-Priority": "3",
@@ -101,10 +107,6 @@ const mailer = async function (title, obj) {
             (err) => {
               if (err) {
                 console.error("Email sending error:", err);
-              } else {
-                console.log(
-                  `Email sent to ${recipientEmail} at ${new Date().toISOString()}`
-                );
               }
             }
           );
@@ -147,10 +149,10 @@ app.post("/subscribe/email", async (req, res) => {
                 } else {
                   // Send the "hello" email immediately
                   transporter.sendMail({
-                    from: `PrepPal`,
+                    from: `${process.env.EMAIL_ACCOUNT}`,
                     to: email,
                     subject: "Welcome email",
-                    replyTo: `PrepPal`,
+                    replyTo: `${process.env.EMAIL_ACCOUNT}`,
                     headers: {
                       "Mime-Version": "1.0",
                       "X-Priority": "3",
@@ -255,40 +257,67 @@ const validateEmail = (email) => {
   return regex.test(email);
 };
 
+// Create a function to send an email
+const sendEmail = async (formData) => {
+  const mailOptions = {
+    from: formData.emailAddress,
+    to: `${process.env.EMAIL_ACCOUNT}`, // Replace with the email address you want to receive the emails
+    subject: `${formData.emailAddress}: ${formData.subject}`,
+    text: `${formData.emailAddress}: ${formData.message}`,
+  };
+
+  // Send the email
+  await transporter.sendMail(mailOptions);
+};
+
+// Create a route to handle the contact form submission
+const contactFormRoute = async (req, res) => {
+  // Get the form data
+  const formData = req.body;
+  console.log(formData);
+  // Send the email
+  await sendEmail(formData);
+
+  // Send a success response
+  res.status(200).send({ message: "Email sent successfully!" });
+};
+
+// Add the contact form route to your Express app
+app.post("/contact-form", contactFormRoute);
+
 //? Payments
 app.post("/check-coupon", (req, res) => {
-  const code = req.body;
+  const code = req.body.code;
+  console.log(code);
 
-  let couponCode = "tiktok";
-  let error = "Error applying coupon";
+  let couponCode = `${proces.env.COUPON}`;
   if (code === couponCode) {
-    res.json({ couponCode });
+    res.status(200).send();
   } else {
-    res.json({ error });
+    res.status(400).send();
   }
 });
 const apiUrl = "https://developers.cjdropshipping.com/api2.0/v1/authentication";
 const email = `${process.env.CJ_EMAIL}`;
 const password = `${process.env.CJ_PASSWORD}`;
 
-// Function to get an access token
 async function getAccessToken() {
-  try {
-    const response = await axios.post(`${apiUrl}/getAccessToken`, {
-      email,
-      password,
+  axios
+    .post(
+      "https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken",
+      {
+        email: process.env.CJ_EMAIL,
+        password: process.env.CJ_PASSWORD,
+      }
+    )
+    .then(function (response) {
+      console.log(response.data);
+      return response.data.accessToken;
+    })
+    .catch(function (error) {
+      console.log(error);
+      return false;
     });
-
-    if (response.data && response.data.code === 200 && response.data.result) {
-      return response.data.data.accessToken;
-    } else {
-      console.error("Failed to get access token:", response.data.message);
-      return null;
-    }
-  } catch (error) {
-    console.error("Error while getting access token:", error.message);
-    return null;
-  }
 }
 const url =
   "https://developers.cjdropshipping.com/api2.0/v1/logistic/freightCalculate";
@@ -315,11 +344,17 @@ axios
   .catch((error) => {
     console.error(error);
   });
-
+app.post("/check-token", async (req, res) => {
+  if (accessToken !== false) {
+    console.log(accessToken);
+    res.status(200).send();
+  } else {
+    res.status(500).send();
+  }
+});
 app.post("/create-order", async (req, res) => {
-  const accessToken = await getAccessToken();
 
-  if (accessToken) {
+  if (accessToken !== false) {
     console.log(accessToken);
   } else {
     res.status(500).json({ error: "Failed to obtain access token" });
@@ -352,14 +387,15 @@ app.post("/create-order", async (req, res) => {
 });
 app.post("/payment", async (req, res) => {
   console.log(true);
-  const { locationId, sourceId, idempotencyKey } = req.body;
+  const { locationId, sourceId, idempotencyKey, amount } = req.body;
+  console.log(amount);
 
   try {
     const response = await client.paymentsApi.createPayment({
       sourceId,
       idempotencyKey,
       amountMoney: {
-        amount: 10,
+        amount: amount,
         currency: "USD",
       },
     });
@@ -371,17 +407,41 @@ app.post("/payment", async (req, res) => {
     res.status(500).json({ error: error.message }); // Return the error as JSON
   }
 });
+  const urll = 'https://developers.cjdropshipping.com/api2.0/v1/product/query?pid=1A8F0973-0A68-4A82-8889-3EE3A5A80085';
+const accessTokenn = `${process.env.CJ_ACCESS_TOKEN}`; // Replace with your CJ-Access-Token
+
+axios.get(urll, {
+  headers: {
+    'CJ-Access-Token': accessTokenn
+  }
+})
+  .then(response => {
+    // Handle the response data here
+    console.log('Response:', response.data.data.variants);
+  })
+  .catch(error => {
+    // Handle any errors here
+    console.error('Error:', error);
+  });
 
 app.post("/check-address", async (req, res) => {
   const city = req.body.city;
   const address = req.body.address;
 
   const zip = req.body.zip;
-  const code = req.body.state
+  const code = req.body.state;
 
-  console.log(address)
+  console.log(address);
   let addressXML =
-    '<AddressValidateRequest USERID="1PREPP5N11673"><Revision>1</Revision><Address><Address1></Address1><Address2>'+ address  +'</Address2><City>'+ city +'</City><State>'+ code +'</State><Zip5>'+ zip +'</Zip5><Zip4></Zip4></Address></AddressValidateRequest>';
+    '<AddressValidateRequest USERID="1PREPP5N11673"><Revision>1</Revision><Address><Address1></Address1><Address2>' +
+    address +
+    "</Address2><City>" +
+    city +
+    "</City><State>" +
+    code +
+    "</State><Zip5>" +
+    zip +
+    "</Zip5><Zip4></Zip4></Address></AddressValidateRequest>";
 
   let addressUrl =
     "https://secure.shippingapis.com/ShippingAPI.dll?API=Verify&xml=" +

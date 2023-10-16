@@ -38,7 +38,7 @@ function searchProduct(inputElement) {
     input.value = savedSearchQuestion2;
   });
   productsLogic();
-  if (window.location.pathname === "/") {
+  if (window.location.pathname !== "/catalog") {
     window.location = "/catalog";
   }
 }

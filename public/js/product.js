@@ -1,5 +1,5 @@
 const mainImage = document.querySelector(".main-image");
-const thumbnails = document.querySelectorAll(".thumbnail");
+const thumbnails = document.querySelectorAll(".thumbnail");2
 
 let currentImageIndex = 0;
 const currentLocation = window.location.pathname
@@ -10,6 +10,10 @@ if(currentLocation === "/fast-defrost-tray") {
     "../images/tray_preview2.webp",
     "../images/tray_preview3.webp",
   ];
+}
+let vid;
+if(window.location.pathname === "/fast-defrost-tray") {
+  vid = "F616DF14-C0BF-4BDC-AE52-75664D36218D"
 }
 
 
@@ -63,7 +67,7 @@ const productDescription = document.querySelector(".product_subdesc").innerHTML;
 
 const addToCart = document.querySelector(".cart__button");
 const cartInner = document.querySelector(".modal-body");
-const productPrice = document.querySelector(".product_price").innerHTML;
+const productPrice = document.querySelector(".product_priceSale").innerHTML;
 window.onload = productAmount.innerHTML = `1`;
 let cartData = localStorage.getItem("cart");
 if (cartData) {
@@ -249,6 +253,7 @@ function updateCartData() {
     productPrice: productPrice,
     productImage: productImage,
     productDescription: productDescription,
+    productVid: vid
   });
   addToCart.classList.add("clicked");
   addToCart.disabled = true;

@@ -90,3 +90,35 @@ main button:hover span:not(:nth-child(6)) {
 main button:hover .arrow {
     margin-left: 10px
 }
+@media screen and (min-width: 1800px) {
+  main {
+    padding: 10% 10% 2% 10%;
+  }
+  .main_textBlock {
+    width: 50%
+  }
+}
+@media screen and (max-width: 1040px) {
+  .break_line::before {
+    content: "";
+}
+.main_textBlock {
+  text-align: center;
+}
+main {
+  display: block;
+}
+.main_image {
+  display: flex;
+  width: 80%;
+  margin: auto;
+}
+main button {
+  margin: auto;
+}
+.main_text {
+  max-width: 100%;
+}
+
+
+}

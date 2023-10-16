@@ -4,6 +4,12 @@ if (cartData) {
 } else {
   cartData = [];
 }
+const buttons = document.querySelectorAll("button");
+buttons.forEach((button) => {
+  button.addEventListener("click", function () {
+    event.preventDefault();
+  });
+});
 
 // Get the "products" div to which we will append the product data
 const productsDiv = document.getElementById("products");
@@ -11,52 +17,77 @@ const subTotalElement = document.querySelector(".checkout_subtotal_price");
 const totalElement = document.querySelector(".checkout_total_price");
 let sum = 0;
 // Check if there is data in the cart
-if (cartData && Array.isArray(cartData)) {
-  // Loop through each item in the cart and create product elements
-  cartData.forEach((item) => {
-    const productDiv = document.createElement("div");
-    productDiv.classList.add("checkout_product_block");
-
-    productDiv.innerHTML = `
-    <div class="checkout_product checkout_flex">
-    <div class="first_part_checkout">
-      <img
-        src="${item.productImage}"
-        alt=""
-        class="checkout_product_image"
-      />
-      <div class="image_popup"><p class="quantity">${item.productAmount}</p></div>
-      <p class="checkout_product_title">${item.productTitle}</p>
-    </div>
-    <p class="checkout_product_price">${item.productPrice}</p>
-  </div>`;
-
-    // Append the product element to the "products" div
-    productsDiv.appendChild(productDiv);
-    const newPrices1 = item.productPrice.replace(",", ".");
-    const newPrices = parseFloat(newPrices1.replace("$", ""));
-    sum += newPrices;
-  });
+function showProducts() {
+  if (cartData && Array.isArray(cartData)) {
+    // Loop through each item in the cart and create product elements
+    cartData.forEach((item) => {
+      const productDiv = document.createElement("div");
+      productDiv.classList.add("checkout_product_block");
+  
+      productDiv.innerHTML = `
+      <div class="checkout_product checkout_flex">
+      <div class="first_part_checkout">
+        <img
+          src="${item.productImage}"
+          alt=""
+          class="checkout_product_image"
+        />
+        <div class="image_popup"><p class="quantity">${item.productAmount}</p></div>
+        <p class="checkout_product_title">${item.productTitle}</p>
+      </div>
+      <p class="checkout_product_price">${item.productPrice}</p>
+    </div>`;
+  
+      // Append the product element to the "products" div
+      productsDiv.appendChild(productDiv);
+      const newPrices1 = item.productPrice.replace(",", ".");
+      const newPrices = parseFloat(newPrices1.replace("$", ""));
+      sum += newPrices;
+    });
+  }
 }
+showProducts()
 console.log(sum);
 
-subTotalElement.innerHTML = `$${sum}`;
+subTotalElement.innerHTML = `$${sum}.00`;
+const couponButton = document.querySelector(".applyCoupon");
+const couponText = document.querySelector(".checkout_coupons_price")
 let couponSale;
-fetch("/check-coupon", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ code: "tiktok2" }),
-})
-  .then((response) => response.json())
-  .then((data) => console.log(data));
+couponButton.addEventListener("click", function () {
+  const couponSale = document.querySelector("#coupon").value
+  fetch("/check-coupon", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ code: `${couponSale}` }),
+  }).then((response) => {
+    if (response.status === 200) {
+      document.querySelector(".couponStatus").innerHTML =
+        "Applied successfully";
+      document.querySelector(".couponStatus").style.color = "#40d44f";
+      console.log(sum)
+      sum -= 5
+      sum = parseInt(sum.toFixed(2))
+      subTotalElement.innerHTML = `$${sum}.00`;
+      totalElement.innerHTML = `$${sum}.00`;
+      couponText.innerHTML = "-10%"
+      window.scrollTo(0, 0);
+      console.log(sum)
 
-if (couponSale !== null && couponSale !== undefined) {
-  totalElement.innerHTML = `$${sum - couponSale}`;
-} else {
-  totalElement.innerHTML = `$${sum}`;
-}
+
+
+    } else {
+      document.querySelector(".couponStatus").innerHTML = "Coupon not exists";
+      document.querySelector(".couponStatus").style.color = "#d44040";
+
+    }
+  });
+});
+
+
+  totalElement.innerHTML = `$${sum}.00`;
+
 
 // Add an event listener for delete buttons
 const deleteButtons = document.querySelectorAll(".delete");
@@ -122,9 +153,7 @@ elementsToTruncate.forEach(function (element) {
 const currentForm = document.getElementById("checkoutForm");
 let allFormsStatus = false;
 console.log(currentForm);
-currentForm.addEventListener("submit", function (event) {
-
-});
+currentForm.addEventListener("submit", function (event) {});
 
 const expand = document.getElementById("expandInfo");
 const secondInfo = document.getElementById("secondInfo");

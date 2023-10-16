@@ -1,5 +1,5 @@
-const appId = "sandbox-sq0idb-7ZiozI0Lm8Ltn7rmq5INaQ";
-const locationId = "LEG1KX336TMA8";
+const appId = "sq0idp-3ALhGiwFsiPipnohgMgEkw";
+const locationId = "L4CDNFM8ZNRN1";
 const darkModeCardStyle = {
   ".input-container": {
     borderColor: "#2D2D2D",
@@ -72,6 +72,7 @@ async function createPayment(token) {
     locationId,
     sourceId: "cnon:card-nonce-ok",
     idempotencyKey,
+    amount: sum,
   });
   try {
     const paymentResponse = await fetch("/payment", {
@@ -88,7 +89,15 @@ async function createPayment(token) {
       return paymentResponse.json();
     } else {
       hideLoader();
-      alert("Payment Failed, try reloading page or contact our support");
+      window.scrollTo(0, 0);
+
+      document.getElementById("container").style.display = "block";
+      document.getElementById("container").style.boxShadow =
+        "0px 0px 50px 500px rgba(0,0,0,0.89)";
+      document.querySelector(".error-box1").style.display = "block";
+      document.querySelector(".error-box1").style.boxShadow =
+        "0px 0px 50px 500px rgba(0,0,0,0.89)";
+      document.body.style.overflow = "hidden";
       console.log("Error");
     }
   } catch (error) {
@@ -150,8 +159,10 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     } catch (e) {
       cardButton.disabled = false;
+
       displayPaymentResults("FAILURE");
       console.error(e.message);
+
       return false;
     }
   }
@@ -163,7 +174,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const orderNumber = Array.from({ length: 10 }, () =>
       Math.floor(Math.random() * 10)
     ).join("");
-  
+
     const shippingZip = document.getElementById("zip").value;
     const shippingProvince = document.getElementById("province").value;
     const shippingCity = document.getElementById("city").value;
@@ -172,16 +183,21 @@ document.addEventListener("DOMContentLoaded", async function () {
     const lastName = document.getElementById("lastName").value;
     const shippingPhone = document.getElementById("phone").value;
     const houseNumber = document.getElementById("house").value;
-  
+
     let addressError = "";
     let stateError = "";
     let phoneError = "";
-    let nameError = ""
-  
-    if (firstName === "" || lastName === "" || houseNumber === "") {
-      nameError = "Please fill in all name and house number fields.";
+    let nameError = "";
+    let houseError = "";
+
+    if (firstName === "" || lastName === "") {
+      nameError = "Please fill in all name fields.";
     }
-    document.querySelector(".nameError").innerHTML = nameError
+    document.querySelector(".nameError").innerHTML = nameError;
+    if (houseNumber === "") {
+      houseError = "Please fill in house number field";
+    }
+    document.querySelector(".houseError").innerHTML = houseError;
 
     const stateCodes = {
       alabama: "AL",
@@ -236,65 +252,111 @@ document.addEventListener("DOMContentLoaded", async function () {
       wyoming: "WY",
     };
 
-
     function getStateCode(stateName) {
       const normalizedStateName = stateName.trim();
       return stateCodes[normalizedStateName] || false;
     }
-  
+
     const stateName = `${shippingProvince.toLowerCase()}`;
     const stateCode = getStateCode(stateName);
-  
+
     if (stateCode === false) {
       stateError = "State Not Found";
     }
-  
+
     function isValidPhoneNumber(phoneNumber) {
       const phonePattern =
         /^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9][0-9]{2})\s*\)|([2-9][0-9]{2}))(?:[.-]\s*)?([2-9][0-9]{2})(?:[.-]\s*)?([0-9]{4}))(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/;
       return phonePattern.test(phoneNumber);
     }
-  
+
     const phoneNumber = `${shippingPhone}`;
     if (!isValidPhoneNumber(phoneNumber)) {
       phoneError = "Phone Is Incorrect";
     }
-  
+
     // Display errors for each field
     document.querySelector(".errorAddress").innerHTML = addressError;
     document.querySelector(".errorState").innerHTML = stateError;
     document.querySelector(".errorPhone").innerHTML = phoneError;
-  
-      console.log("Success");
-  
-      const serverData = {
-        address: shippingAddress,
-        city: shippingCity,
-        zip: shippingZip,
-        state: stateCode,
-      };
-      fetch("/check-address", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(serverData),
+
+    console.log("Success");
+
+    const serverData = {
+      address: shippingAddress,
+      city: shippingCity,
+      zip: shippingZip,
+      state: stateCode,
+    };
+    fetch("/check-address", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(serverData),
+    })
+      .then((response) => {
+        console.log(response);
+        if (response.status === 400) {
+          document.querySelector(".errorAddress").innerHTML =
+            "Address/City Incorrect";
+        }
+        if (response.status === 200) {
+          document.querySelector(".errorAddress").innerHTML = "";
+          fetch("/check-token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(serverData),
+          })
+            .then((response) => {
+              console.log(response);
+              if (response.status === 400) {
+                document.querySelector(".error-box2").style.display = "block";
+                document.querySelector(".error-box2").style.boxShadow =
+                  "0px 0px 50px 500px rgba(0,0,0,0.89)";
+                document.body.style.overflow = "hidden";
+              }
+              if (response.status === 200) {
+                handlePaymentMethodSubmission(event, card);
+              }
+            })
+            .catch((error) => {
+              document.querySelector(".errorAddress").innerHTML =
+                "Address/City Incorrect";
+            });
+        }
       })
-        .then((response) => {
-          console.log(response);
-          if (response.status === 400) {
-            document.querySelector(".errorAddress").innerHTML = "Address Incorrect";
-          }
-          if (response.status === 200) {
-            document.querySelector(".errorAddress").innerHTML = "";
-            handlePaymentMethodSubmission(event, card);
-          }
-        })
-        .catch((error) => {
-          document.querySelector(".errorAddress").innerHTML = "Address Incorrect";
-        });
-  }); 
+      .catch((error) => {
+        document.querySelector(".errorAddress").innerHTML =
+          "Address/City Incorrect";
+      });
+  });
   function storeOrder() {
+    const orderNumber = Array.from({ length: 10 }, () =>
+      Math.floor(Math.random() * 10)
+    ).join("");
+    const shippingZip = document.getElementById("zip").value;
+    const shippingProvince = document.getElementById("province").value;
+    const shippingCity = document.getElementById("city").value;
+    const shippingAddress = document.getElementById("address").value;
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
+    const shippingPhone = document.getElementById("phone").value;
+    const houseNumber = document.getElementById("house").value;
+    const productses = [];
+
+    // Loop through the cart items and create a new object for each product
+    console.log(cartData);
+    for (const key in cartData) {
+      const product = {
+        vid: cartData[key].productVid,
+        quantity: cartData[key].productAmount,
+        shippingName: "",
+      };
+      productses.push(product);
+    }
     const orderData = {
       orderNumber: `${orderNumber}`,
       shippingZip: `${shippingZip}`,
@@ -310,14 +372,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       logisticName: "US (2-5Days)",
       houseNumber: `${houseNumber}`,
       email: "",
-      products: [
-        {
-          vid: "F616DF14-C0BF-4BDC-AE52-75664D36218D",
-          quantity: 1,
-          shippingName: "",
-        },
-      ],
+      products: productses,
     };
+
+    // Now you can use the `products` array in your code
+    console.log(productses);
     fetch("/create-order", {
       method: "POST",
       headers: {
@@ -325,6 +384,16 @@ document.addEventListener("DOMContentLoaded", async function () {
       },
       body: JSON.stringify({ orderData }),
     });
+    localStorage.removeItem("cart");
+    window.scrollTo(0, 0);
+    document.getElementById("container").style.display = "block";
+    document.getElementById("container").style.boxShadow =
+      "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+    document.getElementById("success-box").style.display = "block";
+    document.getElementById("success-box").style.boxShadow =
+      "0px 0px 50px 500px rgba(0,0,0,0.89)";
+    document.body.style.overflow = "hidden";
   }
 });
 function showLoader() {
