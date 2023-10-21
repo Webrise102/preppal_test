@@ -17,7 +17,7 @@ nav.innerHTML = `
 </div>
 </div>
 <div class="logo">
-<img src="images/logo.png" alt="PrepPal Logo" class="nav_logo" />
+<img src="images/Logo.png" alt="PrepPal Logo" class="nav_logo" />
 </div>
 <div class="nav_linksBox">
 <a href="/" class="nav_link">Home</a
