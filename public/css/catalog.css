@@ -65,3 +65,17 @@ h1 {
   }
 }
 
+@media screen and (max-width: 700px) {
+  .search_cards_box {
+    flex-direction: column;
+  }
+  .search_product_card {
+    margin: auto;
+    width: min(350px, 100%);
+  }
+  .search_product_card:nth-child(1) {
+    margin-right: auto;
+    margin-bottom: 20px;
+  }
+}
+

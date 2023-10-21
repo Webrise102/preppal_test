@@ -14,6 +14,8 @@ if(currentLocation === "/fast-defrost-tray") {
 let vid;
 if(window.location.pathname === "/fast-defrost-tray") {
   vid = "F616DF14-C0BF-4BDC-AE52-75664D36218D"
+} else {
+  vid = "1636420804961382400"
 }
 
 
@@ -61,9 +63,9 @@ const decreaseAmount = document.getElementById("productMinus");
 const increaseAmount = document.getElementById("productPlus");
 const productAmount = document.getElementById("productAmount");
 const productAmount2 = document.getElementById("productAmount");
-const productTitle = document.querySelector(".product_title").innerHTML;
+const productTitle = document.querySelector(".product_title").innerHTML.trim();
 const productImage = document.querySelector(".main-image").src;
-const productDescription = document.querySelector(".product_subdesc").innerHTML;
+const productDescription = document.querySelector(".product_subdesc").innerHTML.trim();
 
 const addToCart = document.querySelector(".cart__button");
 const cartInner = document.querySelector(".modal-body");

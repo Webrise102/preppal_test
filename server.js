@@ -2,6 +2,7 @@
 
 const express = require("express");
 const app = express();
+const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv");
 const crypto = require("crypto");
@@ -13,9 +14,11 @@ const schedule = require("node-schedule");
 const nodemailer = require("nodemailer");
 const square = require("square");
 const axios = require("axios");
+const imageContent = fs.readFileSync("public/images/LogoOrange.png");
+const imageContent2 = fs.readFileSync("public/images/mail.png");
 
 const accessToken = `${process.env.ACCESS_TOKEN}`;
-const environment = square.Environment.Production; // or square.Environment.Production
+const environment = square.Environment.Sandbox; // or square.Environment.Production
 const client = new square.Client({
   accessToken: accessToken,
   environment: environment,
@@ -208,7 +211,6 @@ app.get("/subscribe/check/:email", (req, res) => {
 // Unsubscribe route
 app.post("/unsubscribe", (req, res) => {
   const { email } = req.body;
-  console.log(email);
   const query = "SELECT * FROM subscriptions2 WHERE email = ?";
 
   db.query(query, [email], (error, results) => {
@@ -274,7 +276,6 @@ const sendEmail = async (formData) => {
 const contactFormRoute = async (req, res) => {
   // Get the form data
   const formData = req.body;
-  console.log(formData);
   // Send the email
   await sendEmail(formData);
 
@@ -282,13 +283,37 @@ const contactFormRoute = async (req, res) => {
   res.status(200).send({ message: "Email sent successfully!" });
 };
 
+app.post("/check-availability", (req, res) => {
+  //   const apiUrl =
+  //   "https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryByVid?vid=D391B8D7-ED4B-4283-8206-D8607B4DEDD5";
+
+  // const config = {
+  //   headers: {
+  //     "CJ-Access-Token": `${process.env.CJ_ACCESS_TOKEN}`, // Replace with your access token
+  //   },
+  // };
+
+  // axios
+  //   .get(apiUrl, config)
+  //   .then((response) => {
+  //     const currentObject = response.data.data.find(
+  //       (item) => item.countryCode === "US"
+  //     );
+  //     const responseApi = currentObject.storageNum;
+  //     console.log(responseApi);
+  res.json(10);
+  // })
+  // .catch((error) => {
+  //   console.error(error);
+  // });
+});
+
 // Add the contact form route to your Express app
 app.post("/contact-form", contactFormRoute);
 
 //? Payments
 app.post("/check-coupon", (req, res) => {
   const code = req.body.code;
-  console.log(code);
 
   let couponCode = `${proces.env.COUPON}`;
   if (code === couponCode) {
@@ -297,53 +322,38 @@ app.post("/check-coupon", (req, res) => {
     res.status(400).send();
   }
 });
-const url =
-  "https://developers.cjdropshipping.com/api2.0/v1/logistic/freightCalculate";
+app.post("/get-order", (req, res) => {
+  const orderId = req.body.orderNumber;
+  console.log(orderId);
+  const apiUrl = `https://developers.cjdropshipping.com/api2.0/v1/shopping/order/getOrderDetail?orderId=${orderId}`;
 
-const headers = {
-  "Content-Type": "application/json",
-  "CJ-Access-Token": `${process.env.CJ_ACCESS_TOKEN}`, // Replace with your actual access token
-};
+  const headers = {
+    "CJ-Access-Token": `${process.env.CJ_ACCESS_TOKEN}`,
+  };
 
-const data = {
-  startCountryCode: "US",
-  endCountryCode: "US",
-  products: [
-    {
-      quantity: 1,
-      vid: "F616DF14-C0BF-4BDC-AE52-75664D36218D",
-    },
-  ],
-};
-
-axios
-  .post(url, data, { headers })
-  .then((response) => {})
-  .catch((error) => {
-    console.error(error);
-  });
-app.post("/check-token", async (req, res) => {
-  if (accessToken !== false) {
-    console.log(accessToken);
-    res.status(200).send();
-  } else {
-    res.status(500).send();
-  }
+  axios
+    .get(apiUrl, { headers })
+    .then((response) => {
+      console.log("Response:", response.data);
+      const responseData = {
+        orderStatus: response.data.data.orderStatus,
+        trackNumber: response.data.data.trackNumber,
+      };
+      res.json(responseData);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      res.send(error);
+    });
 });
-app.post("/create-order", async (req, res) => {
 
-  if (accessToken !== false) {
-    console.log(accessToken);
-  } else {
-    res.status(500).json({ error: "Failed to obtain access token" });
-  }
+app.post("/create-order", async (req, res) => {
   const headers = {
     "CJ-Access-Token": `${process.env.CJ_ACCESS_TOKEN}`,
     "Content-Type": "application/json",
   };
 
   const data = req.body.orderData;
-  console.log(data);
 
   const config = {
     method: "post",
@@ -373,7 +383,7 @@ app.post("/payment", async (req, res) => {
       sourceId,
       idempotencyKey,
       amountMoney: {
-        amount: amount,
+        amount: 10,
         currency: "USD",
       },
     });
@@ -385,22 +395,32 @@ app.post("/payment", async (req, res) => {
     res.status(500).json({ error: error.message }); // Return the error as JSON
   }
 });
-  const urll = 'https://developers.cjdropshipping.com/api2.0/v1/product/query?pid=1A8F0973-0A68-4A82-8889-3EE3A5A80085';
-const accessTokenn = `${process.env.CJ_ACCESS_TOKEN}`; // Replace with your CJ-Access-Token
 
-axios.get(urll, {
-  headers: {
-    'CJ-Access-Token': accessTokenn
-  }
-})
-  .then(response => {
-    // Handle the response data here
-    console.log('Response:', response.data.data.variants);
-  })
-  .catch(error => {
-    // Handle any errors here
-    console.error('Error:', error);
-  });
+app.post("/check-access", (req, res) => {
+  const apiUrll =
+    "https://developers.cjdropshipping.com/api2.0/v1/product/getCategory";
+  const accessTokenn = `${process.env.CJ_ACCESS_TOKEN}`; // Replace with your access token
+
+  const headers = {
+    "CJ-Access-Token": accessTokenn,
+  };
+
+  axios
+    .get(apiUrll, { headers })
+    .then((response) => {
+      console.log("Response:", response.data.code);
+      if (response.data.code === 200) {
+        console.log(true);
+        res.status(200).send();
+      } else {
+        console.log(false);
+        res.status(400).send();
+      }
+    })
+    .catch((error) => {
+      res.status(400).send();
+    });
+});
 
 app.post("/check-address", async (req, res) => {
   const city = req.body.city;
@@ -439,6 +459,98 @@ app.post("/check-address", async (req, res) => {
     .catch(function (error) {
       res.status(500).send();
     });
+});
+
+app.post("/send-success", (req, res) => {
+  // Define the email data.
+  const orderNumber = req.body.orderNumber;
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+  const orderAddress = req.body.address;
+  const total = req.body.total;
+  const orderDate = req.body.orderDate;
+  console.log(firstName, orderNumber, orderAddress, total, orderDate);
+  const dayMinInit = new Date();
+
+  const futureMinDate = new Date(dayMinInit);
+  futureMinDate.setDate(dayMinInit.getDate() + 8);
+  const futureMinDay = futureMinDate.getDate();
+  const futureMinMonth = futureMinDate.getMonth() + 1;
+  const futureMinYear = futureMinDate.getFullYear();
+
+  const futureDate = new Date(dayMinInit);
+  futureDate.setDate(dayMinInit.getDate() + 15);
+  const futureDay = futureDate.getDate();
+  const futureMonth = futureDate.getMonth() + 1;
+  const futureYear = futureDate.getFullYear();
+
+  // Your email template
+  const emailTemplate = `
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600&display=swap");
+      .button {
+        background-color: #000;
+        color: #fff;
+        padding: 12px 24px;
+        text-decoration: none;
+        font-family: 'Montserrat', sans-serif;
+        cursor: pointer;
+      }
+      p {
+        font-size: 16px;
+        font-family: 'Montserrat', sans-serif;
+        color: #000000;
+      }
+      html {
+        max-width: 700px;
+        font-family: 'Montserrat', sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <p style="font-size: 24px; font-weight: bold">
+      Arriving between ${futureMinDay}/${futureMinMonth}/${futureMinYear} and ${futureDay}/${futureMonth}/${futureYear}
+    </p>
+
+    <p style=" font-weight: bold">Hi ${firstName},</p>
+
+    <p>We received your order and it will be proceeded within 24 hours</p>
+
+<p >Your Total: <span style="font-weight: bold">$${total}</span></p>
+<p style="font-size: 12px;">Below you can find address which you wrote, contact us if it isn't right</p>
+
+    <div style="float: left; width: 50%">
+      <p style="font-weight: bold">Delivery address</p>
+      <p>${firstName} ${lastName}</p>
+      <p>${orderAddress}</p>
+    </div>
+
+    <div style="float: right; width: 50%">
+      <p style="font-weight: bold">Estimated delivery</p>
+      <p>between ${futureMinDay}/${futureMinMonth}/${futureMinYear} and ${futureDay}/${futureMonth}/${futureYear}</p>
+    </div>
+  </body>
+</html>
+`;
+  // Email data
+  const mailOptions = {
+    from: `${process.env.EMAIL_ACCOUNT}`,
+    to: "ilahristoforov88@gmail.com",
+    subject: `Thanks for your order`,
+    html: emailTemplate,
+  };
+
+  // Send the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("Error sending email:", error);
+    } else {
+      console.log("Email sent:", info.response);
+    }
+  });
 });
 
 //? Start Server

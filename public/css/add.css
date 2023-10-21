@@ -21,6 +21,11 @@
   overflow: hidden;
   transition: 0.3s ease-in-out;
   display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.data-nodisplay {
+  display: none;
 }
 .cart__button:hover {
   background-color: #040115;

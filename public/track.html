@@ -12,16 +12,29 @@
   <body>
     <header></header>
     <nav></nav>
+    <h1>Track your order</h1>
+    <main>
     <form class="form">
-        <span class="title">Track your order</span>
+      <span class="title">Order ID </span>
+      <div>
+        <input type="text" id="orderNumber" placeholder="Order number">
+        <button id="orderIdButton">Track</button>
+      </div>
+      <div id="result"></div>
+
+    </form>
+    <form class="form">
+        <span class="title">Tracking Number</span>
         <div>
           <input placeholder="Enter your tracking number" type="email" name="email" id="tracking-number">
           <button type="submit" id="trackSubmit">Track</button>
         </div>
-      </form>    <footer></footer>
+      </form>
+    </main>    <footer></footer>
     <script src="js/structure.js"></script>
     <script src="js/cartConnector.js"></script>
     <script src="js/script.js"></script>
+
     <script src="js/track.js"></script>
   </body>
 </html>

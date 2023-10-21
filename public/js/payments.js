@@ -1,5 +1,5 @@
-const appId = "sq0idp-3ALhGiwFsiPipnohgMgEkw";
-const locationId = "L4CDNFM8ZNRN1";
+const appId = "sandbox-sq0idb-7ZiozI0Lm8Ltn7rmq5INaQ";
+const locationId = "LEG1KX336TMA8";
 const darkModeCardStyle = {
   ".input-container": {
     borderColor: "#2D2D2D",
@@ -89,14 +89,14 @@ async function createPayment(token) {
       return paymentResponse.json();
     } else {
       hideLoader();
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: "instant" });
 
       document.getElementById("container").style.display = "block";
       document.getElementById("container").style.boxShadow =
         "0px 0px 50px 500px rgba(0,0,0,0.89)";
       document.querySelector(".error-box1").style.display = "block";
       document.querySelector(".error-box1").style.boxShadow =
-        "0px 0px 50px 500px rgba(0,0,0,0.89)";
+        "0px 0px 50px 5000px rgba(0,0,0,0.89)";
       document.body.style.overflow = "hidden";
       console.log("Error");
     }
@@ -183,12 +183,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     const lastName = document.getElementById("lastName").value;
     const shippingPhone = document.getElementById("phone").value;
     const houseNumber = document.getElementById("house").value;
+    const orderEmail = document.getElementById("email").value;
 
     let addressError = "";
     let stateError = "";
     let phoneError = "";
     let nameError = "";
     let houseError = "";
+    let emailError = "";
 
     if (firstName === "" || lastName === "") {
       nameError = "Please fill in all name fields.";
@@ -198,6 +200,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       houseError = "Please fill in house number field";
     }
     document.querySelector(".houseError").innerHTML = houseError;
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(orderEmail)) {
+    } else {
+      emailError = "Invalid Email Address";
+    }
+    document.querySelector(".errorEmail").innerHTML = emailError;
+
 
     const stateCodes = {
       alabama: "AL",
@@ -303,7 +311,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
         if (response.status === 200) {
           document.querySelector(".errorAddress").innerHTML = "";
-          fetch("/check-token", {
+          fetch("/check-access", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -313,9 +321,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             .then((response) => {
               console.log(response);
               if (response.status === 400) {
+                window.scrollTo({ top: 0, behavior: "instant" });
+
+                document.getElementById("container").style.display = "block";
+                document.getElementById("container").style.boxShadow =
+                  "0px 0px 50px 500px rgba(0,0,0,0.89)";
                 document.querySelector(".error-box2").style.display = "block";
                 document.querySelector(".error-box2").style.boxShadow =
-                  "0px 0px 50px 500px rgba(0,0,0,0.89)";
+                  "0px 0px 50px 5000px rgba(0,0,0,0.89)";
                 document.body.style.overflow = "hidden";
               }
               if (response.status === 200) {
@@ -356,6 +369,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         shippingName: "",
       };
       productses.push(product);
+      console.log(product)
     }
     const orderData = {
       orderNumber: `${orderNumber}`,
@@ -374,6 +388,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       email: "",
       products: productses,
     };
+    console.log(orderData.products)
 
     // Now you can use the `products` array in your code
     console.log(productses);
@@ -384,15 +399,22 @@ document.addEventListener("DOMContentLoaded", async function () {
       },
       body: JSON.stringify({ orderData }),
     });
+    fetch("/send-success", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ orderNumber: orderNumber, firstName: firstName, lastName: lastName, address:shippingCity + " " + shippingAddress + " " + shippingZip, total: sum, orderDate: new(Date) }),
+    })
     localStorage.removeItem("cart");
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "instant" });
     document.getElementById("container").style.display = "block";
     document.getElementById("container").style.boxShadow =
       "0px 0px 500px 500px rgba(0,0,0,0.89)";
 
     document.getElementById("success-box").style.display = "block";
     document.getElementById("success-box").style.boxShadow =
-      "0px 0px 50px 500px rgba(0,0,0,0.89)";
+      "0px 0px 50px 5000px rgba(0,0,0,0.89)";
     document.body.style.overflow = "hidden";
   }
 });

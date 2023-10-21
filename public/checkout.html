@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Payment Page</title>
     <!-- Include the Square.js library -->
-    <script src="https://web.squarecdn.com/v1/square.js"></script>
+    <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
     <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link
@@ -89,7 +89,9 @@
               />
               <label for="phone">Phone Number</label>
             </div>
-            <div class="form-floating mb-3">
+            <label for="emailBlock" class="errorEmail error"></label>
+
+            <div class="form-floating mb-3" id="emailBlock">
               <input
                 type="email"
                 class="form-control"

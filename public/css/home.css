@@ -122,3 +122,17 @@ main button {
 
 
 }
+
+@media screen and (max-width: 580px) {
+  .main_image {
+    display: none;
+  }
+}
+@media screen and (max-width: 380px) {
+  h1 {
+    font-size: 60px
+  }
+  .main_text {
+    font-size: 18px
+  }
+}

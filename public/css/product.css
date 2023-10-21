@@ -143,6 +143,9 @@ h4 {
   }
   .product_title {
     text-align: center;
+    margin-top: 20px;
+  }
+  .product_textBlock {
     margin-top: 50px;
   }
   .product_amountBox {
