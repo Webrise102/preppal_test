@@ -296,6 +296,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       zip: shippingZip,
       state: stateCode,
     };
+    document.getElementById("loaderAllContainer").style.display = "block"
+
     fetch("/check-address", {
       method: "POST",
       headers: {
@@ -304,13 +306,15 @@ document.addEventListener("DOMContentLoaded", async function () {
       body: JSON.stringify(serverData),
     })
       .then((response) => {
-        console.log(response);
+        document.getElementById("loaderAllContainer").style.display = "none"
+
         if (response.status === 400) {
           document.querySelector(".errorAddress").innerHTML =
             "Address/City Incorrect";
         }
         if (response.status === 200) {
           document.querySelector(".errorAddress").innerHTML = "";
+          document.getElementById("loaderAllContainer").style.display = "block"
           fetch("/check-access", {
             method: "POST",
             headers: {
@@ -319,7 +323,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             body: JSON.stringify(serverData),
           })
             .then((response) => {
-              console.log(response);
+              document.getElementById("loaderAllContainer").style.display = "none"
+
               if (response.status === 400) {
                 window.scrollTo({ top: 0, behavior: "instant" });
 

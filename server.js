@@ -14,8 +14,6 @@ const schedule = require("node-schedule");
 const nodemailer = require("nodemailer");
 const square = require("square");
 const axios = require("axios");
-const imageContent = fs.readFileSync("public/images/LogoOrange.png");
-const imageContent2 = fs.readFileSync("public/images/mail.png");
 
 const accessToken = `${process.env.ACCESS_TOKEN}`;
 const environment = square.Environment.Sandbox; // or square.Environment.Production
@@ -62,8 +60,8 @@ app.get("/catalog", (req, res) => {
 app.get("/fast-defrost-tray", (req, res) => {
   res.sendFile(path.join(`${staticPath}/products`, "tray.html"));
 });
-app.get("/mini-electric-juicer", (req, res) => {
-  res.sendFile(path.join(`${staticPath}/products`, "juicer.html"));
+app.get("/room-cooking-pot", (req, res) => {
+  res.sendFile(path.join(`${staticPath}/products`, "pot.html"));
 });
 app.get("/unsubscribe", (req, res) => {
   res.sendFile(path.join(staticPath, "unsubscribe.html"));

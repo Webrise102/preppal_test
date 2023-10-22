@@ -17,6 +17,8 @@
   <body class="dark-mode">
     <header></header>
     <nav></nav>
+    <div id="paypal-button-container"></div>
+
     <div id="container">
       <div id="success-box">
         <div class="dot"></div>
@@ -72,7 +74,22 @@
     </div>
     <main>
       <div class="error-message" id="error-message"></div>
-
+      <div id="loaderAllContainer" style="display: none">
+        <div
+          class="loader"
+          id="loaderAll"
+          style="
+            position: absolute;
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            top: 40%;
+            width: 50px;
+            height: 50px;
+          "
+        ></div>
+      </div>
       <div class="container">
         <div class="loader" id="loader"></div>
 
@@ -326,6 +343,42 @@
     </main>
 
     <footer></footer>
+    <script src="https://www.paypal.com/sdk/js?client-id=AXh5j1fggZvIaes8IhbEnM57pWoDNedqn5dEJ7W0RueFaYBYrkb4HShgFeUbBXTcQXCN0jZhfJ053R0E&currency=USD"></script>
+    <script>
+      // Render the PayPal button
+      paypal
+        .Buttons({
+          createOrder: function (data, actions) {
+            return actions.order.create({
+              purchase_units: [
+                {
+                  amount: {
+                    value: "10.00", // Set the payment amount here
+                  },
+                },
+              ],
+              application_context: { shipping_preference: "NO_SHIPPING" },
+              billingAddress: {
+                name: {
+                  given_name: "John",
+                  surname: "Doe",
+                },
+                address_line_1: "123 Main St",
+                admin_area_2: "Anytown",
+                admin_area_1: "CA",
+                postal_code: "98765",
+                country_code: "US",
+              },
+            });
+          },
+          onApprove: function (data, actions) {
+            return actions.order.capture().then(function (details) {
+              alert("Payment completed successfully!");
+            });
+          },
+        })
+        .render("#paypal-button-container");
+    </script>
     <script src="js/structure.js"></script>
     <script src="css/bootstrap-5.3.1-dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>

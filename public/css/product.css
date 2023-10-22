@@ -44,7 +44,7 @@ main {
 }
 .close_image {
   height: 40px;
-  position: absolute;
+  position: fixed;
   top: 2%;
   width: 40px;
   z-index: 10000;

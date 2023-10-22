@@ -10,6 +10,12 @@ if(currentLocation === "/fast-defrost-tray") {
     "../images/tray_preview2.webp",
     "../images/tray_preview3.webp",
   ];
+} else {
+  images = [
+    "../images/pot_preview1.jpg",
+    "../images/pot_preview2.jpg",
+    "../images/pot_preview3.jpg",
+  ];
 }
 let vid;
 if(window.location.pathname === "/fast-defrost-tray") {

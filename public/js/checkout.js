@@ -49,7 +49,7 @@ function showProducts() {
 showProducts()
 console.log(sum);
 
-subTotalElement.innerHTML = `$${sum}.00`;
+subTotalElement.innerHTML = `$${sum}`;
 const couponButton = document.querySelector(".applyCoupon");
 const couponText = document.querySelector(".checkout_coupons_price")
 let couponSale;
@@ -69,8 +69,8 @@ couponButton.addEventListener("click", function () {
       console.log(sum)
       sum -= 5
       sum = parseInt(sum.toFixed(2))
-      subTotalElement.innerHTML = `$${sum}.00`;
-      totalElement.innerHTML = `$${sum}.00`;
+      subTotalElement.innerHTML = `$${sum}`;
+      totalElement.innerHTML = `$${sum}`;
       couponText.innerHTML = "-10%"
       window.scrollTo(0, 0);
       console.log(sum)
