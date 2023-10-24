@@ -281,31 +281,6 @@ const contactFormRoute = async (req, res) => {
   res.status(200).send({ message: "Email sent successfully!" });
 };
 
-app.post("/check-availability", (req, res) => {
-  //   const apiUrl =
-  //   "https://developers.cjdropshipping.com/api2.0/v1/product/stock/queryByVid?vid=D391B8D7-ED4B-4283-8206-D8607B4DEDD5";
-
-  // const config = {
-  //   headers: {
-  //     "CJ-Access-Token": `${process.env.CJ_ACCESS_TOKEN}`, // Replace with your access token
-  //   },
-  // };
-
-  // axios
-  //   .get(apiUrl, config)
-  //   .then((response) => {
-  //     const currentObject = response.data.data.find(
-  //       (item) => item.countryCode === "US"
-  //     );
-  //     const responseApi = currentObject.storageNum;
-  //     console.log(responseApi);
-  res.json(10);
-  // })
-  // .catch((error) => {
-  //   console.error(error);
-  // });
-});
-
 // Add the contact form route to your Express app
 app.post("/contact-form", contactFormRoute);
 
@@ -313,111 +288,91 @@ app.post("/contact-form", contactFormRoute);
 app.post("/check-coupon", (req, res) => {
   const code = req.body.code;
 
-  let couponCode = `${proces.env.COUPON}`;
+  let couponCode = `${process.env.COUPON}`;
   if (code === couponCode) {
     res.status(200).send();
   } else {
     res.status(400).send();
   }
 });
-app.post("/get-order", (req, res) => {
-  const orderId = req.body.orderNumber;
-  console.log(orderId);
-  const apiUrl = `https://developers.cjdropshipping.com/api2.0/v1/shopping/order/getOrderDetail?orderId=${orderId}`;
+app.post("/create-order", (req, res) => {
+  const OrderDate = req.body.OrderDate;
+  const OrderEmail = req.body.OrderEmail;
+  const FirstName = req.body.FirstName;
+  const LastName = req.body.LastName;
+  const OrderCity = req.body.OrderCity;
+  const OrderAddress = req.body.OrderAddress;
+  const OrderZIP = req.body.OrderZip; // Correct the case
+  const Total = req.body.Total;
+  const OrderStatus = req.body.OrderStatus;
+  const OrderTrackingNumber = req.body.OrderTrackingNumber;
+  const OrderPhone = req.body.OrderPhone;
+  const OrderProducts = req.body.OrderProducts;
+  const OrderAddress2 = req.body.OrderAddress2;
+  const OrderProvince = req.body.OrderProvince;
+  // Create a Date object from the input string
+  const date = new Date(OrderDate);
 
-  const headers = {
-    "CJ-Access-Token": `${process.env.CJ_ACCESS_TOKEN}`,
-  };
+  // Extract the components of the date
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth() + 1; // Months are zero-indexed, so add 1
+  const day = date.getUTCDate();
+  const hours = date.getUTCHours();
+  const minutes = date.getUTCMinutes();
+  const seconds = date.getUTCSeconds();
 
-  axios
-    .get(apiUrl, { headers })
-    .then((response) => {
-      console.log("Response:", response.data);
-      const responseData = {
-        orderStatus: response.data.data.orderStatus,
-        trackNumber: response.data.data.trackNumber,
-      };
-      res.json(responseData);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      res.send(error);
-    });
-});
+  // Format the date in the MySQL-friendly format
+  const mysqlFriendlyDate = `${year}-${month.toString().padStart(2, "0")}-${day
+    .toString()
+    .padStart(2, "0")} ${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
-app.post("/create-order", async (req, res) => {
-  const headers = {
-    "CJ-Access-Token": `${process.env.CJ_ACCESS_TOKEN}`,
-    "Content-Type": "application/json",
-  };
+  console.log(
+    mysqlFriendlyDate,
+    OrderEmail,
+    FirstName,
+    LastName,
+    OrderCity,
+    OrderAddress,
+    OrderZIP,
+    Total,
+    OrderStatus,
+    OrderTrackingNumber,
+    OrderPhone,
+    OrderProducts,
+    OrderAddress2,
+    OrderProvince
+  );
 
-  const data = req.body.orderData;
+  const insertSql =
+    "INSERT INTO orderscj (OrderDate, OrderEmail, FirstName, LastName, OrderCity, OrderAddress, OrderZIP, Total, OrderStatus, OrderTrackingNumber, OrderPhone, OrderProducts, OrderAddress2, OrderProvince) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const values = [
+    mysqlFriendlyDate,
+    OrderEmail,
+    FirstName,
+    LastName,
+    OrderCity,
+    OrderAddress,
+    OrderZIP,
+    Total,
+    OrderStatus,
+    OrderTrackingNumber,
+    OrderPhone,
+    OrderProducts,
+    OrderAddress2,
+    OrderProvince
+  ];
 
-  const config = {
-    method: "post",
-    url: "https://developers.cjdropshipping.com/api2.0/v1/shopping/order/createOrder",
-    headers,
-    data,
-  };
-  createOrder(config);
-
-  function createOrder(config) {
-    axios(config)
-      .then(function (response) {
-        console.log(response.data);
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
-  }
-});
-app.post("/payment", async (req, res) => {
-  console.log(true);
-  const { locationId, sourceId, idempotencyKey, amount } = req.body;
-  console.log(amount);
-
-  try {
-    const response = await client.paymentsApi.createPayment({
-      sourceId,
-      idempotencyKey,
-      amountMoney: {
-        amount: 10,
-        currency: "USD",
-      },
-    });
-
-    console.log(response.result);
-    res.json("Response"); // Return the response as JSON
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: error.message }); // Return the error as JSON
-  }
-});
-
-app.post("/check-access", (req, res) => {
-  const apiUrll =
-    "https://developers.cjdropshipping.com/api2.0/v1/product/getCategory";
-  const accessTokenn = `${process.env.CJ_ACCESS_TOKEN}`; // Replace with your access token
-
-  const headers = {
-    "CJ-Access-Token": accessTokenn,
-  };
-
-  axios
-    .get(apiUrll, { headers })
-    .then((response) => {
-      console.log("Response:", response.data.code);
-      if (response.data.code === 200) {
-        console.log(true);
-        res.status(200).send();
-      } else {
-        console.log(false);
-        res.status(400).send();
-      }
-    })
-    .catch((error) => {
-      res.status(400).send();
-    });
+  db.query(insertSql, values, (err, result) => {
+    if (err) {
+      console.error("Error inserting data:", err);
+      res.status(500).send("Error inserting data");
+    } else {
+      console.log("Data inserted successfully");
+      res.status(200).send("Data inserted successfully");
+    }
+  });
 });
 
 app.post("/check-address", async (req, res) => {
@@ -552,6 +507,21 @@ app.post("/send-success", (req, res) => {
 });
 
 //? Start Server
+// Attempt to get a connection from the pool and check the status
+app.post("/check-connection", (req, res) => {
+  db.getConnection((err, connection) => {
+    if (err) {
+      console.error('Error connecting to MySQL:', err);
+      res.status(500).send()
+    }
+  
+    console.log('Connected to MySQL');
+    res.status(200).send()
+  
+    // Release the connection back to the pool when you're done with it.
+    connection.release();
+  });
+})
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

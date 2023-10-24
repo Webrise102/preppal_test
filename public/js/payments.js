@@ -1,212 +1,263 @@
-const appId = "sandbox-sq0idb-7ZiozI0Lm8Ltn7rmq5INaQ";
-const locationId = "LEG1KX336TMA8";
-const darkModeCardStyle = {
-  ".input-container": {
-    borderColor: "#2D2D2D",
-    borderRadius: "6px",
-  },
-  ".input-container.is-focus": {
-    borderColor: "#006AFF",
-  },
-  ".input-container.is-error": {
-    borderColor: "#ff1600",
-  },
-  ".message-text": {
-    color: "#999999",
-  },
-  ".message-icon": {
-    color: "#999999",
-  },
-  ".message-text.is-error": {
-    color: "#ff1600",
-  },
-  ".message-icon.is-error": {
-    color: "#ff1600",
-  },
-  input: {
-    backgroundColor: "#2D2D2D",
-    color: "#FFFFFF",
-    fontFamily: "helvetica neue, sans-serif",
-  },
-  "input::placeholder": {
-    color: "#999999",
-  },
-  "input.is-error": {
-    color: "#ff1600",
-  },
-};
-// Function to generate a random idempotency key
-function generateRandomString(length) {
-  const symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const allCharacters = symbols + characters;
-  let result = "";
+// Render the PayPal button
+const errorMessage = document.querySelector(".error-message2");
+paypal
+  .Buttons({
+    onClick: async function () {
+      const response = await fetch("/check-connection", {
+        method: "POST",
+      });
+      if (response.status === 200) {
+        const isValid = await new Promise((resolve) => {
+          checkAll((isValid) => {
+            resolve(isValid);
+          });
+        });
+        console.log(isValid);
+        if (isValid) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        window.scrollTo({ top: 0, behavior: "instant" });
+        document.getElementById("container").style.display = "block";
+        document.getElementById("container").style.boxShadow =
+          "0px 0px 500px 500px rgba(0,0,0,0.89)";
 
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * allCharacters.length);
-    result += allCharacters.charAt(randomIndex);
-  }
-
-  return result;
-}
-
-const idempotencyKey = generateRandomString(10);
-
-async function initializeCard(payments) {
-  showLoader();
-
-  const card = await payments.card({
-    style: darkModeCardStyle,
-  });
-  await card.attach("#card-container");
-  hideLoader();
-
-  return card;
-}
-
-async function createPayment(token) {
-  showLoader();
-
-  const body = JSON.stringify({
-    locationId,
-    sourceId: "cnon:card-nonce-ok",
-    idempotencyKey,
-    amount: sum,
-  });
-  try {
-    const paymentResponse = await fetch("/payment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: body,
-    });
-
-    if (paymentResponse.ok) {
-      hideLoader();
-
-      return paymentResponse.json();
-    } else {
-      hideLoader();
-      window.scrollTo({ top: 0, behavior: "instant" });
-
-      document.getElementById("container").style.display = "block";
-      document.getElementById("container").style.boxShadow =
-        "0px 0px 50px 500px rgba(0,0,0,0.89)";
-      document.querySelector(".error-box1").style.display = "block";
-      document.querySelector(".error-box1").style.boxShadow =
-        "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-      document.body.style.overflow = "hidden";
-      console.log("Error");
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-async function tokenize(paymentMethod) {
-  const tokenResult = await paymentMethod.tokenize();
-  if (tokenResult.status === "OK") {
-    return tokenResult.token;
-  } else {
-    let errorMessage = `Tokenization failed-status: ${tokenResult.status}`;
-    if (tokenResult.errors) {
-      errorMessage += ` and errors: ${JSON.stringify(tokenResult.errors)}`;
-    }
-    throw new Error(errorMessage);
-  }
-}
-
-function displayPaymentResults(status) {
-  const statusContainer = document.getElementById("payment-status-container");
-  if (status === "SUCCESS") {
-    statusContainer.classList.remove("is-failure");
-    statusContainer.classList.add("is-success");
-  } else {
-    statusContainer.classList.remove("is-success");
-    statusContainer.classList.add("is-failure");
-  }
-  statusContainer.style.visibility = "visible";
-}
-
-document.addEventListener("DOMContentLoaded", async function () {
-  if (!window.Square) {
-    throw new Error("Square.js failed to load properly");
-  }
-
-  const payments = window.Square.payments(appId, locationId);
-  let card;
-  try {
-    card = await initializeCard(payments);
-  } catch (e) {
-    console.error("Initializing Card failed", e);
-    return;
-  }
-
-  async function handlePaymentMethodSubmission(event, paymentMethod) {
-    event.preventDefault();
-    try {
-      const cardButton = document.getElementById("card-button");
-      // Disable the submit button as we await tokenization and make a payment request.
-      cardButton.disabled = true;
-      const token = await tokenize(paymentMethod);
-      const paymentResults = await createPayment(token);
-      if (paymentResults) {
-        displayPaymentResults("SUCCESS");
-        console.debug("Payment Success", paymentResults);
-        storeOrder(); // Call the storeOrder function after successful payment
+        document.querySelector(".error-box2").style.display = "block";
+        document.querySelector(".error-box2").style.boxShadow =
+          "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+        document.body.style.overflow = "hidden";
+        return false;
       }
-    } catch (e) {
-      cardButton.disabled = false;
+    },
+    createOrder: function (data, actions) {
+      return actions.order.create({
+        purchase_units: [
+          {
+            amount: {
+              value: `${sum}`, // Set the payment amount here
+            },
+          },
+        ],
+        application_context: { shipping_preference: "NO_SHIPPING" },
+      });
+    },
+    onApprove: function (data, actions) {
+      return actions.order.capture().then(function (details) {
+        console.log(details);
+        storeOrder();
+        // Close the PayPal tab here if needed
+        // window.close();
+      });
+    },
+    onError: function (err) {
+      const inputText = err;
 
-      displayPaymentResults("FAILURE");
-      console.error(e.message);
+      // Use a regular expression to extract the value associated with "name"
+      const nameMatch = /"name":"(.*?)"/.exec(inputText);
+      const nameValue = nameMatch[1];
+      console.log(nameValue); // This will log "UNPROCESSABLE_ENTITY"
+      switch (nameValue) {
+        case "BUYER_CANCEL":
+          errorMessage.innerHTML = "Transaction cancelled by buyer";
+          document.getElementById("container").style.display = "block";
+          document.getElementById("container").style.boxShadow =
+            "0px 0px 500px 500px rgba(0,0,0,0.89)";
 
-      return false;
+          document.querySelector(".error-box1").style.display = "block";
+          document.querySelector(".error-box1").style.boxShadow =
+            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+          document.body.style.overflow = "hidden";
+
+          break;
+
+        case "INSTRUMENT_DECLINED":
+          errorMessage.innerHTML = "Payment method was declined";
+          document.getElementById("container").style.display = "block";
+          document.getElementById("container").style.boxShadow =
+            "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+          document.querySelector(".error-box1").style.display = "block";
+          document.querySelector(".error-box1").style.boxShadow =
+            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+          document.body.style.overflow = "hidden";
+          break;
+
+        case "PAYER_ACTION_REQUIRED":
+          errorMessage.innerHTML = "Buyer action required to continue";
+          document.getElementById("container").style.display = "block";
+          document.getElementById("container").style.boxShadow =
+            "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+          document.querySelector(".error-box1").style.display = "block";
+          document.querySelector(".error-box1").style.boxShadow =
+            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+          document.body.style.overflow = "hidden";
+          break;
+
+        case "PAYMENT_FAILURE":
+          errorMessage.innerHTML = "Payment failed, please try again";
+          document.getElementById("container").style.display = "block";
+          document.getElementById("container").style.boxShadow =
+            "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+          document.querySelector(".error-box1").style.display = "block";
+          document.querySelector(".error-box1").style.boxShadow =
+            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+          document.body.style.overflow = "hidden";
+          break;
+
+        case "INTERNAL_SERVICE_ERROR":
+          errorMessage.innerHTML = "Internal service error, try again later";
+          document.getElementById("container").style.display = "block";
+          document.getElementById("container").style.boxShadow =
+            "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+          document.querySelector(".error-box1").style.display = "block";
+          document.querySelector(".error-box1").style.boxShadow =
+            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+          document.body.style.overflow = "hidden";
+          break;
+
+        case "NOT_CONFIGURED":
+          errorMessage.innerHTML = "PayPal buttons not properly configured";
+          document.getElementById("container").style.display = "block";
+          document.getElementById("container").style.boxShadow =
+            "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+          document.querySelector(".error-box1").style.display = "block";
+          document.querySelector(".error-box1").style.boxShadow =
+            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+          document.body.style.overflow = "hidden";
+          break;
+
+        case "INVALID_CONFIGURATION":
+          errorMessage.innerHTML = "Invalid configuration provided";
+          document.getElementById("container").style.display = "block";
+          document.getElementById("container").style.boxShadow =
+            "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+          document.querySelector(".error-box1").style.display = "block";
+          document.querySelector(".error-box1").style.boxShadow =
+            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+          document.body.style.overflow = "hidden";
+          break;
+
+        case "UNSUPPORTED_BROWSER":
+          errorMessage.innerHTML = "This browser is not supported by PayPal";
+          document.getElementById("container").style.display = "block";
+          document.getElementById("container").style.boxShadow =
+            "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+          document.querySelector(".error-box1").style.display = "block";
+          document.querySelector(".error-box1").style.boxShadow =
+            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+          document.body.style.overflow = "hidden";
+          break;
+
+        case "BUYER_ACCOUNT_ERROR":
+          errorMessage.innerHTML = "Problem with buyer PayPal account";
+          document.getElementById("container").style.display = "block";
+          document.getElementById("container").style.boxShadow =
+            "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+          document.querySelector(".error-box1").style.display = "block";
+          document.querySelector(".error-box1").style.boxShadow =
+            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+          document.body.style.overflow = "hidden";
+          break;
+
+        case "DEPOSIT_FAILED":
+          errorMessage.innerHTML = "Failed to charge buyer account";
+          document.getElementById("container").style.display = "block";
+          document.getElementById("container").style.boxShadow =
+            "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+          document.querySelector(".error-box1").style.display = "block";
+          document.querySelector(".error-box1").style.boxShadow =
+            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+          document.body.style.overflow = "hidden";
+          break;
+
+        // ... other cases
+        case "UNPROCESSABLE_ENTITY":
+          errorMessage.innerHTML = "Check if your cart isn`t empty or try reloading page";
+          document.getElementById("container").style.display = "block";
+          document.getElementById("container").style.boxShadow =
+            "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+          document.querySelector(".error-box1").style.display = "block";
+          document.querySelector(".error-box1").style.boxShadow =
+            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+          document.body.style.overflow = "hidden";
+          break;
+
+        default:
+          errorMessage.innerHTML = "Unknown error occurred";
+      }
+    },
+  })
+  .render("#paypal-button-container")
+  .then(function () {
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("checkoutForm").style.display = "block";
+  });
+
+async function checkAll(callbackk) {
+  const validationStates = {
+    name: false,
+    email: false,
+    // phone: false,
+    address: false,
+    state: false,
+    house: false,
+  };
+
+  const shippingZip = document.getElementById("zip").value;
+  const shippingProvince = document.getElementById("province").value;
+  const shippingCity = document.getElementById("city").value;
+  const shippingAddress = document.getElementById("address").value;
+  const firstName = document.getElementById("firstName").value;
+  const lastName = document.getElementById("lastName").value;
+  // const shippingPhone = document.getElementById("phone").value;
+  const houseNumber = document.getElementById("house").value;
+  const orderEmail = document.getElementById("email").value;
+
+  function validateName() {
+    if (firstName === "" || lastName === "") {
+      document.querySelector(".nameError").innerHTML =
+        "Please fill in all name fields.";
+      validationStates["name"] = false;
+    } else {
+      validationStates["name"] = true;
+      document.querySelector(".nameError").innerHTML = "";
     }
   }
 
-  const cardButton = document.getElementById("card-button");
-  cardButton.addEventListener("click", async function (event) {
-    console.log("Called Function");
-    event.preventDefault();
-    const orderNumber = Array.from({ length: 10 }, () =>
-      Math.floor(Math.random() * 10)
-    ).join("");
-
-    const shippingZip = document.getElementById("zip").value;
-    const shippingProvince = document.getElementById("province").value;
-    const shippingCity = document.getElementById("city").value;
-    const shippingAddress = document.getElementById("address").value;
-    const firstName = document.getElementById("firstName").value;
-    const lastName = document.getElementById("lastName").value;
-    const shippingPhone = document.getElementById("phone").value;
-    const houseNumber = document.getElementById("house").value;
-    const orderEmail = document.getElementById("email").value;
-
-    let addressError = "";
-    let stateError = "";
-    let phoneError = "";
-    let nameError = "";
-    let houseError = "";
-    let emailError = "";
-
-    if (firstName === "" || lastName === "") {
-      nameError = "Please fill in all name fields.";
-    }
-    document.querySelector(".nameError").innerHTML = nameError;
+  function validateHouse() {
     if (houseNumber === "") {
-      houseError = "Please fill in house number field";
-    }
-    document.querySelector(".houseError").innerHTML = houseError;
-    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(orderEmail)) {
+      document.querySelector(".houseError").innerHTML =
+        "Please fill in the house number field.";
+      validationStates["house"] = false;
     } else {
-      emailError = "Invalid Email Address";
+      validationStates["house"] = true;
+      document.querySelector(".houseError").innerHTML = "";
     }
-    document.querySelector(".errorEmail").innerHTML = emailError;
+  }
 
+  function validateEmail() {
+    const emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (emailPattern.test(orderEmail)) {
+      validationStates["email"] = true;
+      document.querySelector(".errorEmail").innerHTML = "";
+    } else {
+      document.querySelector(".errorEmail").innerHTML = "Invalid Email Address";
+      validationStates["email"] = false;
+    }
+  }
 
+  function validateState() {
     const stateCodes = {
       alabama: "AL",
       alaska: "AK",
@@ -259,44 +310,41 @@ document.addEventListener("DOMContentLoaded", async function () {
       wisconsin: "WI",
       wyoming: "WY",
     };
-
-    function getStateCode(stateName) {
-      const normalizedStateName = stateName.trim();
-      return stateCodes[normalizedStateName] || false;
-    }
-
-    const stateName = `${shippingProvince.toLowerCase()}`;
-    const stateCode = getStateCode(stateName);
-
+    const stateName = shippingProvince.toLowerCase().trim();
+    const stateCode = stateCodes[stateName] || false;
     if (stateCode === false) {
-      stateError = "State Not Found";
+      document.querySelector(".errorState").innerHTML = "State Not Found";
+      validationStates["state"] = false;
+    } else {
+      validationStates["state"] = true;
+      document.querySelector(".errorState").innerHTML = "";
     }
+    return stateCode;
+  }
 
-    function isValidPhoneNumber(phoneNumber) {
-      const phonePattern =
-        /^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9][0-9]{2})\s*\)|([2-9][0-9]{2}))(?:[.-]\s*)?([2-9][0-9]{2})(?:[.-]\s*)?([0-9]{4}))(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/;
-      return phonePattern.test(phoneNumber);
-    }
+  // function validatePhone() {
+  //   function isValidPhoneNumber(phoneNumber) {
+  //     const phonePattern =
+  //       /^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9][0-9]{2})\s*\)|([2-9][0-9]{2}))(?:[.-]\s*)?([2-9][0-9]{2})(?:[.-]\s*)?([0-9]{4}))(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/;
+  //     return phonePattern.test(phoneNumber);
+  //   }
 
-    const phoneNumber = `${shippingPhone}`;
-    if (!isValidPhoneNumber(phoneNumber)) {
-      phoneError = "Phone Is Incorrect";
-    }
-
-    // Display errors for each field
-    document.querySelector(".errorAddress").innerHTML = addressError;
-    document.querySelector(".errorState").innerHTML = stateError;
-    document.querySelector(".errorPhone").innerHTML = phoneError;
-
-    console.log("Success");
-
+  //   if (!isValidPhoneNumber(shippingPhone)) {
+  //     document.querySelector(".errorPhone").innerHTML = "Phone Is Incorrect";
+  //     validationStates["phone"] = false;
+  //   } else {
+  //     validationStates["phone"] = true;
+  //     document.querySelector(".errorPhone").innerHTML = "";
+  //   }
+  // }
+  const stateCode = validateState();
+  function validateAddress(callback) {
     const serverData = {
       address: shippingAddress,
       city: shippingCity,
       zip: shippingZip,
       state: stateCode,
     };
-    document.getElementById("loaderAllContainer").style.display = "block"
 
     fetch("/check-address", {
       method: "POST",
@@ -306,123 +354,121 @@ document.addEventListener("DOMContentLoaded", async function () {
       body: JSON.stringify(serverData),
     })
       .then((response) => {
-        document.getElementById("loaderAllContainer").style.display = "none"
-
         if (response.status === 400) {
           document.querySelector(".errorAddress").innerHTML =
             "Address/City Incorrect";
+
+          validationStates["address"] = false;
         }
         if (response.status === 200) {
           document.querySelector(".errorAddress").innerHTML = "";
-          document.getElementById("loaderAllContainer").style.display = "block"
-          fetch("/check-access", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(serverData),
-          })
-            .then((response) => {
-              document.getElementById("loaderAllContainer").style.display = "none"
-
-              if (response.status === 400) {
-                window.scrollTo({ top: 0, behavior: "instant" });
-
-                document.getElementById("container").style.display = "block";
-                document.getElementById("container").style.boxShadow =
-                  "0px 0px 50px 500px rgba(0,0,0,0.89)";
-                document.querySelector(".error-box2").style.display = "block";
-                document.querySelector(".error-box2").style.boxShadow =
-                  "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-                document.body.style.overflow = "hidden";
-              }
-              if (response.status === 200) {
-                handlePaymentMethodSubmission(event, card);
-              }
-            })
-            .catch((error) => {
-              document.querySelector(".errorAddress").innerHTML =
-                "Address/City Incorrect";
-            });
+          validationStates["address"] = true;
         }
+
+        callback();
       })
       .catch((error) => {
         document.querySelector(".errorAddress").innerHTML =
           "Address/City Incorrect";
+
+        validationStates["address"] = false;
+        callback();
       });
-  });
-  function storeOrder() {
-    const orderNumber = Array.from({ length: 10 }, () =>
-      Math.floor(Math.random() * 10)
-    ).join("");
-    const shippingZip = document.getElementById("zip").value;
-    const shippingProvince = document.getElementById("province").value;
-    const shippingCity = document.getElementById("city").value;
-    const shippingAddress = document.getElementById("address").value;
-    const firstName = document.getElementById("firstName").value;
-    const lastName = document.getElementById("lastName").value;
-    const shippingPhone = document.getElementById("phone").value;
-    const houseNumber = document.getElementById("house").value;
-    const productses = [];
-
-    // Loop through the cart items and create a new object for each product
-    console.log(cartData);
-    for (const key in cartData) {
-      const product = {
-        vid: cartData[key].productVid,
-        quantity: cartData[key].productAmount,
-        shippingName: "",
-      };
-      productses.push(product);
-      console.log(product)
-    }
-    const orderData = {
-      orderNumber: `${orderNumber}`,
-      shippingZip: `${shippingZip}`,
-      shippingCountryCode: "US",
-      shippingCountry: "United States",
-      shippingProvince: `${shippingProvince}`,
-      shippingCity: `${shippingCity}`,
-      shippingAddress: `${shippingAddress}`,
-      shippingCustomerName: `${firstName} ${lastName}`,
-      shippingPhone: `${shippingPhone}`,
-      remark: "note",
-      fromCountryCode: "US",
-      logisticName: "US (2-5Days)",
-      houseNumber: `${houseNumber}`,
-      email: "",
-      products: productses,
-    };
-    console.log(orderData.products)
-
-    // Now you can use the `products` array in your code
-    console.log(productses);
-    fetch("/create-order", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ orderData }),
-    });
-    fetch("/send-success", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ orderNumber: orderNumber, firstName: firstName, lastName: lastName, address:shippingCity + " " + shippingAddress + " " + shippingZip, total: sum, orderDate: new(Date) }),
-    })
-    localStorage.removeItem("cart");
-    window.scrollTo({ top: 0, behavior: "instant" });
-    document.getElementById("container").style.display = "block";
-    document.getElementById("container").style.boxShadow =
-      "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-    document.getElementById("success-box").style.display = "block";
-    document.getElementById("success-box").style.boxShadow =
-      "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-    document.body.style.overflow = "hidden";
   }
-});
+
+  validateName();
+  validateHouse();
+  validateEmail();
+  validateState();
+  // validatePhone();
+  validateAddress(() => {
+    const isValidd = Object.values(validationStates).every(
+      (value) => value === true
+    );
+    callbackk(isValidd);
+  });
+}
+
+function storeOrder() {
+  const shippingZip = document.getElementById("zip").value;
+  const shippingProvince = document.getElementById("province").value;
+  const shippingCity = document.getElementById("city").value;
+  const shippingAddress = document.getElementById("address").value;
+  const firstName = document.getElementById("firstName").value;
+  const lastName = document.getElementById("lastName").value;
+  // const shippingPhone = document.getElementById("phone").value;
+  const address2 = document.getElementById("address2").value;
+  const orderEmail = document.getElementById("email").value;
+
+  const productses = [];
+
+  // Loop through the cart items and create a new object for each product
+  console.log(cartData);
+  for (const key in cartData) {
+    const product = {
+      name: cartData[key].productTitle,
+      quantity: cartData[key].productAmount,
+    };
+    productses.push(product);
+    console.log(product);
+  }
+  const formattedProducts = productses
+    .map((product) => {
+      return `${product.name} * ${product.quantity}`;
+    })
+    .join(", ");
+  const orderData = {
+    OrderDate: new Date(), // You can set the OrderDate to the current date/time
+
+    OrderZip: `${shippingZip}`,
+    OrderCity: `${shippingCity}`,
+    OrderAddress: `${shippingAddress}`,
+    LastName: `${firstName}`,
+    FirstName: ` ${lastName}`,
+    // OrderPhone: `${shippingPhone}`,
+    OrderEmail: `${orderEmail}`,
+    OrderProvince: `${shippingProvince}`,
+    OrderAddress2: `${address2}`,
+    Total: sum,
+    OrderStatus: `New`,
+    OrderTrackingNumber: "", // You can set this to an empty string initially,
+    OrderProducts: formattedProducts,
+  };
+  console.log(orderData.OrderProducts);
+
+  // Now you can use the `products` array in your code
+  console.log(productses);
+  fetch("/create-order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(orderData),
+  });
+  fetch("/send-success", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      firstName: firstName,
+      lastName: lastName,
+      address: shippingCity + " " + shippingAddress + " " + shippingZip,
+      total: sum,
+      orderDate: new Date(),
+    }),
+  });
+  localStorage.removeItem("cart");
+  window.scrollTo({ top: 0, behavior: "instant" });
+  document.getElementById("container").style.display = "block";
+  document.getElementById("container").style.boxShadow =
+    "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+  document.getElementById("success-box").style.display = "block";
+  document.getElementById("success-box").style.boxShadow =
+    "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+  document.body.style.overflow = "hidden";
+}
 function showLoader() {
   document.querySelector("form").style.display = "none";
   const loader = document.getElementById("loader");

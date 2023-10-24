@@ -10,9 +10,7 @@ function cartClick() {
 // Get the addToCart button
 const addToCartButton = document.querySelectorAll(".cart__button");
 let productTitle;
-let productVID;
 let productImage;
-let productDescription;
 let productPrice;
 function updateCart() {
   // Clear the cartInner
@@ -87,7 +85,6 @@ function updateCart() {
       const newAmount = currentAmount + 1;
       productAmountInner[index].innerHTML = newAmount;
       updateCartInner(index, newAmount); // Update cart modal
-      updateAmountInBothPlaces(index, newAmount); // Update product page
     });
   });
 
@@ -98,7 +95,6 @@ function updateCart() {
         const newAmount = currentAmount - 1;
         productAmountInner[index].innerHTML = newAmount;
         updateCartInner(index, newAmount); // Update cart modal
-        updateAmountInBothPlaces(index, newAmount); // Update product page
       }
     });
   });
@@ -121,8 +117,6 @@ function updateCartData() {
     productAmount: 1,
     productPrice: productPrice,
     productImage: productImage,
-    productDescription: productDescription,
-    productVid: productVID,
   });
 
   // Save the updated cartData back to localStorage
@@ -151,17 +145,9 @@ addToCartButton.forEach((button) => {
       .closest(".search_product_card")
       .querySelector(".search_product_title")
       .innerHTML.trim();
-    productVID = button
-      .closest(".search_product_card")
-      .querySelector(".vid")
-      .innerHTML.trim();
     productImage = button
       .closest(".search_product_card")
       .querySelector(".search_product_image").src;
-    productDescription = button
-      .closest(".search_product_card")
-      .querySelector(".description")
-      .innerHTML.trim();
     // Your logic for adding to cart goes here
     productPrice = button
       .closest(".search_product_card")

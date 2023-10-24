@@ -46,6 +46,9 @@ p {
   font-weight: 400;
   padding-bottom: 10px;
 }
+.delete {
+  cursor: pointer
+}
 
 /*? Header */
 

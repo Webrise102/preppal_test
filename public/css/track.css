@@ -6,8 +6,9 @@
   background: linear-gradient(to right, #1c1d1e, #1e1e26);
   padding: 40px;
   border-radius: 10px;
-  max-width: 500px;
+  max-width: 100%;
   margin: 40px auto;
+  width: min(500px, 100%)
 }
 
 .title {
@@ -27,7 +28,7 @@ main form {
   width: 100%;
 }
 main form:nth-of-type(1) {
-  margin-right: 20px;
+  margin-right: auto;
 }
 #result {
   color: #ffffff;
@@ -49,8 +50,10 @@ main form:nth-of-type(1) {
 .form div {
   display: flex;
   max-width: 28rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   column-gap: 0.5rem;
+  width: 100%;
+  margin-inline: auto;
 }
 
 .form div input {
@@ -117,6 +120,11 @@ h1 {
     margin-right: auto;
   }
 }
+@media screen and (max-width: 500px) {
+  main {
+    margin: 0 1%
+  }
+}
 @media screen and (max-width: 450px) {
   .form div {
     flex-direction: column;
@@ -124,5 +132,10 @@ h1 {
   .form div button {
     margin-top: 10px;
     text-align: center;
+  }
+}
+@media screen and (max-width: 360px) {
+  .form {
+    padding: 30px
   }
 }

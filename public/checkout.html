@@ -17,7 +17,6 @@
   <body class="dark-mode">
     <header></header>
     <nav></nav>
-    <div id="paypal-button-container"></div>
 
     <div id="container">
       <div id="success-box">
@@ -33,7 +32,7 @@
           <h6 class="alert">Success!</h6>
           <p>payment succeeded</p>
         </div>
-        <button class="button-box" onclikc="window.location.href='/'">
+        <button class="button-box" onclick="window.location.href='/'">
           <h6 class="green">Go home</h6>
         </button>
       </div>
@@ -47,8 +46,8 @@
         </div>
         <div class="shadow move"></div>
         <div class="message">
-          <h6 class="alert">Payment Error!</h6>
-          <p>check if your cart isn`t empty or try reloading page</p>
+          <h6 class="alert">Error!</h6>
+          <p class="error-message2">check if your cart isn`t empty or try reloading page</p>
         </div>
         <button class="button-box" onclick="location.reload()">
           <h6 class="red">Try again</h6>
@@ -65,7 +64,7 @@
         <div class="shadow move"></div>
         <div class="message">
           <h6 class="alert">Server Error!</h6>
-          <p>try contacting our support</p>
+          <p>reload page or try contacting our support</p>
         </div>
         <button class="button-box" onclick="location.reload()">
           <h6 class="red">Try again</h6>
@@ -93,10 +92,10 @@
       <div class="container">
         <div class="loader" id="loader"></div>
 
-        <form id="checkoutForm">
+        <form id="checkoutForm" style="display: none">
           <div id="contactForm">
             <h4>Contact</h4>
-            <label for="phoneBlock" class="errorPhone error"></label>
+            <!-- <label for="phoneBlock" class="errorPhone error"></label>
             <div class="form-floating mb-3" id="phoneBlock">
               <input
                 type="text"
@@ -105,7 +104,7 @@
                 placeholder="+1295857675994857"
               />
               <label for="phone">Phone Number</label>
-            </div>
+            </div> -->
             <label for="emailBlock" class="errorEmail error"></label>
 
             <div class="form-floating mb-3" id="emailBlock">
@@ -273,9 +272,8 @@
                   data-bs-parent="#accordionExample"
                 >
                   <div class="accordion-body">
-                    <div id="card-container"></div>
-                    <div id="payment-status-container"></div>
-                    <button id="card-button" type="submit">Submit</button>
+                    <div id="paypal-button-container"></div>
+
                   </div>
                 </div>
               </div>
@@ -343,46 +341,11 @@
     </main>
 
     <footer></footer>
-    <script src="https://www.paypal.com/sdk/js?client-id=AXh5j1fggZvIaes8IhbEnM57pWoDNedqn5dEJ7W0RueFaYBYrkb4HShgFeUbBXTcQXCN0jZhfJ053R0E&currency=USD"></script>
-    <script>
-      // Render the PayPal button
-      paypal
-        .Buttons({
-          createOrder: function (data, actions) {
-            return actions.order.create({
-              purchase_units: [
-                {
-                  amount: {
-                    value: "10.00", // Set the payment amount here
-                  },
-                },
-              ],
-              application_context: { shipping_preference: "NO_SHIPPING" },
-              billingAddress: {
-                name: {
-                  given_name: "John",
-                  surname: "Doe",
-                },
-                address_line_1: "123 Main St",
-                admin_area_2: "Anytown",
-                admin_area_1: "CA",
-                postal_code: "98765",
-                country_code: "US",
-              },
-            });
-          },
-          onApprove: function (data, actions) {
-            return actions.order.capture().then(function (details) {
-              alert("Payment completed successfully!");
-            });
-          },
-        })
-        .render("#paypal-button-container");
-    </script>
     <script src="js/structure.js"></script>
     <script src="css/bootstrap-5.3.1-dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
     <script src="js/checkout.js"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AXh5j1fggZvIaes8IhbEnM57pWoDNedqn5dEJ7W0RueFaYBYrkb4HShgFeUbBXTcQXCN0jZhfJ053R0E&currency=USD"></script>
 
     <script src="js/payments.js"></script>
   </body>
