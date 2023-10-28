@@ -2,25 +2,15 @@
 
 const express = require("express");
 const app = express();
-const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv");
-const crypto = require("crypto");
 require("dotenv").config();
 const port = process.env.PORT || 3000;
 const bodyParser = require("body-parser");
 const mysql = require("mysql2");
 const schedule = require("node-schedule");
 const nodemailer = require("nodemailer");
-const square = require("square");
 const axios = require("axios");
-
-const accessToken = `${process.env.ACCESS_TOKEN}`;
-const environment = square.Environment.Sandbox; // or square.Environment.Production
-const client = new square.Client({
-  accessToken: accessToken,
-  environment: environment,
-});
 
 const db = mysql.createPool({
   host: process.env.DB_HOST,
@@ -56,9 +46,6 @@ app.get("/", (req, res) => {
 });
 app.get("/catalog", (req, res) => {
   res.sendFile(path.join(staticPath, "catalog.html"));
-});
-app.get("/fast-defrost-tray", (req, res) => {
-  res.sendFile(path.join(`${staticPath}/products`, "tray.html"));
 });
 app.get("/room-cooking-pot", (req, res) => {
   res.sendFile(path.join(`${staticPath}/products`, "pot.html"));
