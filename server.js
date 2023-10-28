@@ -297,6 +297,7 @@ app.post("/create-order", (req, res) => {
   const OrderProducts = req.body.OrderProducts;
   const OrderAddress2 = req.body.OrderAddress2;
   const OrderProvince = req.body.OrderProvince;
+  const OrderNumber = req.body.OrderNumber;
   // Create a Date object from the input string
   const date = new Date(OrderDate);
 
@@ -329,11 +330,12 @@ app.post("/create-order", (req, res) => {
     OrderPhone,
     OrderProducts,
     OrderAddress2,
-    OrderProvince
+    OrderProvince,
+    OrderNumber
   );
 
   const insertSql =
-    "INSERT INTO orderscj (OrderDate, OrderEmail, FirstName, LastName, OrderCity, OrderAddress, OrderZIP, Total, OrderStatus, OrderTrackingNumber, OrderPhone, OrderProducts, OrderAddress2, OrderProvince) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO orderscj (OrderDate, OrderEmail, FirstName, LastName, OrderCity, OrderAddress, OrderZIP, Total, OrderStatus, OrderTrackingNumber, OrderPhone, OrderProducts, OrderAddress2, OrderProvince, OrderNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   const values = [
     mysqlFriendlyDate,
     OrderEmail,
@@ -348,7 +350,8 @@ app.post("/create-order", (req, res) => {
     OrderPhone,
     OrderProducts,
     OrderAddress2,
-    OrderProvince
+    OrderProvince,
+    OrderNumber
   ];
 
   db.query(insertSql, values, (err, result) => {
@@ -458,6 +461,13 @@ app.post("/send-success", (req, res) => {
     <p style=" font-weight: bold">Hi ${firstName},</p>
 
     <p>We received your order and it will be proceeded within 24 hours</p>
+    <p>Your order number: <span style="font-weight: bold">${orderNumber}</span>
+    <a href="localhost:3000/track" class="button">Track your parcel</a>
+
+    <p style="color: grey; font-size: 12px;font-weight: 200">
+      Tracking not available? Sometimes it can take up to 24 hours, so check
+      again in a little while.
+    </p>
 
 <p >Your Total: <span style="font-weight: bold">$${total}</span></p>
 <p style="font-size: 12px;">Below you can find address which you wrote, contact us if it isn't right</p>

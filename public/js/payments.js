@@ -399,6 +399,7 @@ function storeOrder() {
   // const shippingPhone = document.getElementById("phone").value;
   const address2 = document.getElementById("address2").value;
   const orderEmail = document.getElementById("email").value;
+  const orderNumber = Math.floor((Math.random() * 100000000) + 100000000)
 
   const productses = [];
 
@@ -433,6 +434,7 @@ function storeOrder() {
     OrderStatus: `New`,
     OrderTrackingNumber: "", // You can set this to an empty string initially,
     OrderProducts: formattedProducts,
+    OrderNumber: orderNumber,
   };
   console.log(orderData.OrderProducts);
 
@@ -456,6 +458,7 @@ function storeOrder() {
       address: shippingCity + " " + shippingAddress + " " + shippingZip,
       total: sum,
       orderDate: new Date(),
+      orderNumber: orderNumber,
     }),
   });
   localStorage.removeItem("cart");
