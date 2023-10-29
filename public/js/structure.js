@@ -9,10 +9,10 @@ nav.innerHTML = `
 <div class="sidebar_content">
 <svg class="sidebar_close" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
   <ul class="sidebar_list">
-    <a href="/" class="sidebar_link">Home</a
-    ><a href="/catalog" class="sidebar_link">Catalog</a
-    ><a href="/track" class="sidebar_link">Track your order</a
-    ><a href="/contact" class="sidebar_link">Contact</a>
+    <li><a href="/" class="sidebar_link">Home</a
+    ></li><li><a href="/catalog" class="sidebar_link">Catalog</a
+    ></li><li><a href="/track" class="sidebar_link">Track your order</a
+    ></li><li><a href="/contact" class="sidebar_link">Contact</a></li>
   </ul>
 </div>
 </div>
@@ -77,9 +77,9 @@ nav.innerHTML = `
 const footer = document.querySelector("footer");
 footer.innerHTML = `      <div class="footer_part">
 <div class="footer_subsribeBlock">
-  <h5 class="footer_subscribeTitle">
+  <h6 class="footer_subscribeTitle">
     Join the club & get the benefits!
-  </h5>
+  </h6>
   <div class="error-message">
   Not a valid email
 </div>
@@ -91,10 +91,8 @@ footer.innerHTML = `      <div class="footer_part">
     /><button class="footer_subscribeButton">Sign up</button>
   </div>
 </div>
-<div class="footer_linksBlock">
-  <a href="" class="footer_link">Privacy Policy</a
-  ><a href="" class="footer_link footer_link2">Shipping Policy</a
-  ><a href="" class="footer_link">Refund Policy</a>
+<div class="footer_linksBlock"><a href="/shipping-policy" class="footer_link footer_link2">Shipping Policy</a
+  ><a href="/refund-policy" class="footer_link">Refund Policy</a>
 </div>
 </div>
 <div class="line"></div>

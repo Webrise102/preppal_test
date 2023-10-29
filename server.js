@@ -62,6 +62,12 @@ app.get("/contact", (req, res) => {
 app.get("/track", (req, res) => {
   res.sendFile(path.join(staticPath, "track.html"));
 });
+app.get("/shipping-policy", (req, res) => {
+  res.sendFile(path.join(staticPath, "shipping.html"));
+});
+app.get("/refund-policy", (req, res) => {
+  res.sendFile(path.join(staticPath, "refund.html"));
+});
 
 //? Subscription Service
 
