@@ -90,6 +90,13 @@ if (existingItems) {
   savedDelivery = existingItems.productDelivery;
   productImage = existingItems.productImage
 }
+if (savedColor === "green") {
+  productImage = document.querySelector(".main-image").src;
+} else {
+  if (savedColor === "white") {
+    productImage = document.querySelector(".white_image").src;
+  }
+}
 const colorRadios = document.querySelectorAll('input[name="color"]');
 colorRadios.forEach((radio) => {
   if (radio.value === savedColor) {
@@ -373,8 +380,10 @@ function updateCartInner(index, newAmount) {
   // Update the cartData with the new amount for the corresponding product.
   const productTitle = cartData[index].productTitle;
   const productPrice = cartData[index].productPrice;
+  const existingAll = cartData[index]
 
   cartData[index] = {
+    ...existingAll,
     productTitle: productTitle,
     productAmount: newAmount,
     productPrice: productPrice,

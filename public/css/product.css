@@ -165,6 +165,9 @@ h4 {
   background-color: #fff;
   font-weight: 600;
 }
+.radio-inputs {
+  margin-top: 20px;
+}
 
 @media screen and (max-width: 820px) {
   .slider {
@@ -202,14 +205,25 @@ h4 {
     width: 80%;
     margin: auto;
   }
+  .radio-inputs {
+    margin-inline: auto;
+  }
 }
 @media screen and (max-width: 500px) {
   .thumbnail {
     width: 70px
   }
+  .product_desc {
+    font-size: 17px
+  }
 }
 @media screen and (max-width: 400px) {
   .slider {
     width: 100%;
+  }
+}
+@media screen and (max-width: 350px) {
+  .radio-inputs {
+    width: 280px
   }
 }

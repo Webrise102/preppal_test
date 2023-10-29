@@ -28,6 +28,8 @@ function updateCart() {
   cartData.forEach((cartItem, index) => {
     const productTitle = cartItem.productTitle;
     const productAmount = cartItem.productAmount;
+    const productColor = cartItem.productColor;
+
 
     // Create a div to hold the item information
     const divParagraph = document.createElement("div");
@@ -54,7 +56,9 @@ function updateCart() {
     amountBox.classList.add("amountBox");
 
     // Set the text content of the <p> elements
-    titleParagraph.textContent = productTitle;
+    titleParagraph.textContent = `${
+      productColor[0].toUpperCase() + productColor.slice(1)
+    } ${productTitle}`;
     amountParagraph.textContent = productAmount;
 
     // Add a click event listener to the delete button
@@ -117,6 +121,8 @@ function updateCartData() {
     productAmount: 1,
     productPrice: productPrice,
     productImage: productImage,
+    productColor: "green",
+    productDelivery: "normal"
   });
 
   // Save the updated cartData back to localStorage

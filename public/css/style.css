@@ -153,6 +153,7 @@ h2 {
 .amountBox {
   display: flex;
   align-items: center;
+  width: 40%;
 }
 .titleParagr {
   width: 100%;
@@ -280,6 +281,9 @@ footer {
 }
 .close_search {
   display: none;
+}
+.product_title_cart {
+  padding-bottom: 0;
 }
 @media screen and (max-width: 750px) {
   nav > div:not(.sidebar, .side-cart) {

@@ -1,5 +1,19 @@
-let isTrue = false; 
+if (navigator.userAgent.indexOf("Edg") !== -1) {
+  document.getElementById("browser").innerHTML = "If you are using microsoft edge, the debit/credit card payment method may work incorrectly"
+  document.getElementById("browser").style.paddingBottom = "10px"
+  document.getElementById("browser").style.marginBottom = "1rem"
 
+}
+
+
+let isTrue = false; 
+cartData.forEach((item) => {
+  if(item.productDelivery === "fast") {
+    isTrue = false
+  } else {
+    isTrue = true
+  }
+})
 if (isTrue) {
   // Hide and disable phoneBlock input
   document.getElementById('phoneBlock').style.display = 'none'; 
@@ -49,7 +63,7 @@ paypal
         purchase_units: [
           {
             amount: {
-              value: `${sum}`, // Set the payment amount here
+              value: `${totalsum}`, // Set the payment amount here
             },
           },
         ],
