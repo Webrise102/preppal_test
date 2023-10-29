@@ -1,10 +1,11 @@
 const mainImage = document.querySelector(".main-image");
-const thumbnails = document.querySelectorAll(".thumbnail");2
+const thumbnails = document.querySelectorAll(".thumbnail");
+2;
 
 let currentImageIndex = 0;
-const currentLocation = window.location.pathname
+const currentLocation = window.location.pathname;
 let images;
-if(currentLocation === "/fast-defrost-tray") {
+if (currentLocation === "/fast-defrost-tray") {
   images = [
     "../images/tray_preview1.webp",
     "../images/tray_preview2.webp",
@@ -12,12 +13,11 @@ if(currentLocation === "/fast-defrost-tray") {
   ];
 } else {
   images = [
-    "../images/pot_preview1.jpg",
-    "../images/pot_preview2.jpg",
-    "../images/pot_preview3.jpg",
+    "../images/pot_preview1.webp",
+    "../images/pot_preview2.webp",
+    "../images/pot_preview3.webp",
   ];
 }
-
 
 function updateMainImage() {
   mainImage.src = images[currentImageIndex];
@@ -49,6 +49,11 @@ mainImage.addEventListener("click", () => {
     document.body.style.overflow = "";
   });
 });
+let productImage;
+
+let savedColor = "green";
+let savedDelivery = "normal";
+
 const cartButton = document.querySelectorAll(".cart__button");
 cartButton.forEach((button) => {
   button.addEventListener("click", cartClick);
@@ -64,18 +69,78 @@ const increaseAmount = document.getElementById("productPlus");
 const productAmount = document.getElementById("productAmount");
 const productAmount2 = document.getElementById("productAmount");
 const productTitle = document.querySelector(".product_title").innerHTML.trim();
-const productImage = document.querySelector(".main-image").src;
 
 const addToCart = document.querySelector(".cart__button");
 const cartInner = document.querySelector(".modal-body");
 const productPrice = document.querySelector(".product_priceSale").innerHTML;
 window.onload = productAmount.innerHTML = `1`;
+
 let cartData = localStorage.getItem("cart");
 if (cartData) {
   cartData = JSON.parse(cartData);
 } else {
   cartData = [];
 }
+// Check if product already in cart
+const existingItems = cartData.find(
+  (item) => item.productTitle === productTitle
+);
+if (existingItems) {
+  savedColor = existingItems.productColor;
+  savedDelivery = existingItems.productDelivery;
+  productImage = existingItems.productImage
+}
+const colorRadios = document.querySelectorAll('input[name="color"]');
+colorRadios.forEach((radio) => {
+  if (radio.value === savedColor) {
+    radio.checked = true;
+  }
+  radio.addEventListener("change", () => {
+    const someexistingItemIndex = cartData.findIndex(
+      (item) => item.productTitle === productTitle
+    );
+    savedColor = radio.value;
+    if (radio.value === "green") {
+      productImage = document.querySelector(".main-image").src;
+    } else {
+      if (radio.value === "white") {
+        productImage = document.querySelector(".white_image").src;
+      }
+    }
+    console.log("checked" + someexistingItemIndex);
+    // Check if the item was found in cartData
+    if (someexistingItemIndex !== -1) {
+      console.log("checked if");
+
+      updateCartData();
+      updateCart();
+    } else {
+      console.log("checked else");
+    }
+  });
+});
+
+const deliveryRadios = document.querySelectorAll('input[name="delivery"]');
+deliveryRadios.forEach((radio) => {
+  if (radio.value === savedDelivery) {
+    radio.checked = true;
+  }
+  radio.addEventListener("change", () => {
+    const someexistingItemIndex = cartData.findIndex(
+      (item) => item.productTitle === productTitle
+    );
+    savedDelivery = radio.value;
+    // Check if the item was found in cartData
+    if (someexistingItemIndex !== -1) {
+      console.log("checked if");
+
+      updateCartData();
+      updateCart();
+    } else {
+      console.log("checked else");
+    }
+  });
+});
 
 cartInner.innerHTML = ``;
 
@@ -95,6 +160,7 @@ function updateCart() {
   cartData.forEach((cartItem, index) => {
     const productTitle = cartItem.productTitle;
     const productAmount = cartItem.productAmount;
+    const productColorCart = cartItem.productColor;
 
     // Create a div to hold the item information
     const divParagraph = document.createElement("div");
@@ -121,7 +187,9 @@ function updateCart() {
     amountBox.classList.add("amountBox");
 
     // Set the text content of the <p> elements
-    titleParagraph.textContent = productTitle;
+    titleParagraph.textContent = `${
+      productColorCart[0].toUpperCase() + productColorCart.slice(1)
+    } ${productTitle}`;
     amountParagraph.textContent = productAmount;
 
     // Add a click event listener to the delete button
@@ -143,32 +211,30 @@ function updateCart() {
     cartInner.appendChild(divParagraph);
   });
   const productAmountInner = document.querySelectorAll(".amountParagr");
-const minusButtons = document.querySelectorAll(".cartDecrease");
-const plusButtons = document.querySelectorAll(".cartIncrease");
+  const minusButtons = document.querySelectorAll(".cartDecrease");
+  const plusButtons = document.querySelectorAll(".cartIncrease");
 
-plusButtons.forEach((plus, index) => {
-  plus.addEventListener("click", function () {
-    const currentAmount = parseInt(productAmountInner[index].innerHTML);
-    const newAmount = currentAmount + 1;
-    productAmountInner[index].innerHTML = newAmount;
-    updateCartInner(index, newAmount); // Update cart modal
-    updateAmountInBothPlaces(index, newAmount); // Update product page
-  });
-});
-
-minusButtons.forEach((minus, index) => {
-  minus.addEventListener("click", function () {
-    const currentAmount = parseInt(productAmountInner[index].innerHTML);
-    if (currentAmount > 1) {
-      const newAmount = currentAmount - 1;
+  plusButtons.forEach((plus, index) => {
+    plus.addEventListener("click", function () {
+      const currentAmount = parseInt(productAmountInner[index].innerHTML);
+      const newAmount = currentAmount + 1;
       productAmountInner[index].innerHTML = newAmount;
       updateCartInner(index, newAmount); // Update cart modal
       updateAmountInBothPlaces(index, newAmount); // Update product page
-    }
+    });
   });
-});
 
-
+  minusButtons.forEach((minus, index) => {
+    minus.addEventListener("click", function () {
+      const currentAmount = parseInt(productAmountInner[index].innerHTML);
+      if (currentAmount > 1) {
+        const newAmount = currentAmount - 1;
+        productAmountInner[index].innerHTML = newAmount;
+        updateCartInner(index, newAmount); // Update cart modal
+        updateAmountInBothPlaces(index, newAmount); // Update product page
+      }
+    });
+  });
 }
 
 // Initial rendering of the cart
@@ -190,19 +256,20 @@ decreaseAmount.addEventListener("click", function () {
 
       // Call the updateCartInner function with the correct index and newAmount
       updateCartInner(existingItemIndex, newAmount);
-      updateCartData()
-      updateCart()
+      updateCartData();
+      updateCart();
     } else {
-      updateCartData()
-      updateCart()    }
+      updateCartData();
+      updateCart();
+    }
   }
 });
 const cartTitle = document.querySelectorAll(".titleParagr");
 increaseAmount.addEventListener("click", function () {
-  console.log(productAmount)
+  console.log(productAmount);
 
   productAmount.innerHTML++; // Increment the displayed amount
-  console.log(productAmount)
+  console.log(productAmount);
 
   // Check if the item was found in cartData
   if (existingItemIndex !== -1) {
@@ -222,7 +289,7 @@ increaseAmount.addEventListener("click", function () {
     // You can also update the UI here to indicate that the product was added to the cart
     addToCart.classList.add("clicked");
     addToCart.disabled = true;
-    updateCart()
+    updateCart();
   }
 });
 const productTitles = document.querySelectorAll("#title");
@@ -232,7 +299,7 @@ const existingItemIndex2 = cartData.findIndex(
 );
 if (existingItemIndex2 !== -1) {
   addToCart.innerHTML = `Added`;
-  addToCart.classList.add("clicked_cart")
+  addToCart.classList.add("clicked_cart");
   addToCart.disabled = true;
 }
 function updateCartData() {
@@ -253,6 +320,8 @@ function updateCartData() {
     productAmount: parseInt(productAmount.innerHTML),
     productPrice: productPrice,
     productImage: productImage,
+    productColor: savedColor,
+    productDelivery: savedDelivery,
   });
   addToCart.classList.add("clicked");
   addToCart.disabled = true;
@@ -281,7 +350,7 @@ if (existingItemIndex !== -1) {
 
 addToCart.addEventListener("click", function () {
   updateCartData();
-  updateCart()
+  updateCart();
   // You can also update the UI here to indicate that the product was added to the cart
   addToCart.classList.add("clicked");
   addToCart.disabled = true;
@@ -315,3 +384,5 @@ function updateCartInner(index, newAmount) {
   // Update the cartData in localStorage.
   localStorage.setItem("cart", JSON.stringify(cartData));
 }
+
+

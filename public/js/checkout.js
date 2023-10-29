@@ -17,6 +17,7 @@ const productsDiv = document.getElementById("products");
 const subTotalElement = document.querySelector(".checkout_subtotal_price");
 const totalElement = document.querySelector(".checkout_total_price");
 let sum = 0;
+let totalsum = sum;
 // Check if there is data in the cart
 function showProducts() {
   if (cartData && Array.isArray(cartData)) {
@@ -34,7 +35,11 @@ function showProducts() {
           class="checkout_product_image"
         />
         <div class="image_popup"><p class="quantity">${item.productAmount}</p></div>
-        <p class="checkout_product_title">${item.productTitle}</p>
+        <div style="display:flex;flex-direction: column;">
+        <p class="checkout_product_title" style="margin-bottom: 0;padding-bottom: 2px;">${item.productTitle}</p>
+        <p style="margin-bottom: 0;padding-bottom:2px;font-size: 10px;color:#00000080;">Color: ${item.productColor}</p>
+        <p style="margin-bottom: 0;padding-bottom:2px;font-size: 10px;color:#00000080;">Delivery: ${item.productDelivery}</p>
+        </div>
       </div>
       <p class="checkout_product_price">${item.productPrice}</p>
     </div>`;
@@ -45,6 +50,13 @@ function showProducts() {
       const newPrices = parseFloat(newPrices1.replace("$", ""));
       const newPrice = newPrices * item.productAmount;
       sum += newPrice;
+      totalsum = sum;
+      if (item.productDelivery === "fast") {
+        totalsum += 15;
+        totalsum = totalsum.toFixed(2);
+        console.log(totalsum);
+        document.querySelector(".checkout_shipping_price").innerHTML = "$15.00"
+      }
     });
   }
 }
@@ -68,9 +80,9 @@ couponButton.addEventListener("click", function () {
         "Applied successfully";
       document.querySelector(".couponStatus").style.color = "#40d44f";
       console.log(sum);
-      sum % 100 * 10
+      (sum % 100) * 10;
       subTotalElement.innerHTML = `$${sum}`;
-      totalElement.innerHTML = `$${sum}`;
+      totalElement.innerHTML = `$${totalsum}`;
       couponText.innerHTML = "-10%";
       window.scrollTo(0, 0);
       console.log(sum);
@@ -81,7 +93,7 @@ couponButton.addEventListener("click", function () {
   });
 });
 
-totalElement.innerHTML = `$${sum}`;
+totalElement.innerHTML = `$${totalsum}`;
 
 const currentForm = document.getElementById("checkoutForm");
 let allFormsStatus = false;

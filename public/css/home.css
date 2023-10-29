@@ -1,13 +1,27 @@
 h1 {
   font-size: 70px;
 }
+h1, .main_text {
+  color: #FFFFFF
+}
+main {
+  background-image: url(../images/zyro-image\ \(2\)2.webp);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 10%;
+  box-shadow: 0px 4px 0px 381px rgba(0, 0, 0, 0.50) inset;
+}
 .break_line::before {
   content: "\a";
   white-space: pre;
 }
 main {
-  padding: 10% 1% 2% 5%;
+  padding: 10% 0% 2% 0%;
   display: flex;
+}
+.main_textBlock {
+  text-align: center;
+  margin: auto;
 }
 
 a {
@@ -20,7 +34,6 @@ a {
 }
 .main_text {
   font-size: 20px;
-  max-width: 80%;
 }
 .main_image {
   width: 60%;
@@ -39,6 +52,7 @@ main button {
   overflow: hidden;
   display: flex;
   margin-top: 20px;
+  margin-inline: auto;
 }
 
 main button span:not(:nth-child(6)) {
@@ -57,11 +71,11 @@ main button span:nth-child(6) {
   position: relative;
 }
 main button div {
-    position: relative;
-    transition: 0.5s;
-    margin-top: 2px;
-    margin-left: 5px;
-  }
+  position: relative;
+  transition: 0.5s;
+  margin-top: 2px;
+  margin-left: 5px;
+}
 
 main button span:nth-child(1) {
   transform: translate(-3.3em, -4em);
@@ -88,39 +102,42 @@ main button:hover span:not(:nth-child(6)) {
   transition: 1.5s ease;
 }
 main button:hover .arrow {
-    margin-left: 10px
+  margin-left: 10px;
 }
 @media screen and (min-width: 1800px) {
   main {
-    padding: 10% 10% 2% 10%;
+    padding: 100px 10% 2% 10%;
   }
   .main_textBlock {
-    width: 50%
+    width: 50%;
   }
 }
 @media screen and (max-width: 1040px) {
   .break_line::before {
     content: "";
+  }
+  .main_textBlock {
+    text-align: center;
+  }
+  main {
+    display: block;
+  }
+  .main_image {
+    display: flex;
+    width: 80%;
+    margin: auto;
+  }
+  main button {
+    margin: auto;
+  }
+  .main_text {
+    max-width: 100%;
+  }
 }
-.main_textBlock {
-  text-align: center;
-}
-main {
-  display: block;
-}
-.main_image {
-  display: flex;
-  width: 80%;
-  margin: auto;
-}
-main button {
-  margin: auto;
-}
-.main_text {
-  max-width: 100%;
-}
-
-
+@media screen and (max-width: 680px) {
+  main {
+    background-image: url(../images/pot_preview2.webp)
+  }
 }
 
 @media screen and (max-width: 580px) {
@@ -130,9 +147,9 @@ main button {
 }
 @media screen and (max-width: 380px) {
   h1 {
-    font-size: 60px
+    font-size: 60px;
   }
   .main_text {
-    font-size: 18px
+    font-size: 18px;
   }
 }

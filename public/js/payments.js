@@ -1,3 +1,16 @@
+let isTrue = false; 
+
+if (isTrue) {
+  // Hide and disable phoneBlock input
+  document.getElementById('phoneBlock').style.display = 'none'; 
+  document.getElementById('phoneBlock').disabled = true;
+
+} else {
+
+    // Show and enable phoneBlock input
+    document.getElementById('phoneBlock').style.display = 'block';
+    document.getElementById('phoneBlock').disabled = false;
+}
 // Render the PayPal button
 const errorMessage = document.querySelector(".error-message2");
 paypal
@@ -208,7 +221,7 @@ async function checkAll(callbackk) {
   const validationStates = {
     name: false,
     email: false,
-    // phone: false,
+    phone: false,
     address: false,
     state: false,
     house: false,
@@ -220,7 +233,7 @@ async function checkAll(callbackk) {
   const shippingAddress = document.getElementById("address").value;
   const firstName = document.getElementById("firstName").value;
   const lastName = document.getElementById("lastName").value;
-  // const shippingPhone = document.getElementById("phone").value;
+  const shippingPhone = document.getElementById("phone").value;
   const houseNumber = document.getElementById("house").value;
   const orderEmail = document.getElementById("email").value;
 
@@ -322,21 +335,21 @@ async function checkAll(callbackk) {
     return stateCode;
   }
 
-  // function validatePhone() {
-  //   function isValidPhoneNumber(phoneNumber) {
-  //     const phonePattern =
-  //       /^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9][0-9]{2})\s*\)|([2-9][0-9]{2}))(?:[.-]\s*)?([2-9][0-9]{2})(?:[.-]\s*)?([0-9]{4}))(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/;
-  //     return phonePattern.test(phoneNumber);
-  //   }
+  function validatePhone() {
+    function isValidPhoneNumber(phoneNumber) {
+      const phonePattern =
+        /^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9][0-9]{2})\s*\)|([2-9][0-9]{2}))(?:[.-]\s*)?([2-9][0-9]{2})(?:[.-]\s*)?([0-9]{4}))(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/;
+      return phonePattern.test(phoneNumber);
+    }
 
-  //   if (!isValidPhoneNumber(shippingPhone)) {
-  //     document.querySelector(".errorPhone").innerHTML = "Phone Is Incorrect";
-  //     validationStates["phone"] = false;
-  //   } else {
-  //     validationStates["phone"] = true;
-  //     document.querySelector(".errorPhone").innerHTML = "";
-  //   }
-  // }
+    if (!isValidPhoneNumber(shippingPhone)) {
+      document.querySelector(".errorPhone").innerHTML = "Phone Is Incorrect";
+      validationStates["phone"] = false;
+    } else {
+      validationStates["phone"] = true;
+      document.querySelector(".errorPhone").innerHTML = "";
+    }
+  }
   const stateCode = validateState();
   function validateAddress(callback) {
     const serverData = {
@@ -380,7 +393,16 @@ async function checkAll(callbackk) {
   validateHouse();
   validateEmail();
   validateState();
-  // validatePhone();
+  if(isTrue) {
+    validationStates["phone"] = true;
+
+  } else {
+    if(isTrue === false) {
+      validatePhone();
+
+    }
+
+  }
   validateAddress(() => {
     const isValidd = Object.values(validationStates).every(
       (value) => value === true
@@ -396,7 +418,7 @@ function storeOrder() {
   const shippingAddress = document.getElementById("address").value;
   const firstName = document.getElementById("firstName").value;
   const lastName = document.getElementById("lastName").value;
-  // const shippingPhone = document.getElementById("phone").value;
+  const shippingPhone = document.getElementById("phone").value;
   const address2 = document.getElementById("address2").value;
   const orderEmail = document.getElementById("email").value;
   const orderNumber = Math.floor((Math.random() * 100000000) + 100000000)
@@ -409,13 +431,14 @@ function storeOrder() {
     const product = {
       name: cartData[key].productTitle,
       quantity: cartData[key].productAmount,
+      color: cartData[key].productColor,
     };
     productses.push(product);
     console.log(product);
   }
   const formattedProducts = productses
     .map((product) => {
-      return `${product.name} * ${product.quantity}`;
+      return `${product.color} ${product.name} * ${product.quantity}`;
     })
     .join(", ");
   const orderData = {
@@ -426,11 +449,11 @@ function storeOrder() {
     OrderAddress: `${shippingAddress}`,
     LastName: `${firstName}`,
     FirstName: ` ${lastName}`,
-    // OrderPhone: `${shippingPhone}`,
+    OrderPhone: `${shippingPhone}`,
     OrderEmail: `${orderEmail}`,
     OrderProvince: `${shippingProvince}`,
     OrderAddress2: `${address2}`,
-    Total: sum,
+    Total: totalsum,
     OrderStatus: `New`,
     OrderTrackingNumber: "", // You can set this to an empty string initially,
     OrderProducts: formattedProducts,
