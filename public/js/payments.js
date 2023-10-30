@@ -443,6 +443,7 @@ function storeOrder() {
   console.log(cartData);
   for (const key in cartData) {
     const product = {
+      delivery: cartData[key].productDelivery,
       name: cartData[key].productTitle,
       quantity: cartData[key].productAmount,
       color: cartData[key].productColor,
@@ -452,7 +453,7 @@ function storeOrder() {
   }
   const formattedProducts = productses
     .map((product) => {
-      return `${product.color} ${product.name} * ${product.quantity}`;
+      return `${product.delivery}, ${product.color} ${product.name} * ${product.quantity}`;
     })
     .join(", ");
   const orderData = {
