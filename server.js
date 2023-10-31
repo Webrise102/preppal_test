@@ -68,6 +68,27 @@ app.get("/shipping-policy", (req, res) => {
 app.get("/refund-policy", (req, res) => {
   res.sendFile(path.join(staticPath, "refund.html"));
 });
+app.get("/map-index", (req, res) => {
+  res.sendFile(path.join(`${staticPath}/xml`, "index.xml"));
+})
+app.get("/map-ship", (req, res) => {
+  res.sendFile(path.join(`${staticPath}/xml`, "ship.xml"));
+})
+app.get("/map-catalog", (req, res) => {
+  res.sendFile(path.join(`${staticPath}/xml`, "catalog.xml"));
+})
+app.get("/map-contact", (req, res) => {
+  res.sendFile(path.join(`${staticPath}/xml`, "contact.xml"));
+})
+app.get("/map-pot", (req, res) => {
+  res.sendFile(path.join(`${staticPath}/xml`, "pot.xml"));
+})
+app.get("/map-refund", (req, res) => {
+  res.sendFile(path.join(`${staticPath}/xml`, "refund.xml"));
+})
+app.get("/map-track", (req, res) => {
+  res.sendFile(path.join(`${staticPath}/xml`, "track.xml"));
+})
 
 //? Subscription Service
 
