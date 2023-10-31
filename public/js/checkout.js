@@ -50,10 +50,9 @@ function showProducts() {
       const newPrices = parseFloat(newPrices1.replace("$", ""));
       const newPrice = newPrices * item.productAmount;
       sum += newPrice;
-      totalsum = sum;
+      sum = sum.toFixed(2)
       if (item.productDelivery === "fast") {
-        totalsum += 15;
-        totalsum = totalsum.toFixed(2);
+        totalsum = (Number(sum) + 15).toFixed(2)
         console.log(totalsum);
         document.querySelector(".checkout_shipping_price").innerHTML = "$15.00"
       }

@@ -66,13 +66,19 @@ nav.innerHTML = `
 <svg class="close_side-cart" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
   <h2>Your Cart</h2>
   <ul class="modal-body">
-    <li>Product 1</li>
-    <li>Product 2</li>
-    <li>Product 3</li>
+  <li>Your cart is empty</li>
   </ul>
-  <button onclick="window.location.href='/checkout'" style="color: #000000;margin-top: 20px;cursor:pointer">Checkout</button>
-</div>
+  <button class="checkout_btn" onclick="window.location.href='/checkout'"> Checkout
+  </button></div>
 `;
+const checkoutBtn = document.querySelector('.checkout_btn');
+
+checkoutBtn.addEventListener('click', function() {
+  this.style.boxShadow = '0 0 33px #121212';
+  this.style.backgroundColor = '#ffffff';
+  this.style.color = '#000000';
+  this.style.transform = 'scale(0.95)';
+});
 
 const footer = document.querySelector("footer");
 footer.innerHTML = `      <div class="footer_part">
@@ -110,8 +116,8 @@ footer.innerHTML = `      <div class="footer_part">
     src="images/cards/Discover.svg"
     alt="Discover Card"
     class="footer_card"
-  /><img src="images/cards/JCB.svg" alt="JCB Card" class="footer_card" />
-  <img src="images/cards/UnionPay.svg" alt="Union Card" class="footer_card" />
+  /><img src="images/cards/Paypal.svg" alt="PayPal Card" class="footer_card" />
+  <img src="images/cards/SEPA.svg" alt="SEPA Card" class="footer_card" />
 </div>
 <p class="footer_company">©2023, PrepPal™</p>
 </div>`;
