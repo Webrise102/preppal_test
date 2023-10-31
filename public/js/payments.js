@@ -94,6 +94,8 @@ paypal
             "0px 0px 50px 5000px rgba(0,0,0,0.89)";
           document.body.style.overflow = "hidden";
 
+          window.scrollTo({ top: 0, behavior: "instant" });
+
           break;
 
         case "INSTRUMENT_DECLINED":
@@ -106,6 +108,8 @@ paypal
           document.querySelector(".error-box1").style.boxShadow =
             "0px 0px 50px 5000px rgba(0,0,0,0.89)";
           document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, behavior: "instant" });
+
           break;
 
         case "PAYER_ACTION_REQUIRED":
@@ -118,6 +122,8 @@ paypal
           document.querySelector(".error-box1").style.boxShadow =
             "0px 0px 50px 5000px rgba(0,0,0,0.89)";
           document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, behavior: "instant" });
+
           break;
 
         case "PAYMENT_FAILURE":
@@ -130,6 +136,8 @@ paypal
           document.querySelector(".error-box1").style.boxShadow =
             "0px 0px 50px 5000px rgba(0,0,0,0.89)";
           document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, behavior: "instant" });
+
           break;
 
         case "INTERNAL_SERVICE_ERROR":
@@ -142,6 +150,8 @@ paypal
           document.querySelector(".error-box1").style.boxShadow =
             "0px 0px 50px 5000px rgba(0,0,0,0.89)";
           document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, behavior: "instant" });
+
           break;
 
         case "NOT_CONFIGURED":
@@ -154,6 +164,8 @@ paypal
           document.querySelector(".error-box1").style.boxShadow =
             "0px 0px 50px 5000px rgba(0,0,0,0.89)";
           document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, behavior: "instant" });
+
           break;
 
         case "INVALID_CONFIGURATION":
@@ -166,6 +178,8 @@ paypal
           document.querySelector(".error-box1").style.boxShadow =
             "0px 0px 50px 5000px rgba(0,0,0,0.89)";
           document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, behavior: "instant" });
+
           break;
 
         case "UNSUPPORTED_BROWSER":
@@ -178,6 +192,8 @@ paypal
           document.querySelector(".error-box1").style.boxShadow =
             "0px 0px 50px 5000px rgba(0,0,0,0.89)";
           document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, behavior: "instant" });
+
           break;
 
         case "BUYER_ACCOUNT_ERROR":
@@ -190,6 +206,8 @@ paypal
           document.querySelector(".error-box1").style.boxShadow =
             "0px 0px 50px 5000px rgba(0,0,0,0.89)";
           document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, behavior: "instant" });
+
           break;
 
         case "DEPOSIT_FAILED":
@@ -202,6 +220,8 @@ paypal
           document.querySelector(".error-box1").style.boxShadow =
             "0px 0px 50px 5000px rgba(0,0,0,0.89)";
           document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, behavior: "instant" });
+
           break;
 
         // ... other cases
@@ -216,6 +236,8 @@ paypal
           document.querySelector(".error-box1").style.boxShadow =
             "0px 0px 50px 5000px rgba(0,0,0,0.89)";
           document.body.style.overflow = "hidden";
+          window.scrollTo({ top: 0, behavior: "instant" });
+
           break;
 
         default:

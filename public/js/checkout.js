@@ -55,6 +55,8 @@ function showProducts() {
         totalsum = (Number(sum) + 15).toFixed(2)
         console.log(totalsum);
         document.querySelector(".checkout_shipping_price").innerHTML = "$15.00"
+      } else {
+        totalsum = Number(sum).toFixed(2)
       }
     });
   }
