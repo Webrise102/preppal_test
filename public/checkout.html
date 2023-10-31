@@ -196,19 +196,20 @@
               />
               <label for="address2">Address 2</label>
             </div>
+            <div class="col">
+              <div class="form-floating mb-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="city"
+                  placeholder="Washington"
+                />
+                <label for="city">City</label>
+              </div>
+            </div>
             <div class="conteiner">
               <div class="row row2">
-                <div class="col">
-                  <div class="form-floating mb-3">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="city"
-                      placeholder="Washington"
-                    />
-                    <label for="city">City</label>
-                  </div>
-                </div>
+<div>
                 <label for="stateBlock" class="error errorState"></label>
                 <div class="col" id="stateBlock">
                   <div class="form-floating mb-3">
@@ -221,7 +222,11 @@
                     <label for="province">Province/State</label>
                   </div>
                 </div>
-                <div class="col">
+              </div>
+              <div>
+                <label for="zipBlock" class="error errorZip"></label>
+
+                <div class="col" id="zipBlock">
                   <div class="form-floating mb-3">
                     <input
                       type="text"
@@ -232,6 +237,7 @@
                     <label for="zip">ZIP</label>
                   </div>
                 </div>
+              </div>
               </div>
               <label for="houseBlock" class="houseError error"></label>
               <div class="row" id="houseBlock">

@@ -1,29 +1,26 @@
 if (navigator.userAgent.indexOf("Edg") !== -1) {
-  document.getElementById("browser").innerHTML = "If you are using microsoft edge, the debit/credit card payment method may work incorrectly"
-  document.getElementById("browser").style.paddingBottom = "10px"
-  document.getElementById("browser").style.marginBottom = "1rem"
-
+  document.getElementById("browser").innerHTML =
+    "If you are using microsoft edge, the debit/credit card payment method may work incorrectly";
+  document.getElementById("browser").style.paddingBottom = "10px";
+  document.getElementById("browser").style.marginBottom = "1rem";
 }
 
-
-let isTrue = false; 
+let isTrue = false;
 cartData.forEach((item) => {
-  if(item.productDelivery === "fast") {
-    isTrue = false
+  if (item.productDelivery === "fast") {
+    isTrue = false;
   } else {
-    isTrue = true
+    isTrue = true;
   }
-})
+});
 if (isTrue) {
   // Hide and disable phoneBlock input
-  document.getElementById('phoneBlock').style.display = 'none'; 
-  document.getElementById('phoneBlock').disabled = true;
-
+  document.getElementById("phoneBlock").style.display = "none";
+  document.getElementById("phoneBlock").disabled = true;
 } else {
-
-    // Show and enable phoneBlock input
-    document.getElementById('phoneBlock').style.display = 'block';
-    document.getElementById('phoneBlock').disabled = false;
+  // Show and enable phoneBlock input
+  document.getElementById("phoneBlock").style.display = "block";
+  document.getElementById("phoneBlock").disabled = false;
 }
 // Render the PayPal button
 const errorMessage = document.querySelector(".error-message2");
@@ -209,7 +206,8 @@ paypal
 
         // ... other cases
         case "UNPROCESSABLE_ENTITY":
-          errorMessage.innerHTML = "Check if your cart isn`t empty or try reloading page";
+          errorMessage.innerHTML =
+            "Check if your cart isn`t empty or try reloading page";
           document.getElementById("container").style.display = "block";
           document.getElementById("container").style.boxShadow =
             "0px 0px 500px 500px rgba(0,0,0,0.89)";
@@ -239,6 +237,7 @@ async function checkAll(callbackk) {
     address: false,
     state: false,
     house: false,
+    zip: false,
   };
 
   const shippingZip = document.getElementById("zip").value;
@@ -348,7 +347,15 @@ async function checkAll(callbackk) {
     }
     return stateCode;
   }
-
+  function isValidZip(zip) {
+    const zipRegex = /^\d{5}(?:[-\s]\d{4})?$/;
+    if (zipRegex.test(zip) === true) {
+      validationStates["zip"] = true;
+      document.querySelector(".errorZip").innerHTML = "";
+    } else {
+      document.querySelector(".errorZip").innerHTML = "Incorrect ZIP";
+    }
+  }
   function validatePhone() {
     function isValidPhoneNumber(phoneNumber) {
       const phonePattern =
@@ -407,15 +414,13 @@ async function checkAll(callbackk) {
   validateHouse();
   validateEmail();
   validateState();
-  if(isTrue) {
+  isValidZip(shippingZip);
+  if (isTrue) {
     validationStates["phone"] = true;
-
   } else {
-    if(isTrue === false) {
+    if (isTrue === false) {
       validatePhone();
-
     }
-
   }
   validateAddress(() => {
     const isValidd = Object.values(validationStates).every(
@@ -435,7 +440,7 @@ function storeOrder() {
   const shippingPhone = document.getElementById("phone").value;
   const address2 = document.getElementById("address2").value;
   const orderEmail = document.getElementById("email").value;
-  const orderNumber = Math.floor((Math.random() * 100000000) + 100000000)
+  const orderNumber = Math.floor(Math.random() * 100000000 + 100000000);
 
   const productses = [];
 
