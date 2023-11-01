@@ -489,12 +489,6 @@ app.post("/send-success", (req, res) => {
 
     <p>We received your order and it will be proceeded within 24 hours</p>
     <p>Your order number: <span style="font-weight: bold">${orderNumber}</span>
-    <a href="localhost:3000/track" class="button">Track your parcel</a>
-
-    <p style="color: grey; font-size: 12px;font-weight: 200">
-      Tracking not available? Sometimes it can take up to 24 hours, so check
-      again in a little while.
-    </p>
 
 <p >Your Total: <span style="font-weight: bold">$${total}</span></p>
 <p style="font-size: 12px;">Below you can find address which you wrote, contact us if it isn't right</p>
