@@ -439,6 +439,7 @@ app.post("/send-success", (req, res) => {
   const orderAddress = req.body.address;
   const total = req.body.total;
   const orderDate = req.body.orderDate;
+  const orderEmail = req.body.email
   console.log(firstName, orderNumber, orderAddress, total, orderDate);
   const dayMinInit = new Date();
 
@@ -509,7 +510,7 @@ app.post("/send-success", (req, res) => {
   // Email data
   const mailOptions = {
     from: `${process.env.EMAIL_ACCOUNT}`,
-    to: "ilahristoforov88@gmail.com",
+    to: `${orderEmail}`,
     subject: `Thanks for your order`,
     html: emailTemplate,
   };

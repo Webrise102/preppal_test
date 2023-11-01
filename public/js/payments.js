@@ -524,6 +524,7 @@ function storeOrder() {
       total: sum,
       orderDate: new Date(),
       orderNumber: orderNumber,
+      email: orderEmail,
     }),
   });
   localStorage.removeItem("cart");
