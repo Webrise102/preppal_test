@@ -9,7 +9,6 @@ form.addEventListener("submit", async (event) => {
   const messageTextarea = document.getElementById("message");
 
   const nameErrorMessage = document.querySelector("#namee");
-  console.log(nameErrorMessage)
   const emailErrorMessage = document.querySelector("#emaile");
   const subjectErrorMessage = document.querySelector("#subjecte");
   const messageErrorMessage = document.querySelector("#messagee");

@@ -114,15 +114,12 @@ colorRadios.forEach((radio) => {
         productImage = document.querySelector(".white_image").src;
       }
     }
-    console.log("checked" + someexistingItemIndex);
     // Check if the item was found in cartData
     if (someexistingItemIndex !== -1) {
-      console.log("checked if");
 
       updateCartData();
       updateCart();
     } else {
-      console.log("checked else");
     }
   });
 });
@@ -139,12 +136,10 @@ deliveryRadios.forEach((radio) => {
     savedDelivery = radio.value;
     // Check if the item was found in cartData
     if (someexistingItemIndex !== -1) {
-      console.log("checked if");
 
       updateCartData();
       updateCart();
     } else {
-      console.log("checked else");
     }
   });
 });
@@ -273,10 +268,8 @@ decreaseAmount.addEventListener("click", function () {
 });
 const cartTitle = document.querySelectorAll(".titleParagr");
 increaseAmount.addEventListener("click", function () {
-  console.log(productAmount);
 
   productAmount.innerHTML++; // Increment the displayed amount
-  console.log(productAmount);
 
   // Check if the item was found in cartData
   if (existingItemIndex !== -1) {

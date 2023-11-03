@@ -87,7 +87,6 @@ const plusButtons = document.querySelectorAll(".cartIncrease");
 minusButtons.forEach((minus, index) => {
 
   minus.addEventListener("click", function () {
-    console.log("click")
 
     const currentAmount = parseInt(productAmountInner[index].innerHTML);
     if (currentAmount > 1) {
@@ -99,7 +98,6 @@ minusButtons.forEach((minus, index) => {
 
 plusButtons.forEach((plus, index) => {
   plus.addEventListener("click", function () {
-    console.log("click")
 
     const currentAmount = parseInt(productAmountInner[index].innerHTML);
     productAmountInner[index].innerHTML = currentAmount + 1;

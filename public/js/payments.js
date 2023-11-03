@@ -36,7 +36,6 @@ paypal
             resolve(isValid);
           });
         });
-        console.log(isValid);
         if (isValid) {
           return true;
         } else {
@@ -69,7 +68,6 @@ paypal
     },
     onApprove: function (data, actions) {
       return actions.order.capture().then(function (details) {
-        console.log(details);
         storeOrder();
         // Close the PayPal tab here if needed
         // window.close();
@@ -81,7 +79,6 @@ paypal
       // Use a regular expression to extract the value associated with "name"
       const nameMatch = /"name":"(.*?)"/.exec(inputText);
       const nameValue = nameMatch[1];
-      console.log(nameValue); // This will log "UNPROCESSABLE_ENTITY"
       switch (nameValue) {
         case "BUYER_CANCEL":
           errorMessage.innerHTML = "Transaction cancelled by buyer";
@@ -467,7 +464,6 @@ function storeOrder() {
   const productses = [];
 
   // Loop through the cart items and create a new object for each product
-  console.log(cartData);
   for (const key in cartData) {
     const product = {
       delivery: cartData[key].productDelivery,
@@ -476,7 +472,6 @@ function storeOrder() {
       color: cartData[key].productColor,
     };
     productses.push(product);
-    console.log(product);
   }
   const formattedProducts = productses
     .map((product) => {
@@ -501,10 +496,8 @@ function storeOrder() {
     OrderProducts: formattedProducts,
     OrderNumber: orderNumber,
   };
-  console.log(orderData.OrderProducts);
 
   // Now you can use the `products` array in your code
-  console.log(productses);
   fetch("/create-order", {
     method: "POST",
     headers: {

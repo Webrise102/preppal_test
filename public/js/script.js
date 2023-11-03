@@ -30,7 +30,6 @@ function productsLogic() {
 productsLogic();
 function searchProduct(inputElement) {
   const something = inputElement.value;
-  console.log(something);
   const searchQuestionOfInput = inputElement.value;
   localStorage.setItem("searchQuestion", searchQuestionOfInput);
   searchInputs.forEach((input) => {

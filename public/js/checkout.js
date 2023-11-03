@@ -53,7 +53,6 @@ function showProducts() {
       sum = sum.toFixed(2)
       if (item.productDelivery === "fast") {
         totalsum = (Number(sum) + 15).toFixed(2)
-        console.log(totalsum);
         document.querySelector(".checkout_shipping_price").innerHTML = "$15.00"
       } else {
         totalsum = Number(sum).toFixed(2)
@@ -80,13 +79,11 @@ couponButton.addEventListener("click", function () {
       document.querySelector(".couponStatus").innerHTML =
         "Applied successfully";
       document.querySelector(".couponStatus").style.color = "#40d44f";
-      console.log(sum);
       (sum % 100) * 10;
       subTotalElement.innerHTML = `$${sum}`;
       totalElement.innerHTML = `$${totalsum}`;
       couponText.innerHTML = "-10%";
       window.scrollTo(0, 0);
-      console.log(sum);
     } else {
       document.querySelector(".couponStatus").innerHTML = "Coupon not exists";
       document.querySelector(".couponStatus").style.color = "#d44040";

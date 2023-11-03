@@ -399,7 +399,6 @@ app.post("/check-address", async (req, res) => {
   const zip = req.body.zip;
   const code = req.body.state;
 
-  console.log(address);
   let addressXML =
     '<AddressValidateRequest USERID="1PREPP5N11673"><Revision>1</Revision><Address><Address1></Address1><Address2>' +
     address +
@@ -418,11 +417,9 @@ app.post("/check-address", async (req, res) => {
   axios
     .get(addressUrl)
     .then(function (response) {
-      console.log(response.data);
       if (response.data.includes("<Error>")) {
         res.status(400).send();
       } else {
-        console.log("Error Not Found");
         res.status(200).send();
       }
     })

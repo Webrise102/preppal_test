@@ -137,7 +137,6 @@ const subscribe = async function () {
   let input = document.querySelector(
     '.footer_subscribeInput_block input[type="text"]'
   ).value;
-  console.log(input);
   // Validate if it's an email
   if (!validateEmail(input)) {
     // Show an error if it's not
@@ -157,7 +156,6 @@ const subscribe = async function () {
 
     // Get the response
     let getResponse = await postEmailSubscription.json();
-    console.log(getResponse);
     if (getResponse.code == "02") {
       document.querySelector(".error-message").innerHTML =
         "User has already subscribed";

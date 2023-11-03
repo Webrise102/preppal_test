@@ -136,7 +136,6 @@ addToCartButton.forEach((button) => {
   const existingItemIndex2 = cartData.findIndex(
     (item) => item.productTitle === productTitleInner
   );
-  console.log(existingItemIndex2);
   if (existingItemIndex2 !== -1) {
     button.innerHTML = `Added`;
     button.classList.add("clicked_cart");
@@ -159,7 +158,6 @@ addToCartButton.forEach((button) => {
       .closest(".search_product_card")
       .querySelector(".price_new")
       .innerHTML.trim();
-    console.log(productTitle);
     updateCartData();
     updateCart();
 
