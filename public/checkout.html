@@ -120,14 +120,31 @@
           </div>
           <div id="deliveryForm">
             <h4 class="form_label">Delivery</h4>
-            <div class="input-group mb-3">
+            <label for="countryRow" class="countryError error"></label>
+
+            <div class="input-group mb-3" id="countryRow">
               <select
                 class="form-select"
                 id="inputGroupSelect03"
                 aria-label="Example select with button addon"
               >
-                <option selected>United States</option>
-              </select>
+              <option>Belgium</option>
+              <option>Czech Republic</option>
+              <option>Denmark</option>
+              <option>Finland</option>
+              <option>France</option>
+              <option>Germany</option>
+              <option>Ireland</option>
+              <option>Italy</option>
+              <option>Luxembourg</option>
+              <option>Netherlands</option>
+              <option>Poland</option>
+              <option>Spain</option>
+              <option>Sweden</option>
+              <option>United Kingdom</option>
+              <option selected="">United States</option>
+              <option>Canada</option>
+                            </select>
             </div>
             <div class="conteiner conteiner1">
               <label for="rowName" class="nameError error"></label>
@@ -197,7 +214,9 @@
               <label for="address2">Address 2</label>
             </div>
             <div class="col">
-              <div class="form-floating mb-3">
+              <label for="errorCity" class="cityError error"></label>
+
+              <div class="form-floating mb-3" id="errorCity">
                 <input
                   type="text"
                   class="form-control"
@@ -205,10 +224,10 @@
                   placeholder="Washington"
                 />
                 <label for="city">City</label>
+                <p class="hint" style="font-size: 12px;color: #00000080"></p>
               </div>
             </div>
             <div class="conteiner">
-              <div class="row row2">
 <div>
                 <label for="stateBlock" class="error errorState"></label>
                 <div class="col" id="stateBlock">
@@ -219,10 +238,11 @@
                       id="province"
                       placeholder="Washington"
                     />
-                    <label for="province">Province/State</label>
+                    <label for="province">Province (Optional)</label>
                   </div>
                 </div>
               </div>
+              <div class="row row2">
               <div>
                 <label for="zipBlock" class="error errorZip"></label>
 
@@ -238,10 +258,9 @@
                   </div>
                 </div>
               </div>
-              </div>
+              <div>
               <label for="houseBlock" class="houseError error"></label>
-              <div class="row" id="houseBlock">
-                <div class="col">
+                <div class="col" id="houseBlock">
                   <div class="form-floating mb-3">
                     <input
                       type="text"
@@ -253,6 +272,7 @@
                   </div>
                 </div>
               </div>
+            </div>
             </div>
             <!-- Add more fields as necessary -->
           </div>

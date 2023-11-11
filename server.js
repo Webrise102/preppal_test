@@ -10,14 +10,15 @@ const bodyParser = require("body-parser");
 const mysql = require("mysql2");
 const schedule = require("node-schedule");
 const nodemailer = require("nodemailer");
-const axios = require("axios");
-
+const fetch = require("node-fetch");
 const db = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: process.env.TEST_DB_HOST,
+  user: process.env.TEST_DB_USER,
+  password: process.env.TEST_DB_PASSWORD,
+  database: process.env.TEST_DB_NAME,
 });
+const cron = require('node-cron');
+
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -43,6 +44,9 @@ let staticPath = path.join(__dirname, "public");
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(staticPath, "index.html"));
+});
+app.get("/address", (req, res) => {
+  res.sendFile(path.join(staticPath, "address.html"));
 });
 app.get("/catalog", (req, res) => {
   res.sendFile(path.join(staticPath, "catalog.html"));
@@ -70,25 +74,25 @@ app.get("/refund-policy", (req, res) => {
 });
 app.get("/map-index", (req, res) => {
   res.sendFile(path.join(`${staticPath}/xml`, "index.xml"));
-})
+});
 app.get("/map-ship", (req, res) => {
   res.sendFile(path.join(`${staticPath}/xml`, "ship.xml"));
-})
+});
 app.get("/map-catalog", (req, res) => {
   res.sendFile(path.join(`${staticPath}/xml`, "catalog.xml"));
-})
+});
 app.get("/map-contact", (req, res) => {
   res.sendFile(path.join(`${staticPath}/xml`, "contact.xml"));
-})
+});
 app.get("/map-pot", (req, res) => {
   res.sendFile(path.join(`${staticPath}/xml`, "pot.xml"));
-})
+});
 app.get("/map-refund", (req, res) => {
   res.sendFile(path.join(`${staticPath}/xml`, "refund.xml"));
-})
+});
 app.get("/map-track", (req, res) => {
   res.sendFile(path.join(`${staticPath}/xml`, "track.xml"));
-})
+});
 
 //? Subscription Service
 
@@ -222,7 +226,8 @@ app.get("/subscribe/check/:email", (req, res) => {
 
 // Unsubscribe route
 app.post("/unsubscribe", (req, res) => {
-  const { email } = req.body;
+  const { email } = req.query;
+  console.log(email);
   const query = "SELECT * FROM subscriptions2 WHERE email = ?";
 
   db.query(query, [email], (error, results) => {
@@ -378,7 +383,7 @@ app.post("/create-order", (req, res) => {
     OrderProducts,
     OrderAddress2,
     OrderProvince,
-    OrderNumber
+    OrderNumber,
   ];
 
   db.query(insertSql, values, (err, result) => {
@@ -391,41 +396,19 @@ app.post("/create-order", (req, res) => {
     }
   });
 });
-
 app.post("/check-address", async (req, res) => {
-  const city = req.body.city;
-  const address = req.body.address;
-
-  const zip = req.body.zip;
-  const code = req.body.state;
-
-  let addressXML =
-    '<AddressValidateRequest USERID="1PREPP5N11673"><Revision>1</Revision><Address><Address1></Address1><Address2>' +
-    address +
-    "</Address2><City>" +
-    city +
-    "</City><State>" +
-    code +
-    "</State><Zip5>" +
-    zip +
-    "</Zip5><Zip4></Zip4></Address></AddressValidateRequest>";
-
-  let addressUrl =
-    "https://secure.shippingapis.com/ShippingAPI.dll?API=Verify&xml=" +
-    encodeURIComponent(addressXML);
-  console.log("Request");
-  axios
-    .get(addressUrl)
-    .then(function (response) {
-      if (response.data.includes("<Error>")) {
-        res.status(400).send();
-      } else {
-        res.status(200).send();
-      }
-    })
-    .catch(function (error) {
-      res.status(500).send();
-    });
+  const address = `${req.body.address.replace(
+    / /g,
+    "%20"
+  )}%2C%20${req.body.city.replace(/ /g, "%20")}%2C%20${req.body.country.replace(
+    / /g,
+    "%20"
+  )}`;
+  const response = await fetch(
+    `https://api.geoapify.com/v1/geocode/search?text=${address}&format=json&apiKey=918a9c16f81540dd809ae250f9dd4260`
+  );
+  const data = await response.json();
+  res.json({ data });
 });
 
 app.post("/send-success", (req, res) => {
@@ -436,7 +419,7 @@ app.post("/send-success", (req, res) => {
   const orderAddress = req.body.address;
   const total = req.body.total;
   const orderDate = req.body.orderDate;
-  const orderEmail = req.body.email
+  const orderEmail = req.body.email;
   console.log(firstName, orderNumber, orderAddress, total, orderDate);
   const dayMinInit = new Date();
 
@@ -527,16 +510,43 @@ app.post("/send-success", (req, res) => {
 app.post("/check-connection", (req, res) => {
   db.getConnection((err, connection) => {
     if (err) {
-      console.error('Error connecting to MySQL:', err);
-      res.status(500).send()
+      console.error("Error connecting to MySQL:", err);
+      res.status(500).send();
     }
-  
-    console.log('Connected to MySQL');
-    res.status(200).send()
-  
+
+    console.log("Connected to MySQL");
+    res.status(200).send();
+
     // Release the connection back to the pool when you're done with it.
     connection.release();
   });
+});
+
+//? CJDROPSHIPPING API
+/*fetch(
+  "https://developers.cjdropshipping.com/api2.0/v1/authentication/refreshAccessToken",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      refreshToken: `${process.env.REFRESH_TOKEN}`,
+    }),
+  }
+)
+  .then((response) => response.json())
+  .then((data) => {
+    // Handle the response data
+    console.log(data);
+  })
+  .catch((error) => {
+    // Handle errors
+    console.error("Error:", error);
+  });*/
+cron.schedule('*/30 * * * * *', () => {
+console.log("30 seconds");
+
 })
 
 app.listen(port, () => {

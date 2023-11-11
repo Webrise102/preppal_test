@@ -18,7 +18,9 @@ form.addEventListener("submit", async (event) => {
   let contactMessageError = "";
   function countWords(str) {
     const arr = str.split(" ");
+    console.log(arr)
     const filtered = arr.filter((word) => word !== "");
+    console.log(filtered)
     return filtered.length;
   }
   // Validate the form

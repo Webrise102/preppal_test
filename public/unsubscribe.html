@@ -7,17 +7,17 @@
 
     <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/style.css" />
-    <link rel="icon" type="image/jpg" href="images/favicon.jpg">
+    <link rel="icon" type="image/jpg" href="images/favicon.jpg" />
 
     <style>
       section {
-display: flex;
-justify-content: center;
-text-align: center;
+        display: flex;
+        justify-content: center;
+        text-align: center;
       }
       .subscribe_input {
         background-color: #2a2a2a;
-        color: #FFFFFF;
+        color: #ffffff;
         height: 40px;
         width: min(500px, 100%);
         text-align: left;
@@ -25,89 +25,45 @@ text-align: center;
         border-radius: 5px;
       }
       h2 {
-        font-size: 28px
+        font-size: 28px;
       }
       p {
-        font-size: 18px
+        font-size: 18px;
       }
       .unsubscribeButton {
         background-color: #2a2a2a;
         margin-top: 10px;
         width: min(500px, 100%);
-        color: #FFFFFF;
+        color: #ffffff;
         height: 40px;
         border-radius: 5px;
-        cursor: pointer
-
+        cursor: pointer;
       }
     </style>
-    <meta name="description" content="Unsubscribe from the PrepPal newsletter and email notifications by entering your email address."> <meta name="keywords" content="PrepPal unsubscribe, PrepPal newsletter, PrepPal email notifications, PrepPal email list, PrepPal updates">
+    <meta
+      name="description"
+      content="Unsubscribe from the PrepPal newsletter and email notifications by entering your email address."
+    />
+    <meta
+      name="keywords"
+      content="PrepPal unsubscribe, PrepPal newsletter, PrepPal email notifications, PrepPal email list, PrepPal updates"
+    />
   </head>
   <body>
     <section class="subscription_section">
-      <div id="subscribe-box">
-        <h2>Unsubscribe from our newsletter</h2>
-        <p>
-You will not get our email notifications
-        </p>
-        <div class="error-message">Not a valid email</div>
-        <div class="form-holder">
-          <form
-            action="/unsubscribe"
-            method="post"
-            class="subscribe_form"
-          >
-          <input
-            type="text"
-            name="email"
-            value=""
-            placeholder="your@email.com"
-            class="subscribe_input emailInput"
-          />
-          <input type="submit" value="Unsubscribe" class="unsubscribeButton subscribe_button" />
-        </form>
-        </div>
-      </div>
+      <button class="unsubscribeButton" id="unsubscribeButton">Unsubscribe</button>
+      <button class="unsubscribeButton">Nevermind</button>
     </section>
     <script>
-const form = document.querySelector('.subscribe_form');
-const emailInput = document.querySelector('.emailInput');
-const errMessage = document.querySelector(".error-message")
-errMessage.innerHTML = ""
-
-form.addEventListener('submit', (event) => {
-  event.preventDefault();
-
-  const email = emailInput.value;
-
-  // Send the email address to the Node.js server using a POST request
-  fetch('/unsubscribe', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email }),
-  })
-  .then((response) => {
-    if(response.status == 200) {
-      errMessage.innerHTML = "Unsubscrbed Successfully"
-      errMessage.style.color = "green"
-
-    }
-    if(response.status == 422) {
-      errMessage.innerHTML = "Incorrect email"
-      errMessage.style.color = "red"
-
-    }
-    if(response.status == 500) {
-      errMessage.innerHTML = "Error from our side"
-      errMessage.style.color = "red"
-
-    }
-    // Parse the JSON response if it's valid JSON
-    return response.json();
-  })
-});
+      const unsubscribe = document.querySelector("#unsubscribeButton");
+      unsubscribe.addEventListener("click", () => {
+        fetch("/unsubscribe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      });
     </script>
   </body>
 </html>

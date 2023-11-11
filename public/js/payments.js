@@ -36,6 +36,7 @@ paypal
             resolve(isValid);
           });
         });
+        console.log(isValid);
         if (isValid) {
           return true;
         } else {
@@ -254,13 +255,11 @@ async function checkAll(callbackk) {
     email: false,
     phone: false,
     address: false,
-    state: false,
     house: false,
     zip: false,
   };
 
   const shippingZip = document.getElementById("zip").value;
-  const shippingProvince = document.getElementById("province").value;
   const shippingCity = document.getElementById("city").value;
   const shippingAddress = document.getElementById("address").value;
   const firstName = document.getElementById("firstName").value;
@@ -268,6 +267,7 @@ async function checkAll(callbackk) {
   const shippingPhone = document.getElementById("phone").value;
   const houseNumber = document.getElementById("house").value;
   const orderEmail = document.getElementById("email").value;
+  const shippingCountry = document.querySelector(".form-select").value;
 
   function validateName() {
     if (firstName === "" || lastName === "") {
@@ -301,71 +301,6 @@ async function checkAll(callbackk) {
       validationStates["email"] = false;
     }
   }
-
-  function validateState() {
-    const stateCodes = {
-      alabama: "AL",
-      alaska: "AK",
-      arizona: "AZ",
-      arkansas: "AR",
-      california: "CA",
-      colorado: "CO",
-      connecticut: "CT",
-      delaware: "DE",
-      florida: "FL",
-      georgia: "GA",
-      hawaii: "HI",
-      idaho: "ID",
-      illinois: "IL",
-      indiana: "IN",
-      iowa: "IA",
-      kansas: "KS",
-      kentucky: "KY",
-      louisiana: "LA",
-      maine: "ME",
-      maryland: "MD",
-      massachusetts: "MA",
-      michigan: "MI",
-      minnesota: "MN",
-      mississippi: "MS",
-      missouri: "MO",
-      montana: "MT",
-      nebraska: "NE",
-      nevada: "NV",
-      "new hampshire": "NH",
-      "new jersey": "NJ",
-      "new mexico": "NM",
-      "new york": "NY",
-      "north carolina": "NC",
-      "north dakota": "ND",
-      ohio: "OH",
-      oklahoma: "OK",
-      oregon: "OR",
-      pennsylvania: "PA",
-      "rhode island": "RI",
-      "south carolina": "SC",
-      "south dakota": "SD",
-      tennessee: "TN",
-      texas: "TX",
-      utah: "UT",
-      vermont: "VT",
-      virginia: "VA",
-      washington: "WA",
-      "west virginia": "WV",
-      wisconsin: "WI",
-      wyoming: "WY",
-    };
-    const stateName = shippingProvince.toLowerCase().trim();
-    const stateCode = stateCodes[stateName] || false;
-    if (stateCode === false) {
-      document.querySelector(".errorState").innerHTML = "State Not Found";
-      validationStates["state"] = false;
-    } else {
-      validationStates["state"] = true;
-      document.querySelector(".errorState").innerHTML = "";
-    }
-    return stateCode;
-  }
   function isValidZip(zip) {
     const zipRegex = /^\d{5}(?:[-\s]\d{4})?$/;
     if (zipRegex.test(zip) === true) {
@@ -390,49 +325,95 @@ async function checkAll(callbackk) {
       document.querySelector(".errorPhone").innerHTML = "";
     }
   }
-  const stateCode = validateState();
   function validateAddress(callback) {
     const serverData = {
       address: shippingAddress,
       city: shippingCity,
       zip: shippingZip,
-      state: stateCode,
+      country: shippingCountry,
     };
-
-    fetch("/check-address", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(serverData),
-    })
-      .then((response) => {
-        if (response.status === 400) {
-          document.querySelector(".errorAddress").innerHTML =
-            "Address/City Incorrect";
-
-          validationStates["address"] = false;
-        }
-        if (response.status === 200) {
-          document.querySelector(".errorAddress").innerHTML = "";
-          validationStates["address"] = true;
-        }
-
-        callback();
+    if (validationStates["zip"] === true && shippingAddress !== "" && shippingCity !== "") {
+      fetch("/check-address", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          address: serverData.address,
+          city: serverData.city,
+          country: serverData.country,
+        }),
       })
-      .catch((error) => {
-        document.querySelector(".errorAddress").innerHTML =
-          "Address/City Incorrect";
+        .then((response) => response.json())
+        .then((data) => {
+          const dataArray = data.data;
+if(dataArray.results.length > 0) {
+  dataArray.results.forEach((obj) => {
+    if (
+      obj.postcode === serverData.zip &&
+      obj.country === serverData.country
+    ) {
+      validationStates["address"] = true;
+      if (obj.city !== shippingCity) {
+        // City does not match, show hint
+        document.querySelector(
+          ".hint"
+        ).innerHTML = `Did you mean <span class="hint_city" style="font-style: italic;cursor: pointer;">${obj.city}</span>?`;
+        const cityInput = document.getElementById("city");
+        document
+          .querySelector(".hint_city")
+          .addEventListener("click", function () {
+            const spanText =
+              document.querySelector(".hint_city").innerHTML;
+            cityInput.value = spanText;
+          });
+      } else {
+        // Clear any previous hint
+        document.querySelector(".hint").innerHTML = "";
+      }
+    } else {
+      if(obj.country !== serverData.country) {
+        document.querySelector(".countryError").innerHTML = "Incorrect country"
+      } else {
+        document.querySelector(".countryError").innerHTML = ""
 
-        validationStates["address"] = false;
-        callback();
-      });
+      }
+    }
+  });
+} else {
+  validationStates["address"] = false
+}
+
+          callback();
+        })
+        .catch((error) => {
+          validationStates["address"] = false
+          console.log("Error:");
+          console.log(error);
+          callback();
+        });
+    } else {
+      validationStates["address"] = false
+      if (shippingAddress === "") {
+        document.querySelector(".errorAddress").innerHTML =
+          "Address can`t be empty";
+      } else {
+        document.querySelector(".errorAddress").innerHTML = "";
+      }
+      if(shippingCity === "") {
+        document.querySelector(".cityError").innerHTML =
+        "City can`t be empty";
+      } else {
+        document.querySelector(".cityError").innerHTML =
+        "";
+      }
+      callback();
+    }
   }
 
   validateName();
   validateHouse();
   validateEmail();
-  validateState();
   isValidZip(shippingZip);
   if (isTrue) {
     validationStates["phone"] = true;
