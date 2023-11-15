@@ -122,7 +122,6 @@ function updateCartData() {
     productPrice: productPrice,
     productImage: productImage,
     productColor: "green",
-    productDelivery: "normal"
   });
 
   // Save the updated cartData back to localStorage

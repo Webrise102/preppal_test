@@ -4,8 +4,16 @@ if (navigator.userAgent.indexOf("Edg") !== -1) {
   document.getElementById("browser").style.paddingBottom = "10px";
   document.getElementById("browser").style.marginBottom = "1rem";
 }
+// Selector for the container where buttons are rendered
+const paypalButtonContainer = document.getElementById('paypal-button-container'); 
+
+// Function to remove any existing PayPal buttons 
+function removeExistingButtons() {
+  paypalButtonContainer.innerHTML = '';
+}
 
 let isTrue = false;
+let deliveryOption = "normal";
 cartData.forEach((item) => {
   if (item.productDelivery === "fast") {
     isTrue = false;
@@ -24,12 +32,24 @@ if (isTrue) {
 }
 // Render the PayPal button
 const errorMessage = document.querySelector(".error-message2");
-paypal
+const someDataPrice = cartData[0].productPrice
+const newDataPrice = someDataPrice.replace("$", "").replace(",", ".")
+function updatePayPal(sum) {
+  paypal
   .Buttons({
     onClick: async function () {
       const response = await fetch("/check-connection", {
         method: "POST",
       });
+      console.log(newDataPrice)
+      const response2 = await fetch("/check-sum", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({sum: newDataPrice})
+      });
+      console.log(response2)
       if (response.status === 200) {
         const isValid = await new Promise((resolve) => {
           checkAll((isValid) => {
@@ -60,7 +80,7 @@ paypal
         purchase_units: [
           {
             amount: {
-              value: `${totalsum}`, // Set the payment amount here
+              value: `${sum}`, // Set the payment amount here
             },
           },
         ],
@@ -248,6 +268,210 @@ paypal
     document.getElementById("loader").style.display = "none";
     document.getElementById("checkoutForm").style.display = "block";
   });
+}
+updatePayPal(totalsum)
+
+// Define a mapping object for country names to country codes
+const countryMapping = {
+  Belgium: "BE",
+  "Czech Republic": "CZ",
+  Denmark: "DK",
+  Finland: "FI",
+  France: "FR",
+  Germany: "DE",
+  Ireland: "IE",
+  Italy: "IT",
+  Luxembourg: "LU",
+  Netherlands: "NL",
+  Poland: "PL",
+  Spain: "ES",
+  Sweden: "SE",
+  "United Kingdom": "GB",
+  "United States": "US",
+  Canada: "CA",
+  "New Zealand": "NZ",
+};
+
+// Get the select element
+const selectElement = document.querySelector(".country-select");
+const productsess = [];
+const deliveryBlock = document.querySelector(".radio-inputs");
+
+// Loop through the cart items and create a new object for each product
+for (const key in cartData) {
+  const product = {
+    delivery: deliveryOption,
+    name: cartData[key].productTitle,
+    quantity: cartData[key].productAmount,
+    color: cartData[key].productColor,
+  };
+  productsess.push(product);
+}
+console.log(productsess);
+// Plug mapping
+const plugMapping = {
+  "United States": "US",
+  Canada: "US",
+
+  "New Zealand": "AU",
+  "United Kingdom": "UK",
+  Ireland: "UK",
+
+  France: "EU", // Using France as example of EU
+  Germany: "EU",
+};
+
+// Video IDs
+const videoIds = {
+  US_white: "1636420804961382400",
+  US_black: "1636420805179486208",
+  AU_white: "1636420805124960256",
+  AU_black: "1636420805347258368",
+  UK_white: "1636420805070434304",
+  UK_black: "1636420805288538112",
+  EU_white: "1636420805015908352",
+  EU_black: "1636420805234012160",
+};
+
+let vid;
+// Add change event listener to the select element
+selectElement.addEventListener("change", function () {
+  deliveryBlock.innerHTML = ``;
+  // Get the selected option text
+  const selectedCountry = this.options[this.selectedIndex].text;
+
+  // Get the corresponding country code from the mapping object
+  const countryCode = countryMapping[selectedCountry];
+  // Get plug type
+  let plugType = plugMapping[selectedCountry];
+  if (plugType === undefined) {
+    plugType = "EU";
+  }
+  console.log(plugType);
+  let quantityInner;
+  // Loop through cart items
+  cartData.forEach((item) => {
+    // Check color
+    quantityInner = item.productAmount;
+    if (item.productColor === "white") {
+      // Set video ID based on plug type + color
+      vid = videoIds[`${plugType}_white`];
+    } else {
+      // Set video ID based on plug type + color
+      vid = videoIds[`${plugType}_black`];
+    }
+  });
+  fetch("/delivery-calculate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      end: countryCode,
+      products: [{ quantity: quantityInner, vid: vid }],
+    }),
+  })
+    .then((response) => response.json())
+    .then((options) => {
+      console.log("Got Data")
+      const REDUCE_PRICE = 23;
+      // Sort options array based on delivery type
+options.sort((a, b) => {
+  const order = ["CJPacket Ordinary", "CJPacket Fast Ordinary", "DHL Official"];
+  return order.indexOf(a.name) - order.indexOf(b.name);
+});
+      options.forEach((option) => {
+        if (option.name === "CJPacket Ordinary") {
+          option.price = 0;
+        }
+
+        if (option.name === "CJPacket Fast Ordinary") {
+          option.price = Math.max(5, option.price - REDUCE_PRICE);
+        }
+
+        if (option.name === "DHL Official") {
+          option.price = Math.max(30, option.price - REDUCE_PRICE);
+          option.price = Math.round(option.price*2)/2
+        }
+      });
+      // Log them to console
+      options.forEach((option) => {
+        let deliveryName;
+        if (option.name === "CJPacket Ordinary") {
+          const time = option.time;
+          const [start, end] = time.split("-");
+          const startNum = parseInt(start);
+          const endNum = parseInt(end);
+          const newEnd = endNum - 1;
+          deliveryName = `Default Shipping (${startNum}-${newEnd})`;
+        } else {
+          if (option.name === "CJPacket Fast Ordinary") {
+            deliveryName = `Fast Shipping (${option.time})`;
+          } else {
+            if (option.name === "DHL Official") {
+              deliveryName = `Express Shipping (${option.time})`;
+            }
+          }
+        }
+
+        const deliveryOptionDiv = document.createElement("label");
+        if(option.name === "CJPacket Ordinary") {
+          deliveryOptionDiv.innerHTML = `              
+          <input class="radio-input" type="radio" name="engine" checked>
+            <span class="radio-tile">
+              <span class="radio-label">${deliveryName}</span>
+              <span class="radio-label">$${option.price.toFixed(2)}</span>
+  
+            </span>
+        `;
+        } else {
+          deliveryOptionDiv.innerHTML = `              
+          <input class="radio-input" type="radio" name="engine">
+            <span class="radio-tile">
+              <span class="radio-label">${deliveryName}</span>
+              <span class="radio-label">$${option.price.toFixed(2)}</span>
+  
+            </span>
+        `;
+        }
+
+        deliveryBlock.appendChild(deliveryOptionDiv);
+      });
+      const shippingInputs = document.querySelectorAll('.radio-input');
+
+shippingInputs.forEach(input => {
+  input.addEventListener('change', () => {
+    const priceElement = input.nextElementSibling.querySelector('.radio-label:last-child');
+    const price = Number(priceElement.textContent.replace('$', ''));
+    console.log(price)
+    // Inside shipping input change handler
+
+const previousTotal = Number(totalsum);
+console.log("Previous")
+
+console.log(previousTotal)
+totalsum = previousTotal + price;
+console.log("New")
+
+console.log(totalsum)
+// Inside shipping input change handler
+
+totalElement.innerText = `$${totalsum.toFixed(2)}`;
+// Inside shipping input change handler
+const deliveryPriceElement = document.querySelector(".checkout_shipping_price")
+deliveryPriceElement.innerText = `$${price.toFixed(2)}`;
+removeExistingButtons()
+// Inside shipping input change handler 
+
+updatePayPal(totalsum);
+  });
+})
+    });
+});
+// Trigger change event on page load
+window.addEventListener("load", () => {
+  selectElement.dispatchEvent(new Event("change"));
+});
 
 async function checkAll(callbackk) {
   const validationStates = {
@@ -332,7 +556,11 @@ async function checkAll(callbackk) {
       zip: shippingZip,
       country: shippingCountry,
     };
-    if (validationStates["zip"] === true && shippingAddress !== "" && shippingCity !== "") {
+    if (
+      validationStates["zip"] === true &&
+      shippingAddress !== "" &&
+      shippingCity !== ""
+    ) {
       fetch("/check-address", {
         method: "POST",
         headers: {
@@ -347,65 +575,63 @@ async function checkAll(callbackk) {
         .then((response) => response.json())
         .then((data) => {
           const dataArray = data.data;
-if(dataArray.results.length > 0) {
-  dataArray.results.forEach((obj) => {
-    if (
-      obj.postcode === serverData.zip &&
-      obj.country === serverData.country
-    ) {
-      validationStates["address"] = true;
-      if (obj.city !== shippingCity) {
-        // City does not match, show hint
-        document.querySelector(
-          ".hint"
-        ).innerHTML = `Did you mean <span class="hint_city" style="font-style: italic;cursor: pointer;">${obj.city}</span>?`;
-        const cityInput = document.getElementById("city");
-        document
-          .querySelector(".hint_city")
-          .addEventListener("click", function () {
-            const spanText =
-              document.querySelector(".hint_city").innerHTML;
-            cityInput.value = spanText;
-          });
-      } else {
-        // Clear any previous hint
-        document.querySelector(".hint").innerHTML = "";
-      }
-    } else {
-      if(obj.country !== serverData.country) {
-        document.querySelector(".countryError").innerHTML = "Incorrect country"
-      } else {
-        document.querySelector(".countryError").innerHTML = ""
-
-      }
-    }
-  });
-} else {
-  validationStates["address"] = false
-}
+          if (dataArray.results.length > 0) {
+            dataArray.results.forEach((obj) => {
+              if (
+                obj.postcode === serverData.zip &&
+                obj.country === serverData.country
+              ) {
+                validationStates["address"] = true;
+                if (obj.city !== shippingCity) {
+                  // City does not match, show hint
+                  document.querySelector(
+                    ".hint"
+                  ).innerHTML = `Did you mean <span class="hint_city" style="font-style: italic;cursor: pointer;">${obj.city}</span>?`;
+                  const cityInput = document.getElementById("city");
+                  document
+                    .querySelector(".hint_city")
+                    .addEventListener("click", function () {
+                      const spanText =
+                        document.querySelector(".hint_city").innerHTML;
+                      cityInput.value = spanText;
+                    });
+                } else {
+                  // Clear any previous hint
+                  document.querySelector(".hint").innerHTML = "";
+                }
+              } else {
+                if (obj.country !== serverData.country) {
+                  document.querySelector(".countryError").innerHTML =
+                    "Incorrect country";
+                } else {
+                  document.querySelector(".countryError").innerHTML = "";
+                }
+              }
+            });
+          } else {
+            validationStates["address"] = false;
+          }
 
           callback();
         })
         .catch((error) => {
-          validationStates["address"] = false
+          validationStates["address"] = false;
           console.log("Error:");
           console.log(error);
           callback();
         });
     } else {
-      validationStates["address"] = false
+      validationStates["address"] = false;
       if (shippingAddress === "") {
         document.querySelector(".errorAddress").innerHTML =
           "Address can`t be empty";
       } else {
         document.querySelector(".errorAddress").innerHTML = "";
       }
-      if(shippingCity === "") {
-        document.querySelector(".cityError").innerHTML =
-        "City can`t be empty";
+      if (shippingCity === "") {
+        document.querySelector(".cityError").innerHTML = "City can`t be empty";
       } else {
-        document.querySelector(".cityError").innerHTML =
-        "";
+        document.querySelector(".cityError").innerHTML = "";
       }
       callback();
     }
@@ -447,7 +673,7 @@ function storeOrder() {
   // Loop through the cart items and create a new object for each product
   for (const key in cartData) {
     const product = {
-      delivery: cartData[key].productDelivery,
+      delivery: deliveryOption,
       name: cartData[key].productTitle,
       quantity: cartData[key].productAmount,
       color: cartData[key].productColor,

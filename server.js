@@ -17,8 +17,8 @@ const db = mysql.createPool({
   password: process.env.TEST_DB_PASSWORD,
   database: process.env.TEST_DB_NAME,
 });
-const cron = require('node-cron');
-
+const cron = require("node-cron");
+const fs = require("fs");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -504,6 +504,15 @@ app.post("/send-success", (req, res) => {
     }
   });
 });
+app.post("/check-sum", (req, res) => {
+  let sum = req.body.sum;
+  console.log(sum)
+  if(sum < 45) {
+    res.status(400).send()
+  } else {
+    res.status(200).send()
+  }
+})
 
 //? Start Server
 // Attempt to get a connection from the pool and check the status
@@ -523,31 +532,95 @@ app.post("/check-connection", (req, res) => {
 });
 
 //? CJDROPSHIPPING API
-/*fetch(
-  "https://developers.cjdropshipping.com/api2.0/v1/authentication/refreshAccessToken",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      refreshToken: `${process.env.REFRESH_TOKEN}`,
-    }),
-  }
-)
-  .then((response) => response.json())
-  .then((data) => {
-    // Handle the response data
-    console.log(data);
-  })
-  .catch((error) => {
-    // Handle errors
-    console.error("Error:", error);
-  });*/
-cron.schedule('*/30 * * * * *', () => {
-console.log("30 seconds");
+// cron.schedule("*/30 * * * * *", () => {
+//   let envFileContents = fs.readFileSync(".env", "utf8");
 
-})
+//   fetch(
+//     "https://developers.cjdropshipping.com/api2.0/v1/authentication/refreshAccessToken",
+//     {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         refreshToken: `${process.env.REFRESH_TOKEN}`,
+//       }),
+//     }
+//   )
+//     .then((response) => response.json())
+//     .then((data) => {
+//       // Handle the response data
+//       const accessToken = data.data.accessToken;
+//       // Replace the old token with the new one
+//       envFileContents = envFileContents.replace(
+//         new RegExp(`ACCESS_TOKEN=.*`),
+//         `ACCESS_TOKEN='${accessToken}'`
+//       );
+//       console.log(envFileContents)
+
+//       fs.writeFileSync(".env", envFileContents);
+//     })
+//     .catch((error) => {
+//       // Handle errors
+//       console.error("Error:", error);
+//     });
+// });
+app.post("/delivery-calculate", (req, res) => {
+  const endCountryCode = req.body.end;
+  console.log("End country: " + endCountryCode);
+  const products = req.body.products;
+  fetch(
+    "https://developers.cjdropshipping.com/api2.0/v1/logistic/freightCalculate",
+    {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+        "CJ-Access-Token": `${process.env.ACCESS_TOKEN}`,
+      },
+      body: JSON.stringify({
+        startCountryCode: "CN",
+        endCountryCode: `${endCountryCode}`,
+        products: products,
+      }),
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Response:");
+      // Filter options
+      const options = data.data
+        .filter((option) => {
+          return (
+            option.logisticName === "CJPacket Ordinary" ||
+            option.logisticName === "CJPacket Fast Ordinary" ||
+            option.logisticName === "DHL Official"
+          );
+        })
+        .map((option) => {
+          return {
+            name: option.logisticName,
+            price: option.logisticPrice,
+            time: option.logisticAging,
+          };
+        });
+        console.log("Sent data")
+        res.json(options);
+
+    })
+    .catch((error) => console.error("Error:", error));
+});
+// fetch(
+//   "https://developers.cjdropshipping.com/api2.0/v1/product/query?pid=1636420804864913408",
+//   {
+//     method: "get",
+//     headers: {
+//       "CJ-Access-Token": process.env.ACCESS_TOKEN,
+//     },
+//   }
+// )
+//   .then((response) => response.json())
+//   .then((data) => console.log(data.data))
+//   .catch((error) => console.error("Error:", error));
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -87,7 +87,6 @@ const existingItems = cartData.find(
 );
 if (existingItems) {
   savedColor = existingItems.productColor;
-  savedDelivery = existingItems.productDelivery;
   productImage = existingItems.productImage
 }
 if (savedColor === "green") {
@@ -321,7 +320,6 @@ function updateCartData() {
     productPrice: productPrice,
     productImage: productImage,
     productColor: savedColor,
-    productDelivery: savedDelivery,
   });
   addToCart.classList.add("clicked");
   addToCart.disabled = true;
