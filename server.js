@@ -565,6 +565,7 @@ app.post("/check-connection", (req, res) => {
 // });
 let delvieryArray = [];
 app.post("/delivery-calculate", (req, res) => {
+  console.log("called a /delviery-calculate route...");
   const endCountryCode = req.body.end;
   const products = req.body.products;
   fetch(
@@ -584,6 +585,7 @@ app.post("/delivery-calculate", (req, res) => {
   )
     .then((response) => response.json())
     .then((data) => {
+      console.log("working with data...");
       // Filter options
       const options = data.data
         .filter((option) => {
@@ -606,6 +608,7 @@ app.post("/delivery-calculate", (req, res) => {
             time: option.logisticAging,
           };
         });
+      console.log("returning data...");
       res.json(options);
     })
     .catch((error) => console.error("Error:", error));
