@@ -19,6 +19,13 @@ const db = mysql.createPool({
 });
 const cron = require("node-cron");
 const fs = require("fs");
+const environment = process.env.ENVIRONMENT || "sandbox";
+const client_id = process.env.CLIENT_ID;
+const client_secret = process.env.CLIENT_SECRET;
+const endpoint_url =
+  environment === "sandbox"
+    ? "https://api-m.sandbox.paypal.com"
+    : "https://api-m.paypal.com";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -504,15 +511,6 @@ app.post("/send-success", (req, res) => {
     }
   });
 });
-app.post("/check-sum", (req, res) => {
-  let sum = req.body.sum;
-  console.log(sum)
-  if(sum < 45) {
-    res.status(400).send()
-  } else {
-    res.status(200).send()
-  }
-})
 
 //? Start Server
 // Attempt to get a connection from the pool and check the status
@@ -565,9 +563,9 @@ app.post("/check-connection", (req, res) => {
 //       console.error("Error:", error);
 //     });
 // });
+let delvieryArray = [];
 app.post("/delivery-calculate", (req, res) => {
   const endCountryCode = req.body.end;
-  console.log("End country: " + endCountryCode);
   const products = req.body.products;
   fetch(
     "https://developers.cjdropshipping.com/api2.0/v1/logistic/freightCalculate",
@@ -586,7 +584,6 @@ app.post("/delivery-calculate", (req, res) => {
   )
     .then((response) => response.json())
     .then((data) => {
-      console.log("Response:");
       // Filter options
       const options = data.data
         .filter((option) => {
@@ -597,17 +594,139 @@ app.post("/delivery-calculate", (req, res) => {
           );
         })
         .map((option) => {
+          delvieryArray.push({
+            name: option.logisticName,
+            price: option.logisticPrice,
+            time: option.logisticAging,
+          });
+
           return {
             name: option.logisticName,
             price: option.logisticPrice,
             time: option.logisticAging,
           };
         });
-        console.log("Sent data")
-        res.json(options);
-
+      res.json(options);
     })
     .catch((error) => console.error("Error:", error));
+});
+app.post("/create_order", (req, res) => {
+  if (isOk === true) {
+    console.log("creating order...")
+    currentPrice = Number(currentPrice.toFixed(2));
+    console.log(currentPrice)
+      get_access_token()
+        .then((access_token) => {
+          let order_data_json = {
+            intent: req.body.intent.toUpperCase(),
+            purchase_units: [
+              {
+                amount: {
+                  currency_code: "USD",
+                  value: `${currentPrice}`,
+                },
+              },
+            ],
+          };
+          const data = JSON.stringify(order_data_json);
+
+          fetch(endpoint_url + "/v2/checkout/orders", {
+            //https://developer.paypal.com/docs/api/orders/v2/#orders_create
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${access_token}`,
+            },
+            body: data,
+          })
+            .then((res) => res.json())
+            .then((json) => {
+              res.send(json);
+            }); //Send minimal data to client
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).send(err);
+        });
+  } else {
+    console.log("order didnt validate...")
+  }
+});
+function get_access_token() {
+  const auth = `${client_id}:${client_secret}`;
+  const data = "grant_type=client_credentials";
+  return fetch(endpoint_url + "/v1/oauth2/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${Buffer.from(auth).toString("base64")}`,
+    },
+    body: data,
+  })
+    .then((res) => res.json())
+    .then((json) => {
+      return json.access_token;
+    });
+}
+app.post("/complete_order", (req, res) => {
+  get_access_token()
+    .then((access_token) => {
+      fetch(
+        endpoint_url +
+          "/v2/checkout/orders/" +
+          req.body.order_id +
+          "/" +
+          req.body.intent,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .then((json) => {
+          res.send(json);
+        }); //Send minimal data to client
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err);
+    });
+});
+let isOk = false;
+let currentPrice;
+app.post("/check-price", (req, res) => {
+  const deliveryPrice = req.body.price;
+  const deliveryNamee = req.body.name;
+  delvieryArray.forEach((arrus) => {
+    if (arrus.name === `${deliveryNamee}`) {
+      let arrusPrice;
+      if (deliveryNamee === "CJPacket Ordinary") {
+        // Assuming option.price is the variable you want to modify
+        if (arrus.price >= 23) {
+          arrusPrice = arrus.price - 23;
+        } else {
+          arrusPrice = 0;
+        }
+      }
+      if (deliveryNamee === "CJPacket Fast Ordinary") {
+        arrusPrice = Math.max(5, arrus.price - 23);
+      }
+      if (deliveryNamee === "DHL Official") {
+        arrusPrice = Math.max(10, arrus.price - 23);
+        arrusPrice = Math.round(arrusPrice * 2) / 2;
+      }
+      arrusPrice = Number(arrusPrice.toFixed(2))
+      if (deliveryPrice === arrusPrice) {
+        isOk = true;
+        currentPrice = 45.99 + arrusPrice;
+      } else {
+        isOk = false;
+      }
+    }
+  });
 });
 // fetch(
 //   "https://developers.cjdropshipping.com/api2.0/v1/product/query?pid=1636420804864913408",

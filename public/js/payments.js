@@ -4,13 +4,18 @@ if (navigator.userAgent.indexOf("Edg") !== -1) {
   document.getElementById("browser").style.paddingBottom = "10px";
   document.getElementById("browser").style.marginBottom = "1rem";
 }
-// Selector for the container where buttons are rendered
-const paypalButtonContainer = document.getElementById('paypal-button-container'); 
 
-// Function to remove any existing PayPal buttons 
-function removeExistingButtons() {
-  paypalButtonContainer.innerHTML = '';
-}
+let shippingZip;
+let shippingCity;
+let shippingAddress;
+let firstName;
+let lastName;
+let shippingPhone;
+let houseNumber;
+let orderEmail;
+let shippingCountry;
+
+
 
 let isTrue = false;
 let deliveryOption = "normal";
@@ -32,244 +37,281 @@ if (isTrue) {
 }
 // Render the PayPal button
 const errorMessage = document.querySelector(".error-message2");
-const someDataPrice = cartData[0].productPrice
-const newDataPrice = someDataPrice.replace("$", "").replace(",", ".")
-function updatePayPal(sum) {
-  paypal
-  .Buttons({
-    onClick: async function () {
-      const response = await fetch("/check-connection", {
-        method: "POST",
-      });
-      console.log(newDataPrice)
-      const response2 = await fetch("/check-sum", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({sum: newDataPrice})
-      });
-      console.log(response2)
-      if (response.status === 200) {
-        const isValid = await new Promise((resolve) => {
-          checkAll((isValid) => {
-            resolve(isValid);
+const someDataPrice = cartData[0].productPrice;
+const newDataPrice = someDataPrice.replace("$", "").replace(",", ".");
+function updatePayPal() {
+  // Helper / Utility functions
+  let url_to_head = (url) => {
+    return new Promise(function (resolve, reject) {
+      var script = document.createElement("script");
+      script.src = url;
+      script.onload = function () {
+        resolve();
+      };
+      script.onerror = function () {
+        reject("Error loading script.");
+      };
+      document.head.appendChild(script);
+    });
+  };
+  const paypal_sdk_url = "https://www.paypal.com/sdk/js";
+  const client_id =
+    "AXh5j1fggZvIaes8IhbEnM57pWoDNedqn5dEJ7W0RueFaYBYrkb4HShgFeUbBXTcQXCN0jZhfJ053R0E";
+  const currency = "USD";
+  const intent = "capture";
+  url_to_head(
+    paypal_sdk_url +
+      "?client-id=" +
+      client_id +
+      "&enable-funding=venmo&currency=" +
+      currency +
+      "&intent=" +
+      intent
+  ).then(() => {
+    let orderIdd;
+    let paypal_buttons = paypal
+      .Buttons({
+        onClick: async function () {
+          const response = await fetch("/check-connection", {
+            method: "POST",
           });
-        });
-        console.log(isValid);
-        if (isValid) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        window.scrollTo({ top: 0, behavior: "instant" });
-        document.getElementById("container").style.display = "block";
-        document.getElementById("container").style.boxShadow =
-          "0px 0px 500px 500px rgba(0,0,0,0.89)";
+          if (response.status === 200) {
+            // const isValid = await new Promise((resolve) => {
+            //   checkAll((isValid) => {
+            //     resolve(isValid);
+            //   });
+            // });
+            const isValid = true;
+            console.log(isValid);
+            if (isValid) {
+              return true;
+            } else {
+              return false;
+            }
+          } else {
+            window.scrollTo({ top: 0, behavior: "instant" });
+            document.getElementById("container").style.display = "block";
+            document.getElementById("container").style.boxShadow =
+              "0px 0px 500px 500px rgba(0,0,0,0.89)";
 
-        document.querySelector(".error-box2").style.display = "block";
-        document.querySelector(".error-box2").style.boxShadow =
-          "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-        document.body.style.overflow = "hidden";
-        return false;
-      }
-    },
-    createOrder: function (data, actions) {
-      return actions.order.create({
-        purchase_units: [
-          {
-            amount: {
-              value: `${sum}`, // Set the payment amount here
-            },
-          },
-        ],
-        application_context: { shipping_preference: "NO_SHIPPING" },
+            document.querySelector(".error-box2").style.display = "block";
+            document.querySelector(".error-box2").style.boxShadow =
+              "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+            document.body.style.overflow = "hidden";
+            return false;
+          }
+        },
+        createOrder: function (data, actions) {
+          return fetch("/create_order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ intent: intent }),
+          })
+            .then((response) => response.json())
+            .then((order) => {
+              return order.id;
+            });
+        },
+
+        onApprove: function (data, actions) {
+          let order_id = data.orderID;
+          return fetch("http://localhost:3000/complete_order", {
+            method: "post",
+            headers: { "Content-Type": "application/json; charset=utf-8" },
+            body: JSON.stringify({
+              intent: intent,
+              order_id: order_id,
+            }),
+          })
+            .then((response) => response.json())
+            .then((order_details) => {
+              storeOrder(); //Close out the PayPal buttons that were rendered
+              paypal_buttons.close();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        },
+        onError: function (err) {
+          console.log(err);
+          const inputText = err;
+
+          // Use a regular expression to extract the value associated with "name"
+          const nameMatch = /"name":"(.*?)"/.exec(inputText);
+          const nameValue = nameMatch[1];
+          switch (nameValue) {
+            case "BUYER_CANCEL":
+              errorMessage.innerHTML = "Transaction cancelled by buyer";
+              document.getElementById("container").style.display = "block";
+              document.getElementById("container").style.boxShadow =
+                "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+              document.querySelector(".error-box1").style.display = "block";
+              document.querySelector(".error-box1").style.boxShadow =
+                "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+              document.body.style.overflow = "hidden";
+
+              window.scrollTo({ top: 0, behavior: "instant" });
+
+              break;
+
+            case "INSTRUMENT_DECLINED":
+              errorMessage.innerHTML = "Payment method was declined";
+              document.getElementById("container").style.display = "block";
+              document.getElementById("container").style.boxShadow =
+                "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+              document.querySelector(".error-box1").style.display = "block";
+              document.querySelector(".error-box1").style.boxShadow =
+                "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+              document.body.style.overflow = "hidden";
+              window.scrollTo({ top: 0, behavior: "instant" });
+
+              break;
+
+            case "PAYER_ACTION_REQUIRED":
+              errorMessage.innerHTML = "Buyer action required to continue";
+              document.getElementById("container").style.display = "block";
+              document.getElementById("container").style.boxShadow =
+                "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+              document.querySelector(".error-box1").style.display = "block";
+              document.querySelector(".error-box1").style.boxShadow =
+                "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+              document.body.style.overflow = "hidden";
+              window.scrollTo({ top: 0, behavior: "instant" });
+
+              break;
+
+            case "PAYMENT_FAILURE":
+              errorMessage.innerHTML = "Payment failed, please try again";
+              document.getElementById("container").style.display = "block";
+              document.getElementById("container").style.boxShadow =
+                "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+              document.querySelector(".error-box1").style.display = "block";
+              document.querySelector(".error-box1").style.boxShadow =
+                "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+              document.body.style.overflow = "hidden";
+              window.scrollTo({ top: 0, behavior: "instant" });
+
+              break;
+
+            case "INTERNAL_SERVICE_ERROR":
+              errorMessage.innerHTML =
+                "Internal service error, try again later";
+              document.getElementById("container").style.display = "block";
+              document.getElementById("container").style.boxShadow =
+                "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+              document.querySelector(".error-box1").style.display = "block";
+              document.querySelector(".error-box1").style.boxShadow =
+                "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+              document.body.style.overflow = "hidden";
+              window.scrollTo({ top: 0, behavior: "instant" });
+
+              break;
+
+            case "NOT_CONFIGURED":
+              errorMessage.innerHTML = "PayPal buttons not properly configured";
+              document.getElementById("container").style.display = "block";
+              document.getElementById("container").style.boxShadow =
+                "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+              document.querySelector(".error-box1").style.display = "block";
+              document.querySelector(".error-box1").style.boxShadow =
+                "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+              document.body.style.overflow = "hidden";
+              window.scrollTo({ top: 0, behavior: "instant" });
+
+              break;
+
+            case "INVALID_CONFIGURATION":
+              errorMessage.innerHTML = "Invalid configuration provided";
+              document.getElementById("container").style.display = "block";
+              document.getElementById("container").style.boxShadow =
+                "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+              document.querySelector(".error-box1").style.display = "block";
+              document.querySelector(".error-box1").style.boxShadow =
+                "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+              document.body.style.overflow = "hidden";
+              window.scrollTo({ top: 0, behavior: "instant" });
+
+              break;
+
+            case "UNSUPPORTED_BROWSER":
+              errorMessage.innerHTML =
+                "This browser is not supported by PayPal";
+              document.getElementById("container").style.display = "block";
+              document.getElementById("container").style.boxShadow =
+                "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+              document.querySelector(".error-box1").style.display = "block";
+              document.querySelector(".error-box1").style.boxShadow =
+                "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+              document.body.style.overflow = "hidden";
+              window.scrollTo({ top: 0, behavior: "instant" });
+
+              break;
+
+            case "BUYER_ACCOUNT_ERROR":
+              errorMessage.innerHTML = "Problem with buyer PayPal account";
+              document.getElementById("container").style.display = "block";
+              document.getElementById("container").style.boxShadow =
+                "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+              document.querySelector(".error-box1").style.display = "block";
+              document.querySelector(".error-box1").style.boxShadow =
+                "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+              document.body.style.overflow = "hidden";
+              window.scrollTo({ top: 0, behavior: "instant" });
+
+              break;
+
+            case "DEPOSIT_FAILED":
+              errorMessage.innerHTML = "Failed to charge buyer account";
+              document.getElementById("container").style.display = "block";
+              document.getElementById("container").style.boxShadow =
+                "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+              document.querySelector(".error-box1").style.display = "block";
+              document.querySelector(".error-box1").style.boxShadow =
+                "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+              document.body.style.overflow = "hidden";
+              window.scrollTo({ top: 0, behavior: "instant" });
+
+              break;
+
+            // ... other cases
+            case "UNPROCESSABLE_ENTITY":
+              errorMessage.innerHTML =
+                "Check if your cart isn`t empty or try reloading page";
+              document.getElementById("container").style.display = "block";
+              document.getElementById("container").style.boxShadow =
+                "0px 0px 500px 500px rgba(0,0,0,0.89)";
+
+              document.querySelector(".error-box1").style.display = "block";
+              document.querySelector(".error-box1").style.boxShadow =
+                "0px 0px 50px 5000px rgba(0,0,0,0.89)";
+              document.body.style.overflow = "hidden";
+              window.scrollTo({ top: 0, behavior: "instant" });
+
+              break;
+
+            default:
+              errorMessage.innerHTML = "Unknown error occurred";
+          }
+        },
+      })
+      .render("#payment_options")
+      .then(function () {
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("checkoutForm").style.display = "block";
       });
-    },
-    onApprove: function (data, actions) {
-      return actions.order.capture().then(function (details) {
-        storeOrder();
-        // Close the PayPal tab here if needed
-        // window.close();
-      });
-    },
-    onError: function (err) {
-      const inputText = err;
-
-      // Use a regular expression to extract the value associated with "name"
-      const nameMatch = /"name":"(.*?)"/.exec(inputText);
-      const nameValue = nameMatch[1];
-      switch (nameValue) {
-        case "BUYER_CANCEL":
-          errorMessage.innerHTML = "Transaction cancelled by buyer";
-          document.getElementById("container").style.display = "block";
-          document.getElementById("container").style.boxShadow =
-            "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-          document.querySelector(".error-box1").style.display = "block";
-          document.querySelector(".error-box1").style.boxShadow =
-            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-          document.body.style.overflow = "hidden";
-
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          break;
-
-        case "INSTRUMENT_DECLINED":
-          errorMessage.innerHTML = "Payment method was declined";
-          document.getElementById("container").style.display = "block";
-          document.getElementById("container").style.boxShadow =
-            "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-          document.querySelector(".error-box1").style.display = "block";
-          document.querySelector(".error-box1").style.boxShadow =
-            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-          document.body.style.overflow = "hidden";
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          break;
-
-        case "PAYER_ACTION_REQUIRED":
-          errorMessage.innerHTML = "Buyer action required to continue";
-          document.getElementById("container").style.display = "block";
-          document.getElementById("container").style.boxShadow =
-            "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-          document.querySelector(".error-box1").style.display = "block";
-          document.querySelector(".error-box1").style.boxShadow =
-            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-          document.body.style.overflow = "hidden";
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          break;
-
-        case "PAYMENT_FAILURE":
-          errorMessage.innerHTML = "Payment failed, please try again";
-          document.getElementById("container").style.display = "block";
-          document.getElementById("container").style.boxShadow =
-            "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-          document.querySelector(".error-box1").style.display = "block";
-          document.querySelector(".error-box1").style.boxShadow =
-            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-          document.body.style.overflow = "hidden";
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          break;
-
-        case "INTERNAL_SERVICE_ERROR":
-          errorMessage.innerHTML = "Internal service error, try again later";
-          document.getElementById("container").style.display = "block";
-          document.getElementById("container").style.boxShadow =
-            "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-          document.querySelector(".error-box1").style.display = "block";
-          document.querySelector(".error-box1").style.boxShadow =
-            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-          document.body.style.overflow = "hidden";
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          break;
-
-        case "NOT_CONFIGURED":
-          errorMessage.innerHTML = "PayPal buttons not properly configured";
-          document.getElementById("container").style.display = "block";
-          document.getElementById("container").style.boxShadow =
-            "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-          document.querySelector(".error-box1").style.display = "block";
-          document.querySelector(".error-box1").style.boxShadow =
-            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-          document.body.style.overflow = "hidden";
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          break;
-
-        case "INVALID_CONFIGURATION":
-          errorMessage.innerHTML = "Invalid configuration provided";
-          document.getElementById("container").style.display = "block";
-          document.getElementById("container").style.boxShadow =
-            "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-          document.querySelector(".error-box1").style.display = "block";
-          document.querySelector(".error-box1").style.boxShadow =
-            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-          document.body.style.overflow = "hidden";
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          break;
-
-        case "UNSUPPORTED_BROWSER":
-          errorMessage.innerHTML = "This browser is not supported by PayPal";
-          document.getElementById("container").style.display = "block";
-          document.getElementById("container").style.boxShadow =
-            "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-          document.querySelector(".error-box1").style.display = "block";
-          document.querySelector(".error-box1").style.boxShadow =
-            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-          document.body.style.overflow = "hidden";
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          break;
-
-        case "BUYER_ACCOUNT_ERROR":
-          errorMessage.innerHTML = "Problem with buyer PayPal account";
-          document.getElementById("container").style.display = "block";
-          document.getElementById("container").style.boxShadow =
-            "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-          document.querySelector(".error-box1").style.display = "block";
-          document.querySelector(".error-box1").style.boxShadow =
-            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-          document.body.style.overflow = "hidden";
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          break;
-
-        case "DEPOSIT_FAILED":
-          errorMessage.innerHTML = "Failed to charge buyer account";
-          document.getElementById("container").style.display = "block";
-          document.getElementById("container").style.boxShadow =
-            "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-          document.querySelector(".error-box1").style.display = "block";
-          document.querySelector(".error-box1").style.boxShadow =
-            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-          document.body.style.overflow = "hidden";
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          break;
-
-        // ... other cases
-        case "UNPROCESSABLE_ENTITY":
-          errorMessage.innerHTML =
-            "Check if your cart isn`t empty or try reloading page";
-          document.getElementById("container").style.display = "block";
-          document.getElementById("container").style.boxShadow =
-            "0px 0px 500px 500px rgba(0,0,0,0.89)";
-
-          document.querySelector(".error-box1").style.display = "block";
-          document.querySelector(".error-box1").style.boxShadow =
-            "0px 0px 50px 5000px rgba(0,0,0,0.89)";
-          document.body.style.overflow = "hidden";
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          break;
-
-        default:
-          errorMessage.innerHTML = "Unknown error occurred";
-      }
-    },
-  })
-  .render("#paypal-button-container")
-  .then(function () {
-    document.getElementById("loader").style.display = "none";
-    document.getElementById("checkoutForm").style.display = "block";
   });
 }
-updatePayPal(totalsum)
+updatePayPal(totalsum);
 
 // Define a mapping object for country names to country codes
 const countryMapping = {
@@ -373,16 +415,25 @@ selectElement.addEventListener("change", function () {
   })
     .then((response) => response.json())
     .then((options) => {
-      console.log("Got Data")
+      console.log("Got Data");
       const REDUCE_PRICE = 23;
       // Sort options array based on delivery type
-options.sort((a, b) => {
-  const order = ["CJPacket Ordinary", "CJPacket Fast Ordinary", "DHL Official"];
-  return order.indexOf(a.name) - order.indexOf(b.name);
-});
+      options.sort((a, b) => {
+        const order = [
+          "CJPacket Ordinary",
+          "CJPacket Fast Ordinary",
+          "DHL Official",
+        ];
+        return order.indexOf(a.name) - order.indexOf(b.name);
+      });
       options.forEach((option) => {
         if (option.name === "CJPacket Ordinary") {
-          option.price = 0;
+          // Assuming option.price is the variable you want to modify
+          if (option.price >= 23) {
+            option.price -= 23;
+          } else {
+            option.price = 0;
+          }
         }
 
         if (option.name === "CJPacket Fast Ordinary") {
@@ -390,8 +441,8 @@ options.sort((a, b) => {
         }
 
         if (option.name === "DHL Official") {
-          option.price = Math.max(30, option.price - REDUCE_PRICE);
-          option.price = Math.round(option.price*2)/2
+          option.price = Math.max(10, option.price - REDUCE_PRICE);
+          option.price = Math.round(option.price * 2) / 2;
         }
       });
       // Log them to console
@@ -415,11 +466,13 @@ options.sort((a, b) => {
         }
 
         const deliveryOptionDiv = document.createElement("label");
-        if(option.name === "CJPacket Ordinary") {
+        if (option.name === "CJPacket Ordinary") {
           deliveryOptionDiv.innerHTML = `              
           <input class="radio-input" type="radio" name="engine" checked>
             <span class="radio-tile">
-              <span class="radio-label">${deliveryName}</span>
+              <span class="radio-label" data-value="${
+                option.name
+              }">${deliveryName}</span>
               <span class="radio-label">$${option.price.toFixed(2)}</span>
   
             </span>
@@ -428,7 +481,9 @@ options.sort((a, b) => {
           deliveryOptionDiv.innerHTML = `              
           <input class="radio-input" type="radio" name="engine">
             <span class="radio-tile">
-              <span class="radio-label">${deliveryName}</span>
+              <span class="radio-label" data-value="${
+                option.name
+              }">${deliveryName}</span>
               <span class="radio-label">$${option.price.toFixed(2)}</span>
   
             </span>
@@ -437,35 +492,51 @@ options.sort((a, b) => {
 
         deliveryBlock.appendChild(deliveryOptionDiv);
       });
-      const shippingInputs = document.querySelectorAll('.radio-input');
+      const shippingInputs = document.querySelectorAll(".radio-input");
 
-shippingInputs.forEach(input => {
-  input.addEventListener('change', () => {
-    const priceElement = input.nextElementSibling.querySelector('.radio-label:last-child');
-    const price = Number(priceElement.textContent.replace('$', ''));
-    console.log(price)
-    // Inside shipping input change handler
+      shippingInputs.forEach((input) => {
+        input.addEventListener("change", () => {
+          const priceElement = input.nextElementSibling.querySelector(
+            ".radio-label:last-child"
+          );
+          const price = Number(priceElement.textContent.replace("$", ""));
+          const deliveryNamee = input.nextElementSibling
+            .querySelector(".radio-label:first-child")
+            .getAttribute("data-value");
+          console.log(deliveryNamee);
+          // Inside shipping input change handler
 
-const previousTotal = Number(totalsum);
-console.log("Previous")
+          const previousTotal = Number(sum);
 
-console.log(previousTotal)
-totalsum = previousTotal + price;
-console.log("New")
+          totalsum = previousTotal + price;
+          // Inside shipping input change handler
 
-console.log(totalsum)
-// Inside shipping input change handler
-
-totalElement.innerText = `$${totalsum.toFixed(2)}`;
-// Inside shipping input change handler
-const deliveryPriceElement = document.querySelector(".checkout_shipping_price")
-deliveryPriceElement.innerText = `$${price.toFixed(2)}`;
-removeExistingButtons()
-// Inside shipping input change handler 
-
-updatePayPal(totalsum);
-  });
-})
+          totalElement.innerText = `$${totalsum.toFixed(2)}`;
+          // Inside shipping input change handler
+          const deliveryPriceElement = document.querySelector(
+            ".checkout_shipping_price"
+          );
+          const deliveryNameee = input.nextElementSibling
+          .querySelector(".radio-label:first-child")
+          .textContent
+          const delvierySpan = document.querySelector(".delvieryClass");
+          delvierySpan.innerHTML = `${deliveryNameee}`
+          deliveryPriceElement.innerText = `$${price.toFixed(2)}`;
+          fetch("/check-price", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ price: price, name: deliveryNamee }),
+          }).then((response) => {
+            console.log(response);
+          });
+          // Inside shipping input change handler
+        });
+      });
+      // Trigger the change event for each input
+      const evente = new Event("change");
+      shippingInputs[0].dispatchEvent(evente);
     });
 });
 // Trigger change event on page load
@@ -483,15 +554,15 @@ async function checkAll(callbackk) {
     zip: false,
   };
 
-  const shippingZip = document.getElementById("zip").value;
-  const shippingCity = document.getElementById("city").value;
-  const shippingAddress = document.getElementById("address").value;
-  const firstName = document.getElementById("firstName").value;
-  const lastName = document.getElementById("lastName").value;
-  const shippingPhone = document.getElementById("phone").value;
-  const houseNumber = document.getElementById("house").value;
-  const orderEmail = document.getElementById("email").value;
-  const shippingCountry = document.querySelector(".form-select").value;
+   shippingZip = document.getElementById("zip").value;
+   shippingCity = document.getElementById("city").value;
+   shippingAddress = document.getElementById("address").value;
+   firstName = document.getElementById("firstName").value;
+   lastName = document.getElementById("lastName").value;
+   shippingPhone = document.getElementById("phone").value;
+   houseNumber = document.getElementById("house").value;
+   orderEmail = document.getElementById("email").value;
+   shippingCountry = document.querySelector(".form-select").value;
 
   function validateName() {
     if (firstName === "" || lastName === "") {

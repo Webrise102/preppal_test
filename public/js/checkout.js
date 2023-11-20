@@ -38,7 +38,7 @@ function showProducts() {
         <div style="display:flex;flex-direction: column;">
         <p class="checkout_product_title" style="margin-bottom: 0;padding-bottom: 2px;">${item.productTitle}</p>
         <p style="margin-bottom: 0;padding-bottom:2px;font-size: 10px;color:#00000080;">Color: ${item.productColor}</p>
-        <p style="margin-bottom: 0;padding-bottom:2px;font-size: 10px;color:#00000080;">Delivery: ${item.productDelivery}</p>
+        <p style="margin-bottom: 0;padding-bottom:2px;font-size: 10px;color:#00000080;">Delivery: <span class="delvieryClass">Default Shipping</span></p>
         </div>
       </div>
       <p class="checkout_product_price">${item.productPrice}</p>
