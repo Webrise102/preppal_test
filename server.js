@@ -586,6 +586,8 @@ app.post("/delivery-calculate", (req, res) => {
     .then((response) => response.json())
     .then((data) => {
       console.log("working with data...");
+      console.log("data:");
+      console.log(data.data);
       // Filter options
       const options = data.data
         .filter((option) => {
