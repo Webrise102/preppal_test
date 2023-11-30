@@ -761,6 +761,8 @@ async function checkAll(callbackk) {
             });
           } else {
             validationStates["address"] = false;
+            document.querySelector(".deliveryFormError").innerHTML = "No such an adress found, recheck country/address"
+            document.querySelector(".deliveryFormError").style.color = "red"
           }
           console.log(validationStates);
           callback();

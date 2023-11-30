@@ -12,14 +12,14 @@ const schedule = require("node-schedule");
 const nodemailer = require("nodemailer");
 const fetch = require("node-fetch");
 const db = mysql.createPool({
-  host: process.env.TEST_DB_HOST,
-  user: process.env.TEST_DB_USER,
-  password: process.env.TEST_DB_PASSWORD,
-  database: process.env.TEST_DB_NAME,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 const cron = require("node-cron");
 const fs = require("fs");
-const environment = process.env.ENVIRONMENT || "sandbox";
+const environment = process.env.ENVIRONMENT || "live";
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
 const endpoint_url =
@@ -539,39 +539,39 @@ app.post("/check-connection", (req, res) => {
 });
 
 //? CJDROPSHIPPING API
-// cron.schedule("*/30 * * * * *", () => {
-//   let envFileContents = fs.readFileSync(".env", "utf8");
+cron.schedule("*/30 * * * * *", () => {
+  let envFileContents = fs.readFileSync(".env", "utf8");
 
-//   fetch(
-//     "https://developers.cjdropshipping.com/api2.0/v1/authentication/refreshAccessToken",
-//     {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         refreshToken: `${process.env.REFRESH_TOKEN}`,
-//       }),
-//     }
-//   )
-//     .then((response) => response.json())
-//     .then((data) => {
-//       // Handle the response data
-//       const accessToken = data.data.accessToken;
-//       // Replace the old token with the new one
-//       envFileContents = envFileContents.replace(
-//         new RegExp(`ACCESS_TOKEN=.*`),
-//         `ACCESS_TOKEN='${accessToken}'`
-//       );
-//       console.log(envFileContents)
+  fetch(
+    "https://developers.cjdropshipping.com/api2.0/v1/authentication/refreshAccessToken",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        refreshToken: `${process.env.REFRESH_TOKEN}`,
+      }),
+    }
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      // Handle the response data
+      const accessToken = data.data.accessToken;
+      // Replace the old token with the new one
+      envFileContents = envFileContents.replace(
+        new RegExp(`ACCESS_TOKEN=.*`),
+        `ACCESS_TOKEN='${accessToken}'`
+      );
+      console.log(envFileContents)
 
-//       fs.writeFileSync(".env", envFileContents);
-//     })
-//     .catch((error) => {
-//       // Handle errors
-//       console.error("Error:", error);
-//     });
-// });
+      fs.writeFileSync(".env", envFileContents);
+    })
+    .catch((error) => {
+      // Handle errors
+      console.error("Error:", error);
+    });
+});
 let delvieryArray = [];
 app.post("/delivery-calculate", (req, res) => {
   const endCountryCode = req.body.end;
