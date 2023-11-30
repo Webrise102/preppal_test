@@ -22,10 +22,10 @@ const fs = require("fs");
 const environment = process.env.ENVIRONMENT || "live";
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
-const endpoint_url =
-  environment === "live"
-    ? "https://api-m.sandbox.paypal.com"
-    : "https://api-m.paypal.com";
+const endpoint_url = "https://api.paypal.com";
+  // environment === "live"
+  //   ? "https://api-m.sandbox.paypal.com"
+  //   : "https://api-m.paypal.com";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -684,6 +684,7 @@ function get_access_token() {
   })
     .then((res) => res.json())
     .then((json) => {
+      console.log(json)
       return json.access_token;
     });
 }

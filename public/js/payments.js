@@ -113,7 +113,7 @@ function updatePayPal() {
 
         onApprove: function (data, actions) {
           let order_id = data.orderID;
-          return fetch("https://preppal-test.onrender.com/complete_order", {
+          return fetch("http://localhost:3000/complete_order", {
             method: "post",
             headers: { "Content-Type": "application/json; charset=utf-8" },
             body: JSON.stringify({
