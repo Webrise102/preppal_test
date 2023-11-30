@@ -23,9 +23,9 @@ const environment = process.env.ENVIRONMENT || "live";
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
 const endpoint_url = "https://api.paypal.com";
-// environment === "live"
-//   ? "https://api-m.sandbox.paypal.com"
-//   : "https://api-m.paypal.com";
+  // environment === "live"
+  //   ? "https://api-m.sandbox.paypal.com"
+  //   : "https://api-m.paypal.com";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -558,26 +558,26 @@ cron.schedule("0 0 */30 * *", () => {
     .then((data) => {
       // Handle the response data
       const accessToken = data.data.accessToken;
-      // Split the accessToken into three parts
-      const part1 = accessToken.slice(0, 253);
-      const part2 = accessToken.slice(253, 505);
-      const part3 = accessToken.slice(505);
+// Split the accessToken into three parts
+const part1 = accessToken.slice(0, 253);
+const part2 = accessToken.slice(253, 505);
+const part3 = accessToken.slice(505);
 
-      // Replace the old token with the new ones in your .env file
-      envFileContents = envFileContents.replace(
-        /ACCESS_TOKEN1='.*'/,
-        `ACCESS_TOKEN1='${part1}'`
-      );
-      envFileContents = envFileContents.replace(
-        /ACCESS_TOKEN2='.*'/,
-        `ACCESS_TOKEN2='${part2}'`
-      );
-      envFileContents = envFileContents.replace(
-        /ACCESS_TOKEN3='.*'/,
-        `ACCESS_TOKEN3='${part3}'`
-      );
+// Replace the old token with the new ones in your .env file
+envFileContents = envFileContents.replace(
+  /ACCESS_TOKEN1='.*'/,
+  `ACCESS_TOKEN1='${part1}'`
+);
+envFileContents = envFileContents.replace(
+  /ACCESS_TOKEN2='.*'/,
+  `ACCESS_TOKEN2='${part2}'`
+);
+envFileContents = envFileContents.replace(
+  /ACCESS_TOKEN3='.*'/,
+  `ACCESS_TOKEN3='${part3}'`
+);
 
-      fs.writeFileSync(".env", envFileContents);
+fs.writeFileSync(".env", envFileContents);
     })
     .catch((error) => {
       // Handle errors
@@ -605,6 +605,7 @@ app.post("/delivery-calculate", (req, res) => {
   )
     .then((response) => response.json())
     .then((data) => {
+
       // Filter options
       const options = data.data
         .filter((option) => {
@@ -668,7 +669,6 @@ app.post("/create_order", (req, res) => {
         res.status(500).send(err);
       });
   } else {
-    res.status(500).send();
   }
 });
 function get_access_token() {
@@ -684,7 +684,7 @@ function get_access_token() {
   })
     .then((res) => res.json())
     .then((json) => {
-      console.log(json);
+      console.log(json)
       return json.access_token;
     });
 }
@@ -720,7 +720,6 @@ let currentPrice;
 app.post("/check-price", (req, res) => {
   const deliveryPrice = req.body.price;
   const deliveryNamee = req.body.name;
-  console.log(deliveryPrice + " " + deliveryNamee);
   delvieryArray.forEach((arrus) => {
     if (arrus.name === `${deliveryNamee}`) {
       let arrusPrice;
@@ -748,8 +747,6 @@ app.post("/check-price", (req, res) => {
       }
     }
   });
-  console.log(isOk);
-  res.status(204).send();
 });
 
 app.listen(port, () => {
