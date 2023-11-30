@@ -402,6 +402,7 @@ selectElement.addEventListener("change", function () {
       vid = videoIds[`${plugType}_black`];
     }
   });
+  console.log("making request on /delivery-calculate route");
   fetch("/delivery-calculate", {
     method: "POST",
     headers: {
@@ -414,6 +415,10 @@ selectElement.addEventListener("change", function () {
   })
     .then((response) => response.json())
     .then((options) => {
+<<<<<<< HEAD
+=======
+      console.log("Working with data...");
+>>>>>>> 9cbb96fc7f2bb377e66e6a77c05066f507a2e9ce
       const REDUCE_PRICE = 23;
       // Sort options array based on delivery type
       options.sort((a, b) => {
@@ -443,6 +448,7 @@ selectElement.addEventListener("change", function () {
           option.price = Math.round(option.price * 2) / 2;
         }
       });
+      
       // Log them to console
       options.forEach((option) => {
         let deliveryName;
@@ -505,6 +511,7 @@ selectElement.addEventListener("change", function () {
         }
 
         deliveryBlock.appendChild(deliveryOptionDiv);
+        console.log("Ready data");
       });
       const shippingInputs = document.querySelectorAll(".radio-input");
 
