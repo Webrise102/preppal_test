@@ -425,6 +425,7 @@ selectElement.addEventListener("change", function () {
         return order.indexOf(a.name) - order.indexOf(b.name);
       });
       options.forEach((option) => {
+        deliveryOption = `${option.name}`
         if (option.name === "CJPacket Ordinary") {
           // Assuming option.price is the variable you want to modify
           if (option.price >= 23) {
