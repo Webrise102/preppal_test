@@ -12,10 +12,10 @@ const schedule = require("node-schedule");
 const nodemailer = require("nodemailer");
 const fetch = require("node-fetch");
 const db = mysql.createPool({
-  host: process.env.TEST_DB_HOST,
-  user: process.env.TEST_DB_USER,
-  password: process.env.TEST_DB_PASSWORD,
-  database: process.env.TEST_DB_NAME,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 const cron = require("node-cron");
 const fs = require("fs");
