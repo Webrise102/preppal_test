@@ -539,39 +539,39 @@ app.post("/check-connection", (req, res) => {
 });
 
 //? CJDROPSHIPPING API
-cron.schedule('0 0 */30 * *', () => {
-  let envFileContents = fs.readFileSync(".env", "utf8");
+// cron.schedule('0 0 */30 * *', () => {
+//   let envFileContents = fs.readFileSync(".env", "utf8");
 
-  fetch(
-    "https://developers.cjdropshipping.com/api2.0/v1/authentication/refreshAccessToken",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        refreshToken: `${process.env.REFRESH_TOKEN}`,
-      }),
-    }
-  )
-    .then((response) => response.json())
-    .then((data) => {
-      // Handle the response data
-      const accessToken = data.data.accessToken;
-      // Replace the old token with the new one
-      envFileContents = envFileContents.replace(
-        new RegExp(`ACCESS_TOKEN=.*`),
-        `ACCESS_TOKEN='${accessToken}'`
-      );
-      console.log(envFileContents)
+//   fetch(
+//     "https://developers.cjdropshipping.com/api2.0/v1/authentication/refreshAccessToken",
+//     {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         refreshToken: `${process.env.REFRESH_TOKEN}`,
+//       }),
+//     }
+//   )
+//     .then((response) => response.json())
+//     .then((data) => {
+//       // Handle the response data
+//       const accessToken = data.data.accessToken;
+//       // Replace the old token with the new one
+//       envFileContents = envFileContents.replace(
+//         new RegExp(`ACCESS_TOKEN=.*`),
+//         `ACCESS_TOKEN='${accessToken}'`
+//       );
+//       console.log(envFileContents)
 
-      fs.writeFileSync(".env", envFileContents);
-    })
-    .catch((error) => {
-      // Handle errors
-      console.error("Error:", error);
-    });
-});
+//       fs.writeFileSync(".env", envFileContents);
+//     })
+//     .catch((error) => {
+//       // Handle errors
+//       console.error("Error:", error);
+//     });
+// });
 let delvieryArray = [];
 app.post("/delivery-calculate", (req, res) => {
   const endCountryCode = req.body.end;
@@ -582,7 +582,7 @@ app.post("/delivery-calculate", (req, res) => {
       method: "post",
       headers: {
         "Content-Type": "application/json",
-        "CJ-Access-Token": `${process.env.ACCESS_TOKEN}`,
+        "CJ-Access-Token": `${process.env.ACCESS_TOKEN1} + ${process.env.ACCESS_TOKEN2} + ${process.env.ACCESS_TOKEN3}`,
       },
       body: JSON.stringify({
         startCountryCode: "CN",
