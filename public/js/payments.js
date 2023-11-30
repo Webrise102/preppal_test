@@ -54,7 +54,7 @@ function updatePayPal() {
   };
   const paypal_sdk_url = "https://www.paypal.com/sdk/js";
   const client_id =
-    "AXh5j1fggZvIaes8IhbEnM57pWoDNedqn5dEJ7W0RueFaYBYrkb4HShgFeUbBXTcQXCN0jZhfJ053R0E";
+    "AX62qfXBQxAxUO8xgerLTWXGs_bVNIfC_xLpUP_3SBbvZJ2tod3_xE4BLejA6VYaDZXO01mkY7l0D9DG";
   const currency = "USD";
   const intent = "capture";
   url_to_head(
