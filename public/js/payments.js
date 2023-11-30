@@ -869,7 +869,7 @@ function storeOrder() {
       firstName: firstName,
       lastName: lastName,
       address: shippingCity + " " + shippingAddress + " " + shippingZip,
-      total: sum,
+      total: totalsum,
       orderDate1: Date1,
       orderDate2: Date2,
       orderNumber: orderNumber,
