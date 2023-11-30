@@ -12,10 +12,10 @@ const schedule = require("node-schedule");
 const nodemailer = require("nodemailer");
 const fetch = require("node-fetch");
 const db = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: process.env.TEST_DB_HOST,
+  user: process.env.TEST_DB_USER,
+  password: process.env.TEST_DB_PASSWORD,
+  database: process.env.TEST_DB_NAME,
 });
 const cron = require("node-cron");
 const fs = require("fs");
@@ -337,6 +337,7 @@ app.post("/create-order", (req, res) => {
   const OrderAddress2 = req.body.OrderAddress2;
   const OrderProvince = req.body.OrderProvince;
   const OrderNumber = req.body.OrderNumber;
+  const OrderCountry = req.body.OrderCountry;
   // Create a Date object from the input string
   const date = new Date(OrderDate);
 
@@ -370,11 +371,12 @@ app.post("/create-order", (req, res) => {
     OrderProducts,
     OrderAddress2,
     OrderProvince,
-    OrderNumber
+    OrderNumber,
+    OrderCountry
   );
 
   const insertSql =
-    "INSERT INTO orderscj (OrderDate, OrderEmail, FirstName, LastName, OrderCity, OrderAddress, OrderZIP, Total, OrderStatus, OrderTrackingNumber, OrderPhone, OrderProducts, OrderAddress2, OrderProvince, OrderNumber) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO orderscj (OrderDate, OrderEmail, FirstName, LastName, OrderCity, OrderAddress, OrderZIP, Total, OrderStatus, OrderTrackingNumber, OrderPhone, OrderProducts, OrderAddress2, OrderProvince, OrderNumber, OrderCountry) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   const values = [
     mysqlFriendlyDate,
     OrderEmail,
@@ -391,6 +393,7 @@ app.post("/create-order", (req, res) => {
     OrderAddress2,
     OrderProvince,
     OrderNumber,
+    OrderCountry,
   ];
 
   db.query(insertSql, values, (err, result) => {
@@ -425,22 +428,28 @@ app.post("/send-success", (req, res) => {
   const lastName = req.body.lastName;
   const orderAddress = req.body.address;
   const total = req.body.total;
-  const orderDate = req.body.orderDate;
-  const orderEmail = req.body.email;
-  console.log(firstName, orderNumber, orderAddress, total, orderDate);
-  const dayMinInit = new Date();
+  const orderDate1 = req.body.orderDate1;
+  const orderDate2 = req.body.orderDate2;
 
-  const futureMinDate = new Date(dayMinInit);
-  futureMinDate.setDate(dayMinInit.getDate() + 8);
+  const orderEmail = req.body.email;
+  // Get current date
+  const today = new Date();
+
+  // Add days to current date
+  const futureMinDate = new Date();
+  futureMinDate.setDate(today.getDate() + Number(orderDate1));
+
+  const futureMaxDate = new Date();
+  futureMaxDate.setDate(today.getDate() + Number(orderDate2));
+
+  // Extract components
   const futureMinDay = futureMinDate.getDate();
   const futureMinMonth = futureMinDate.getMonth() + 1;
   const futureMinYear = futureMinDate.getFullYear();
 
-  const futureDate = new Date(dayMinInit);
-  futureDate.setDate(dayMinInit.getDate() + 15);
-  const futureDay = futureDate.getDate();
-  const futureMonth = futureDate.getMonth() + 1;
-  const futureYear = futureDate.getFullYear();
+  const futureDay = futureMaxDate.getDate();
+  const futureMonth = futureMaxDate.getMonth() + 1;
+  const futureYear = futureMaxDate.getFullYear();
 
   // Your email template
   const emailTemplate = `
@@ -584,6 +593,7 @@ app.post("/delivery-calculate", (req, res) => {
   )
     .then((response) => response.json())
     .then((data) => {
+
       // Filter options
       const options = data.data
         .filter((option) => {
@@ -612,44 +622,41 @@ app.post("/delivery-calculate", (req, res) => {
 });
 app.post("/create_order", (req, res) => {
   if (isOk === true) {
-    console.log("creating order...")
     currentPrice = Number(currentPrice.toFixed(2));
-    console.log(currentPrice)
-      get_access_token()
-        .then((access_token) => {
-          let order_data_json = {
-            intent: req.body.intent.toUpperCase(),
-            purchase_units: [
-              {
-                amount: {
-                  currency_code: "USD",
-                  value: `${currentPrice}`,
-                },
+    get_access_token()
+      .then((access_token) => {
+        let order_data_json = {
+          intent: req.body.intent.toUpperCase(),
+          purchase_units: [
+            {
+              amount: {
+                currency_code: "USD",
+                value: `${currentPrice}`,
               },
-            ],
-          };
-          const data = JSON.stringify(order_data_json);
-
-          fetch(endpoint_url + "/v2/checkout/orders", {
-            //https://developer.paypal.com/docs/api/orders/v2/#orders_create
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${access_token}`,
             },
-            body: data,
-          })
-            .then((res) => res.json())
-            .then((json) => {
-              res.send(json);
-            }); //Send minimal data to client
+          ],
+        };
+        const data = JSON.stringify(order_data_json);
+
+        fetch(endpoint_url + "/v2/checkout/orders", {
+          //https://developer.paypal.com/docs/api/orders/v2/#orders_create
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+          body: data,
         })
-        .catch((err) => {
-          console.log(err);
-          res.status(500).send(err);
-        });
+          .then((res) => res.json())
+          .then((json) => {
+            res.send(json);
+          }); //Send minimal data to client
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send(err);
+      });
   } else {
-    console.log("order didnt validate...")
   }
 });
 function get_access_token() {
@@ -718,7 +725,7 @@ app.post("/check-price", (req, res) => {
         arrusPrice = Math.max(10, arrus.price - 23);
         arrusPrice = Math.round(arrusPrice * 2) / 2;
       }
-      arrusPrice = Number(arrusPrice.toFixed(2))
+      arrusPrice = Number(arrusPrice.toFixed(2));
       if (deliveryPrice === arrusPrice) {
         isOk = true;
         currentPrice = 45.99 + arrusPrice;
@@ -728,18 +735,6 @@ app.post("/check-price", (req, res) => {
     }
   });
 });
-// fetch(
-//   "https://developers.cjdropshipping.com/api2.0/v1/product/query?pid=1636420804864913408",
-//   {
-//     method: "get",
-//     headers: {
-//       "CJ-Access-Token": process.env.ACCESS_TOKEN,
-//     },
-//   }
-// )
-//   .then((response) => response.json())
-//   .then((data) => console.log(data.data))
-//   .catch((error) => console.error("Error:", error));
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

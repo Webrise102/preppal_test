@@ -15,8 +15,6 @@ let houseNumber;
 let orderEmail;
 let shippingCountry;
 
-
-
 let isTrue = false;
 let deliveryOption = "normal";
 cartData.forEach((item) => {
@@ -56,7 +54,7 @@ function updatePayPal() {
   };
   const paypal_sdk_url = "https://www.paypal.com/sdk/js";
   const client_id =
-    "AXh5j1fggZvIaes8IhbEnM57pWoDNedqn5dEJ7W0RueFaYBYrkb4HShgFeUbBXTcQXCN0jZhfJ053R0E";
+    "AX62qfXBQxAxUO8xgerLTWXGs_bVNIfC_xLpUP_3SBbvZJ2tod3_xE4BLejA6VYaDZXO01mkY7l0D9DG";
   const currency = "USD";
   const intent = "capture";
   url_to_head(
@@ -76,12 +74,12 @@ function updatePayPal() {
             method: "POST",
           });
           if (response.status === 200) {
-            // const isValid = await new Promise((resolve) => {
-            //   checkAll((isValid) => {
-            //     resolve(isValid);
-            //   });
-            // });
-            const isValid = true;
+            const isValid = await new Promise((resolve) => {
+              checkAll((isValid) => {
+                resolve(isValid);
+              });
+            });
+            // const isValid = true;
             console.log(isValid);
             if (isValid) {
               return true;
@@ -115,7 +113,7 @@ function updatePayPal() {
 
         onApprove: function (data, actions) {
           let order_id = data.orderID;
-          return fetch("http://localhost:3000/complete_order", {
+          return fetch("https://preppal-test.onrender.com/complete_order", {
             method: "post",
             headers: { "Content-Type": "application/json; charset=utf-8" },
             body: JSON.stringify({
@@ -376,6 +374,8 @@ const videoIds = {
 };
 
 let vid;
+let Date1;
+let Date2;
 // Add change event listener to the select element
 selectElement.addEventListener("change", function () {
   deliveryBlock.innerHTML = ``;
@@ -389,7 +389,6 @@ selectElement.addEventListener("change", function () {
   if (plugType === undefined) {
     plugType = "EU";
   }
-  console.log(plugType);
   let quantityInner;
   // Loop through cart items
   cartData.forEach((item) => {
@@ -415,7 +414,6 @@ selectElement.addEventListener("change", function () {
   })
     .then((response) => response.json())
     .then((options) => {
-      console.log("Got Data");
       const REDUCE_PRICE = 23;
       // Sort options array based on delivery type
       options.sort((a, b) => {
@@ -455,12 +453,28 @@ selectElement.addEventListener("change", function () {
           const endNum = parseInt(end);
           const newEnd = endNum - 1;
           deliveryName = `Default Shipping (${startNum}-${newEnd})`;
+          Date1 = startNum;
+          Date2 = endNum;
         } else {
           if (option.name === "CJPacket Fast Ordinary") {
             deliveryName = `Fast Shipping (${option.time})`;
+            const time = option.time;
+
+            const [start, end] = time.split("-");
+            const startNum2 = parseInt(start);
+            const endNum2 = parseInt(end);
+            Date1 = startNum2;
+            Date2 = endNum2;
           } else {
             if (option.name === "DHL Official") {
+              const time = option.time;
+
               deliveryName = `Express Shipping (${option.time})`;
+              const [start, end] = time.split("-");
+              const startNum3 = parseInt(start);
+              const endNum3 = parseInt(end);
+              Date1 = startNum3;
+              Date2 = endNum3;
             }
           }
         }
@@ -503,7 +517,6 @@ selectElement.addEventListener("change", function () {
           const deliveryNamee = input.nextElementSibling
             .querySelector(".radio-label:first-child")
             .getAttribute("data-value");
-          console.log(deliveryNamee);
           // Inside shipping input change handler
 
           const previousTotal = Number(sum);
@@ -516,11 +529,11 @@ selectElement.addEventListener("change", function () {
           const deliveryPriceElement = document.querySelector(
             ".checkout_shipping_price"
           );
-          const deliveryNameee = input.nextElementSibling
-          .querySelector(".radio-label:first-child")
-          .textContent
+          const deliveryNameee = input.nextElementSibling.querySelector(
+            ".radio-label:first-child"
+          ).textContent;
           const delvierySpan = document.querySelector(".delvieryClass");
-          delvierySpan.innerHTML = `${deliveryNameee}`
+          delvierySpan.innerHTML = `${deliveryNameee}`;
           deliveryPriceElement.innerText = `$${price.toFixed(2)}`;
           fetch("/check-price", {
             method: "POST",
@@ -529,7 +542,6 @@ selectElement.addEventListener("change", function () {
             },
             body: JSON.stringify({ price: price, name: deliveryNamee }),
           }).then((response) => {
-            console.log(response);
           });
           // Inside shipping input change handler
         });
@@ -554,15 +566,15 @@ async function checkAll(callbackk) {
     zip: false,
   };
 
-   shippingZip = document.getElementById("zip").value;
-   shippingCity = document.getElementById("city").value;
-   shippingAddress = document.getElementById("address").value;
-   firstName = document.getElementById("firstName").value;
-   lastName = document.getElementById("lastName").value;
-   shippingPhone = document.getElementById("phone").value;
-   houseNumber = document.getElementById("house").value;
-   orderEmail = document.getElementById("email").value;
-   shippingCountry = document.querySelector(".form-select").value;
+  shippingZip = document.getElementById("zip").value;
+  shippingCity = document.getElementById("city").value;
+  shippingAddress = document.getElementById("address").value;
+  firstName = document.getElementById("firstName").value;
+  lastName = document.getElementById("lastName").value;
+  shippingPhone = document.getElementById("phone").value;
+  houseNumber = document.getElementById("house").value;
+  orderEmail = document.getElementById("email").value;
+  shippingCountry = document.querySelector(".form-select").value;
 
   function validateName() {
     if (firstName === "" || lastName === "") {
@@ -596,9 +608,67 @@ async function checkAll(callbackk) {
       validationStates["email"] = false;
     }
   }
-  function isValidZip(zip) {
-    const zipRegex = /^\d{5}(?:[-\s]\d{4})?$/;
-    if (zipRegex.test(zip) === true) {
+  function isValidZip(zip, country) {
+    let regex;
+        // Common pattern for most countries
+        const commonPattern = /^\d{5,}$/;
+
+    switch (country) {
+      case 'Belgium':
+          regex = /^\d{4}$/;
+          break;
+      case 'Czech Republic':
+          regex = /^\d{5}$/;
+          break;
+      case 'Denmark':
+          regex = /^\d{4}$/;
+          break;
+      case 'Finland':
+          regex = /^\d{5}$/;
+          break;
+      case 'France':
+          regex = /^\d{5}$/;
+          break;
+      case 'Germany':
+          regex = /^\d{5}$/;
+          break;
+      case 'Ireland':
+          regex = /^[A-Za-z\d]{3}\s?[A-Za-z\d]{4}$/;
+          break;
+      case 'Italy':
+          regex = /^\d{5}$/;
+          break;
+      case 'Luxembourg':
+          regex = /^\d{4}$/;
+          break;
+      case 'Netherlands':
+          regex = /^\d{4}\s?[A-Za-z]{2}$/;
+          break;
+      case 'Poland':
+          regex = /^\d{2}-\d{3}$/;
+          break;
+      case 'Spain':
+          regex = /^\d{5}$/;
+          break;
+      case 'Sweden':
+          regex = /^\d{5}$/;
+          break;
+      case 'United Kingdom':
+          regex = /^[A-Za-z]{1,2}\d{1,2}\s?\d[A-Za-z]{2}$/;
+          break;
+      case 'United States':
+          regex = /^\d{5}(-\d{4})?$/;
+          break;
+      case 'Canada':
+          regex = /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/;
+          break;
+      case 'New Zealand':
+          regex = /^\d{4}$/;
+          break;
+      default:
+        regex = commonPattern;
+  }
+    if (regex.test(zip) === true) {
       validationStates["zip"] = true;
       document.querySelector(".errorZip").innerHTML = "";
     } else {
@@ -632,6 +702,9 @@ async function checkAll(callbackk) {
       shippingAddress !== "" &&
       shippingCity !== ""
     ) {
+      document.querySelector(".errorAddress").innerHTML = "";
+      document.querySelector(".cityError").innerHTML = "";
+
       fetch("/check-address", {
         method: "POST",
         headers: {
@@ -671,18 +744,25 @@ async function checkAll(callbackk) {
                   document.querySelector(".hint").innerHTML = "";
                 }
               } else {
+                console.log("country problems");
                 if (obj.country !== serverData.country) {
                   document.querySelector(".countryError").innerHTML =
                     "Incorrect country";
                 } else {
                   document.querySelector(".countryError").innerHTML = "";
                 }
+                if (obj.postcode !== serverData.zip) {
+                  document.querySelector(".errorZip").innerHTML =
+                    "Postal code doesnt match";
+                } else {
+                  document.querySelector(".errorZip").innerHTML = "";
+                }
               }
             });
           } else {
             validationStates["address"] = false;
           }
-
+          console.log(validationStates);
           callback();
         })
         .catch((error) => {
@@ -711,7 +791,7 @@ async function checkAll(callbackk) {
   validateName();
   validateHouse();
   validateEmail();
-  isValidZip(shippingZip);
+  isValidZip(shippingZip, shippingCountry);
   if (isTrue) {
     validationStates["phone"] = true;
   } else {
@@ -728,15 +808,8 @@ async function checkAll(callbackk) {
 }
 
 function storeOrder() {
-  const shippingZip = document.getElementById("zip").value;
   const shippingProvince = document.getElementById("province").value;
-  const shippingCity = document.getElementById("city").value;
-  const shippingAddress = document.getElementById("address").value;
-  const firstName = document.getElementById("firstName").value;
-  const lastName = document.getElementById("lastName").value;
-  const shippingPhone = document.getElementById("phone").value;
   const address2 = document.getElementById("address2").value;
-  const orderEmail = document.getElementById("email").value;
   const orderNumber = Math.floor(Math.random() * 100000000 + 100000000);
 
   const productses = [];
@@ -768,11 +841,12 @@ function storeOrder() {
     OrderEmail: `${orderEmail}`,
     OrderProvince: `${shippingProvince}`,
     OrderAddress2: `${address2}`,
-    Total: totalsum,
+    Total: Number(totalsum.toFixed(2)),
     OrderStatus: `New`,
     OrderTrackingNumber: "", // You can set this to an empty string initially,
     OrderProducts: formattedProducts,
     OrderNumber: orderNumber,
+    OrderCountry: shippingCountry,
   };
 
   // Now you can use the `products` array in your code
@@ -793,7 +867,8 @@ function storeOrder() {
       lastName: lastName,
       address: shippingCity + " " + shippingAddress + " " + shippingZip,
       total: sum,
-      orderDate: new Date(),
+      orderDate1: Date1,
+      orderDate2: Date2,
       orderNumber: orderNumber,
       email: orderEmail,
     }),
