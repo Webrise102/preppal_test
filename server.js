@@ -19,11 +19,11 @@ const db = mysql.createPool({
 });
 const cron = require("node-cron");
 const fs = require("fs");
-const environment = process.env.ENVIRONMENT || "sandbox";
+const environment = process.env.ENVIRONMENT || "live";
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
 const endpoint_url =
-  environment === "sandbox"
+  environment === "live"
     ? "https://api-m.sandbox.paypal.com"
     : "https://api-m.paypal.com";
 
