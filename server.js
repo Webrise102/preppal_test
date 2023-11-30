@@ -559,9 +559,9 @@ cron.schedule("0 0 */30 * *", () => {
       // Handle the response data
       const accessToken = data.data.accessToken;
 // Split the accessToken into three parts
-const part1 = accessToken.slice(0, 255);
-const part2 = accessToken.slice(255, 510);
-const part3 = accessToken.slice(510);
+const part1 = accessToken.slice(0, 253);
+const part2 = accessToken.slice(253, 505);
+const part3 = accessToken.slice(505);
 
 // Replace the old token with the new ones in your .env file
 envFileContents = envFileContents.replace(
