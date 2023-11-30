@@ -539,7 +539,7 @@ app.post("/check-connection", (req, res) => {
 });
 
 //? CJDROPSHIPPING API
-cron.schedule("*/30 * * * * *", () => {
+cron.schedule('0 0 */30 * *', () => {
   let envFileContents = fs.readFileSync(".env", "utf8");
 
   fetch(
