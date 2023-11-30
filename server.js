@@ -669,6 +669,7 @@ app.post("/create_order", (req, res) => {
         res.status(500).send(err);
       });
   } else {
+    res.status(500).send();
   }
 });
 function get_access_token() {
@@ -747,6 +748,7 @@ app.post("/check-price", (req, res) => {
       }
     }
   });
+  res.status(204).send();
 });
 
 app.listen(port, () => {
