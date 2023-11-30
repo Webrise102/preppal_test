@@ -77,7 +77,7 @@ function updatePayPal() {
             const isValid = await new Promise((resolve) => {
               checkAll((isValid) => {
                 resolve(isValid);
-              });
+              }, deliveryOption);
             });
             // const isValid = true;
             console.log(isValid);
@@ -455,6 +455,7 @@ selectElement.addEventListener("change", function () {
           deliveryName = `Default Shipping (${startNum}-${newEnd})`;
           Date1 = startNum;
           Date2 = endNum;
+
         } else {
           if (option.name === "CJPacket Fast Ordinary") {
             deliveryName = `Fast Shipping (${option.time})`;
@@ -465,6 +466,7 @@ selectElement.addEventListener("change", function () {
             const endNum2 = parseInt(end);
             Date1 = startNum2;
             Date2 = endNum2;
+
           } else {
             if (option.name === "DHL Official") {
               const time = option.time;
@@ -518,7 +520,13 @@ selectElement.addEventListener("change", function () {
             .querySelector(".radio-label:first-child")
             .getAttribute("data-value");
           // Inside shipping input change handler
+if(deliveryNamee === "DHL Official") {
+  document.getElementById("phoneBlock").style.display = "block"
 
+} else {
+  document.getElementById("phoneBlock").style.display = "none"
+
+}
           const previousTotal = Number(sum);
           deliveryOption = `${deliveryNamee}`
 
@@ -557,7 +565,13 @@ window.addEventListener("load", () => {
   selectElement.dispatchEvent(new Event("change"));
 });
 
-async function checkAll(callbackk) {
+async function checkAll(callbackk, deliveryOptionPar) {
+  let isDHL = false;
+  if(deliveryOptionPar === "DHL Official") {
+isDHL = true;
+  } else {
+    isDHL = false;
+  }
   const validationStates = {
     name: false,
     email: false,
@@ -678,8 +692,7 @@ async function checkAll(callbackk) {
   }
   function validatePhone() {
     function isValidPhoneNumber(phoneNumber) {
-      const phonePattern =
-        /^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9][0-9]{2})\s*\)|([2-9][0-9]{2}))(?:[.-]\s*)?([2-9][0-9]{2})(?:[.-]\s*)?([0-9]{4}))(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/;
+      const phonePattern = /(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]‌​)\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)([2-9]1[02-9]‌​|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})\s*(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+)\s*)?$/i;
       return phonePattern.test(phoneNumber);
     }
 
@@ -795,10 +808,10 @@ async function checkAll(callbackk) {
   validateHouse();
   validateEmail();
   isValidZip(shippingZip, shippingCountry);
-  if (isTrue) {
+  if (isDHL === false) {
     validationStates["phone"] = true;
   } else {
-    if (isTrue === false) {
+    if (isDHL === true) {
       validatePhone();
     }
   }
