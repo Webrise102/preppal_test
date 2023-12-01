@@ -684,7 +684,6 @@ function get_access_token() {
   })
     .then((res) => res.json())
     .then((json) => {
-      console.log(json)
       return json.access_token;
     });
 }
