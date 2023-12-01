@@ -1,9 +1,69 @@
-<!doctypehtml><html lang=en><meta charset=UTF-8><meta content="width=device-width,initial-scale=1"name=viewport><title>PrepPal - Unsubscribe from our newsletter</title><link href=css/reset.css rel=stylesheet><link href=css/style.css rel=stylesheet><link href=images/favicon.jpg rel=icon type=image/jpg><style>section{display:flex;justify-content:center;text-align:center}.subscribe_input{background-color:#2a2a2a;color:#fff;height:40px;width:min(500px,100%);text-align:left;padding-left:20px;border-radius:5px}h2{font-size:28px}p{font-size:18px}.unsubscribeButton{background-color:#2a2a2a;margin-top:10px;width:min(500px,100%);color:#fff;height:40px;border-radius:5px;cursor:pointer}</style><meta content="Unsubscribe from the PrepPal newsletter and email notifications by entering your email address."name=description><meta content="PrepPal unsubscribe, PrepPal newsletter, PrepPal email notifications, PrepPal email list, PrepPal updates"name=keywords><section class=subscription_section><button class=unsubscribeButton id=unsubscribeButton>Unsubscribe</button> <button class=unsubscribeButton>Nevermind</button></section><script>const unsubscribe = document.querySelector("#unsubscribeButton");
-  unsubscribe.addEventListener("click", () => {
-    fetch("/unsubscribe", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });</script>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PrepPal - Unsubscribe from our newsletter</title>
+
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon" type="image/jpg" href="images/favicon.jpg" />
+
+    <style>
+      section {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+      }
+      .subscribe_input {
+        background-color: #2a2a2a;
+        color: #ffffff;
+        height: 40px;
+        width: min(500px, 100%);
+        text-align: left;
+        padding-left: 20px;
+        border-radius: 5px;
+      }
+      h2 {
+        font-size: 28px;
+      }
+      p {
+        font-size: 18px;
+      }
+      .unsubscribeButton {
+        background-color: #2a2a2a;
+        margin-top: 10px;
+        width: min(500px, 100%);
+        color: #ffffff;
+        height: 40px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+    <meta
+      name="description"
+      content="Unsubscribe from the PrepPal newsletter and email notifications by entering your email address."
+    />
+    <meta
+      name="keywords"
+      content="PrepPal unsubscribe, PrepPal newsletter, PrepPal email notifications, PrepPal email list, PrepPal updates"
+    />
+  </head>
+  <body>
+    <section class="subscription_section">
+      <button class="unsubscribeButton" id="unsubscribeButton">Unsubscribe</button>
+      <button class="unsubscribeButton">Nevermind</button>
+    </section>
+    <script>
+      const unsubscribe = document.querySelector("#unsubscribeButton");
+      unsubscribe.addEventListener("click", () => {
+        fetch("/unsubscribe", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
