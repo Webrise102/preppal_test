@@ -1,1 +1,144 @@
-*{margin:0;padding:0;box-sizing:border-box}.cart__button{margin-inline:auto;position:relative;width:200px;height:42px;border-radius:10px;border:2px solid #000;font-size:1rem;font-weight:500;background-color:transparent;color:#000;cursor:pointer;overflow:hidden;transition:0.3s ease-in-out;display:flex;justify-content:center;align-items:center}.data-nodisplay{display:none}.cart__button:hover{background-color:#040115;color:#fff}.cart__button:hover .fa-shopping-cart,.cart__button:hover .fa-box{stroke:#fff}.cart__button:active{transform:scale(.9)}.cart__button .fa-shopping-cart{position:absolute;z-index:2;top:50%;left:-10%;font-size:1.5rem;transform:translate(-50%,-50%)}.cart__button .fa-box{position:absolute;z-index:3;top:-25%;left:52%;font-size:.875rem;transform:translate(-50%,-50%)}.cart__button span{position:absolute;left:50%;z-index:3;top:50%;transform:translate(-50%,-50%)}.cart__button span.add__to-cart{opacity:1}.cart__button span.added{opacity:0}.cart__button.clicked .fa-shopping-cart{animation:cart 1.5s ease-in-out forwards}.cart__button.clicked .fa-box{animation:box 1.5s ease-in-out forwards}.cart__button.clicked span.add__to-cart{animation:txt1 1.5s ease-in-out forwards}.cart__button.clicked span.added{animation:txt2 1.5s ease-in-out forwards}@keyframes cart{0%{left:-10%}40%,60%{left:50%}100%{left:110%}}@keyframes box{0%,40%{top:-20%}60%{top:40%;left:52%}100%{top:40%;left:112%}}@keyframes txt1{0%{opacity:1}20%,100%{opacity:0}}@keyframes txt2{0%,80%{opacity:0}100%{opacity:1}}
+/*? Button */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .cart__button {
+    margin-inline: auto;
+  
+    position: relative;
+    width: 200px;
+    height: 42px;
+    border-radius: 10px;
+    border: 2px solid #000000;
+    font-size: 1rem;
+    font-weight: 500;
+    background-color: transparent;
+    color: #000000;
+    cursor: pointer;
+    overflow: hidden;
+    transition: 0.3s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .data-nodisplay {
+    display: none;
+  }
+  .cart__button:hover {
+    background-color: #040115;
+    color: #ffffff;
+  }
+  .cart__button:hover .fa-shopping-cart, .cart__button:hover .fa-box {
+    stroke: #ffffff;
+  }
+  
+  .cart__button:active {
+    transform: scale(0.9);
+  }
+  
+  .cart__button .fa-shopping-cart {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: -10%;
+    font-size: 1.5rem;
+    transform: translate(-50%, -50%);
+  }
+  
+  .cart__button .fa-box {
+    position: absolute;
+    z-index: 3;
+    top: -25%;
+    left: 52%;
+    font-size: 0.875rem;
+    transform: translate(-50%, -50%);
+  }
+  
+  .cart__button span {
+    position: absolute;
+    left: 50%;
+    z-index: 3;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .cart__button span.add__to-cart {
+    opacity: 1;
+  }
+  
+  .cart__button span.added {
+    opacity: 0;
+  }
+  
+  .cart__button.clicked .fa-shopping-cart {
+    animation: cart 1.5s ease-in-out forwards;
+  }
+  
+  .cart__button.clicked .fa-box {
+    animation: box 1.5s ease-in-out forwards;
+  }
+  
+  .cart__button.clicked span.add__to-cart {
+    animation: txt1 1.5s ease-in-out forwards;
+  }
+  
+  .cart__button.clicked span.added {
+    animation: txt2 1.5s ease-in-out forwards;
+  }
+  
+  @keyframes cart {
+    0% {
+      left: -10%;
+    }
+  
+    40%,
+    60% {
+      left: 50%;
+    }
+  
+    100% {
+      left: 110%;
+    }
+  }
+  
+  @keyframes box {
+    0%,
+    40% {
+      top: -20%;
+    }
+  
+    60% {
+      top: 40%;
+      left: 52%;
+    }
+  
+    100% {
+      top: 40%;
+      left: 112%;
+    }
+  }
+  
+  @keyframes txt1 {
+    0% {
+      opacity: 1;
+    }
+  
+    20%,
+    100% {
+      opacity: 0;
+    }
+  }
+  
+  @keyframes txt2 {
+    0%,
+    80% {
+      opacity: 0;
+    }
+  
+    100% {
+      opacity: 1;
+    }
+  }

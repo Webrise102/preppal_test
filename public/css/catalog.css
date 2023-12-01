@@ -1,1 +1,80 @@
-p{font-weight:300}main{padding:2%}.search_product_image{width:90%;padding:5%;margin-inline:auto}.search_cards_box{display:flex}.search_product_card{width:min(300px,100%);border:1px solid #000;border-radius:10px;padding:1%;aspect-ratio:8/11;display:flex;flex-direction:column;justify-content:space-evenly;text-align:center}.search_product_card:nth-child(1){margin-right:5%}.search_product_priceBox{display:flex;align-items:center;margin-inline:auto}.search_product_price{font-size:18px}.search_product_oldprice{color:#5c5c5c;text-decoration:line-through;margin-right:10px;font-size:14px}.catalog_search_bar{width:min(350px,100%);box-shadow:0 4px 4px 0 rgba(0,0,0,.25);margin-bottom:20px}.catalog_search_bar svg{position:relative;top:0;right:0}.search_product_title{font-size:24px;cursor:pointer}h1{font-size:70px}@media screen and (max-width:780px){h1{font-size:60px}}@media screen and (max-width:700px){.search_cards_box{flex-direction:column}.search_product_card{margin:auto;width:min(350px,100%)}.search_product_card:nth-child(1){margin-right:auto;margin-bottom:20px}}
+p {
+    font-weight: 300;
+  }
+  main {
+    padding: 2%;
+  }
+  .search_product_image {
+    width: 90%;
+    padding: 5%;
+    margin-inline: auto;
+  }
+  .search_cards_box {
+    display: flex;
+  }
+  .search_product_card {
+    width: min(300px, 100%);
+    border: 1px solid #000000;
+    border-radius: 10px;
+    padding: 1%;
+    aspect-ratio: 8/11;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    text-align: center;
+  }
+  .search_product_card:nth-child(1) {
+    margin-right: 5%;
+  }
+  .search_product_priceBox {
+    display: flex;
+    align-items: center;
+    margin-inline: auto;
+  }
+  .search_product_price {
+    font-size: 18px;
+  }
+  .search_product_oldprice {
+    color: #5c5c5c;
+    text-decoration: line-through;
+    margin-right: 10px;
+    font-size: 14px;
+  }
+  .catalog_search_bar {
+    width: min(350px, 100%);
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    margin-bottom: 20px;
+  }
+  .catalog_search_bar svg {
+    position: relative;
+    top:0;
+    right: 0;
+  }
+  
+  .search_product_title {
+    font-size: 24px;
+    cursor: pointer
+  }
+  h1 {
+    font-size: 70px;
+  }
+  
+  @media screen and (max-width: 780px) {
+    h1 {
+      font-size: 60px
+    }
+  }
+  
+  @media screen and (max-width: 700px) {
+    .search_cards_box {
+      flex-direction: column;
+    }
+    .search_product_card {
+      margin: auto;
+      width: min(350px, 100%);
+    }
+    .search_product_card:nth-child(1) {
+      margin-right: auto;
+      margin-bottom: 20px;
+    }
+  }
