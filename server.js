@@ -38,7 +38,11 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD,
   },
 });
-
+// Middleware to redirect all requests
+app.use((req, res, next) => {
+  // Redirect to the desired website
+  res.redirect('https://preppal.onrender.com/');
+});
 //? Routes
 
 app.use(express.static("public"));
