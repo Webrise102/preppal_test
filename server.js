@@ -39,10 +39,10 @@ const transporter = nodemailer.createTransport({
   },
 });
 // Middleware to redirect all requests
-// app.use((req, res, next) => {
-//   // Redirect to the desired website
-//   res.redirect('https://preppal.onrender.com/');
-// });
+//app.use((req, res, next) => {
+  // Redirect to the desired website
+//  res.redirect('https://preppal.onrender.com/');
+//});
 //? Routes
 
 app.use(express.static("public"));
